@@ -16,17 +16,55 @@
 
 #include "compress/VSEncodingBlocksHybrid.hpp"
 
+#define VSEHYBRID_THRES         4096
+
+/* FIXME: Whe de-allocated? */
+static uint32_t *__tmp =
+                new uint32_t[VSENCODING_BLOCKSZ * 2 + TAIL_MERGIN];
+
 void
 VSEncodingBlocksHybrid::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        eoutput("Not implemented yet");
+        uint32_t        res;
+        uint32_t        *lin;
+        uint32_t        *lout;
+        uint32_t        csize;
+
+        for (nvalue = 0, res = len, lin = in, lout = out; 
+                        res > VSENCODING_BLOCKSZ;
+                        res -= VSENCODING_BLOCKSZ, lin += VSENCODING_BLOCKSZ,
+                        lout += csize, nvalue += csize + 1) {
+                VSEncodingBlocks::encodeVS(VSENCODING_BLOCKSZ, lin, csize, __tmp);
+                *lout++ = csize;
+                memcpy(lout, __tmp, csize * sizeof(uint32_t));
+        }
+
+        if (res <= VSEHYBRID_THRES)
+                VSEncodingRest::encodeArray(lin, res, lout, csize);
+        else
+                VSEncodingBlocks::encodeVS(res, lin, csize, lout);
+
+        nvalue += csize;
 }
 
 void
 VSEncodingBlocksHybrid::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        eoutput("Not implemented yet");
+        uint32_t        res;
+        uint32_t        sum;
+
+        for (res = nvalue; res > VSENCODING_BLOCKSZ;
+                        out += VSENCODING_BLOCKSZ, in += sum,
+                        len -= sum, res -= VSENCODING_BLOCKSZ) {
+                sum = *in++;
+                VSEncodingBlocks::decodeVS(VSENCODING_BLOCKSZ, in, out, __tmp);
+        }
+
+        if (res <= VSEHYBRID_THRES)
+                VSEncodingRest::decodeArray(in, len, out, res);
+        else
+                VSEncodingBlocks::decodeVS(res, in, out, __tmp);
 }
 
