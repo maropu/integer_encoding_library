@@ -1,0 +1,111 @@
+How to use, and some performance results
+=================
+
+How to use
+-----------
+
+You type a following line for encoding:
+
+./IntEncoder EncoderID Input
+
+A pre-defined value needs to be input in 'EncoderID', and an input
+file in 'Input' needs to follow a pre-defined format. These details
+can be found in following sections.
+
+For decoding, you say a following line:
+
+./IntDecoder DecoderID Input [Output]
+
+You need to input a corresponding value in 'DecoderID' to 'EncoderID',
+and a same name with 'Input' for encoding. For writing decoded 
+integers to a file, you can type an output file name in 'Output'.
+
+Implemented coder IDs
+-----------
+
+This library uses following coder IDs:
+
+### EncoderID   EncoderName
+
+0               Gamma
+1               Delta
+2               Variable Byte
+3               Binary Interpolative
+4               Simple 9
+5               Simple 16
+6               PForDelta
+7               OPTPForDelta
+8               VSEncodingBlocks
+9               VSE-R
+10              VSEncodingRest
+11              VSEncodingBlocksHybrid
+12              VSEncodingSimple v1
+13              VSEncodingSimple v2
+
+### DecoderID   DecoderName
+
+0               N Gamma
+1               FU Gamma
+2               F Gamma
+3               N Delta
+4               FU Delta
+5               FG Delta
+6               F Delta
+7               Variable Byte
+8               Binary Interpolative
+9               Simple 9
+10              Simple 16
+11              PForDelta
+12              OPTPForDelta
+13              VSEncodingBlocks
+14              VSE-R
+15              VSEncodingRest
+16              VSEncodingBlocksHybrid
+17              VSEncodingSimple v1
+18              VSEncodingSimple v2
+
+An input/output file format
+-----------
+
+In the implemented coders in this library, an input/output format
+follows a rule below:
+
+[total of int., a first int., a second int., ..., a last int.]
+[total of int., a first int., a second int., ..., a last int.]
+...
+
+Each entry occupies a 32-bit word, and these integers MUST appear
+in an ascending order.
+
+Performance
+-----------
+
+Some performance results (left and right values are mis and bpi,
+respectively) of these coders are shown here. gov2 was used as a
+test set, which is one of TREC test collections in the Terabyte
+Track. This test was done on a machine with a Intel Core i5-2500
+(3.3GHz) processor and 8GiB of memory.
+
+                                    mis          bpi
+N Gamma                          114.53         5.05
+FU Gamma                         144.82         5.05
+F Gamma                          122.09         5.05
+N Delta                          117.14         4.70
+FU Delta                         123.87         4.70
+FG Delta                         129.67         4.70
+F Delta                          140.74         4.70
+Variable Byte                    226.15         8.97
+Binary Interpolative             103.27         3.95
+Simple 9                         571.93         5.41
+Simple 16                        575.90         5.17
+PForDelta                        425.28         6.29
+OPTPForDelta                     331.06         5.78
+VSEncodingBlocks                 915.36         4.95
+VSE-R                            167.21         4.55
+VSEncodingSimple v1             1701.11         6.40
+VSEncodingSimple v2             1812.66         6.79
+
+, where mis represents these average decompression speed expressed in
+millions of integers per second, and bpi does these compression
+performance expressed in bits per integers.
+
