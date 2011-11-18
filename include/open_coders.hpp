@@ -42,7 +42,7 @@
 #include "utils/int_utils.hpp"
 
 /* Configure parameters */
-#define MAXLEN          22000000
+#define MAXLEN          200000000
 #define SKIP            32
 
 /* Magic numbers */

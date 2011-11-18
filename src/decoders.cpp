@@ -66,7 +66,8 @@ main(int argc, char **argv)
                 eoutput("Can't allocate memory");
 
         decID = strtol(argv[1], &end, 10);
-        if ((*end != '\0') || (decID < 0) || (decID >= NUMDECODERS) || (errno == ERANGE))
+        if ((*end != '\0') || (decID < 0) ||
+                        (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
 
         /* Read the file name, and open it */
@@ -120,6 +121,9 @@ main(int argc, char **argv)
                 while (toclen < lenmax) {
                         /* Read the header of each list */
                         num = __next_read(toc_addr, toclen);
+
+                        assert_debug(num < MAXLEN);
+
                         prev_doc = __next_read(toc_addr, toclen);
                         cmp_pos = __next_read(toc_addr, toclen);
 

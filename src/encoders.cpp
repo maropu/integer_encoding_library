@@ -104,6 +104,8 @@ main(int argc, char **argv)
                         /* Read the numer of integers in a list */
                         num = __next_read(addr, len);
 
+                        assert_debug(num < MAXLEN);
+
                         if (len + num > lenmax)
                                 goto LOOP_END;
 
