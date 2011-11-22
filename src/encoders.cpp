@@ -118,7 +118,7 @@ main(int argc, char **argv)
                                 fwrite(&num, 1, sizeof(uint32_t), toc);
                                 fwrite(&prev_doc, 1, sizeof(uint32_t), toc);
                                 fwrite(&cmp_pos, 1, sizeof(uint32_t), toc);
-                                        
+
                                 for (i = 0; i < num - 1; i++) {
                                         cur_doc = __next_read(addr, len);
 

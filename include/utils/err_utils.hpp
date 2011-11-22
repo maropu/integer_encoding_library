@@ -36,6 +36,25 @@
 
 #ifdef DEBUG
 /* Shortcuts for debug-prints */
+ #define var_output(var)        \
+        do {                    \
+                cerr << "Variable: " << #var << "=" << var <<   \
+                        " (" << __func__ << ":" << __LINE__ << ")" << endl;     \
+        } while (0)
+
+ #define ar_output(ar, num)     \
+        do {                    \
+                int     n;      \
+\
+                n = (num == 0)? sizeof(ar) / sizeof(ar[0]) : num;       \
+\
+                cerr << "Array[]: " << #ar      \
+                        " (" << __func__ << ":" << __LINE__ << ")" << endl;     \
+                for (int i = 0; i < n; i++)             \
+                        cerr << ar[i] << " ";           \
+                cerr << endl;   \
+        } while (0)
+
  #define doutput(flag, fmt, ...)                \
         do {                                    \
                 if ((flag) == FILE_OUTPUT) {    \
@@ -47,6 +66,8 @@
                 }               \
         } while (0)
 #else
+ #define var_output(var)
+ #define ar_output(ar, num)
  #define doutput(flag, fmt, ...)
 #endif /* DEBUG */
 

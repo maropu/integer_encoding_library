@@ -56,7 +56,6 @@
 #define D_VSESIMPLEV1   17
 #define D_VSESIMPLEV2   18
 
-/* FIXME: A last argument should be removed */
 typedef void (*pt2Dec)(uint32_t *, uint32_t, uint32_t *, uint32_t);
 
 static pt2Dec decoders[NUMDECODERS] = {

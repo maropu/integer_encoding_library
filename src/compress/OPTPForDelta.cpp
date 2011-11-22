@@ -1,5 +1,9 @@
 /*-----------------------------------------------------------------------------
  *  OPTPForDelta.cpp - A optimized implementation of PForDelta.
+ *      This implementation made by these authors based on a paper below:
+ *       - http://dl.acm.org/citation.cfm?id=1526764
+ *      And, some potions fo this code are optimized by means of a code given
+ *      by Shuai Ding, who is of original authors proposing OPTPForDelta.
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -15,7 +19,7 @@
 #include "compress/OPTPForDelta.hpp"
 
 static uint32_t __optp4delta_possLogs[] = {
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
 };
 
 uint32_t

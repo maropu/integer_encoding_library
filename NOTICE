@@ -98,8 +98,8 @@ Variable Byte                    226.15         8.97
 Binary Interpolative             103.27         3.95
 Simple 9                         571.93         5.41
 Simple 16                        575.90         5.17
-PForDelta                        425.28         6.29
-OPTPForDelta                     331.06         5.78
+PForDelta                        990.22         6.16
+OPTPForDelta                     842.96         5.36
 VSEncodingBlocks                 915.36         4.95
 VSE-R                            167.21         4.55
 VSEncodingSimple v1             1701.11         6.40
