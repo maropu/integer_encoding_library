@@ -139,19 +139,9 @@ main(int argc, char **argv)
                                 fwrite(cmp_array, sizeof(uint32_t), cmp_size, cmp);
                                 cmp_pos += cmp_size;
                         } else {
-                                for (i = 0; i < num - 1; i++) {
+                                /* Read skipped data */
+                                for (i = 0; i < num - 1; i++)
                                         cur_doc = __next_read(addr, len);
-
-                                        if (cur_doc <= prev_doc)
-                                                cerr << "List ordering exception: list MUST be increasing" << endl;
-
-                                        if (encID != 5)
-                                                list[i] = cur_doc - prev_doc - 1;
-                                        else
-                                                list[i] = cur_doc;
-
-                                        prev_doc = cur_doc;
-                                }
                         }
                 }
         }
