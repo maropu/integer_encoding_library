@@ -35,7 +35,7 @@ BitsReader::BitsReader(uint32_t *in)
 uint32_t
 BitsReader::bit_reader(uint32_t bits)
 {
-        assert_debug(bits <= 32);
+        __assert(bits <= 32);
 
         if (bits == 0)
                 return 0;
@@ -316,7 +316,7 @@ BitsReader::readMinimalBinary(uint32_t b)
         uint32_t        x;
         uint32_t        d;
 
-        assert_debug(data != NULL);
+        __assert(data != NULL);
 
         d = int_utils::get_msb(b);
         m = (1ULL << (d + 1)) - b;
@@ -336,7 +336,7 @@ BitsReader::InterpolativeArray(uint32_t* out, uint32_t nvalues,
         uint32_t        h;
         uint32_t        m;
 
-        assert_debug(lo <= hi);
+        __assert(lo <= hi);
 
         if (nvalues == 0)
                 return;

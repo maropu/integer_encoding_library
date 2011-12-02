@@ -300,6 +300,8 @@ VSEncodingBlocks::decodeVS(uint32_t len,
         uint32_t        K;
         uint32_t        *end;
 
+        __validate(in, len);
+
         ntotal = *in++;
         addr = in + ntotal;
 
@@ -406,12 +408,21 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
         uint32_t        res;
         uint32_t        sum;
 
+        __validate(in, len);
+        __validate(out, nvalue + TAIL_MERGIN);
+
         for (res = nvalue; res > VSENCODING_BLOCKSZ;
                         out += VSENCODING_BLOCKSZ, in += sum,
                         res -= VSENCODING_BLOCKSZ) {
                 sum = *in++;
+
+                __validate(in, sum);
+                __validate(out, VSENCODING_BLOCKSZ + TAIL_MERGIN);
+
                 decodeVS(VSENCODING_BLOCKSZ, in, out, __tmp);
         }
+
+        __validate(out, res + TAIL_MERGIN);
 
         decodeVS(res, in, out, __tmp);
 }

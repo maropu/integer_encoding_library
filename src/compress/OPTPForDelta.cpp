@@ -37,7 +37,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
         uint32_t        excVal;
         uint32_t        e;
 
-        assert_debug(b <= 32);
+        __assert(b <= 32);
 
         if (b == 32) {
                 return len;

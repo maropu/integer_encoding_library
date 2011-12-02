@@ -141,7 +141,7 @@ BitsWriter::writeMinimalBinary(uint32_t x, uint32_t b)
         int             d;
         uint32_t        m;
 
-        assert_debug(data != NULL);
+        __assert(data != NULL);
 
         d = int_utils::get_msb(b);
         m = (1ULL << (d + 1)) - b;
@@ -159,7 +159,7 @@ BitsWriter::InterpolativeArray(uint32_t *in, uint32_t len,
         uint32_t        h;
         uint32_t        m;
 
-        assert_debug(lo <= hi);
+        __assert(lo <= hi);
 
         if (len == 0)
                 return;

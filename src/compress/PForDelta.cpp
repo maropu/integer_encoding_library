@@ -136,7 +136,7 @@ PForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
         uint32_t        i;
         uint32_t        curExcept;
 
-        assert_debug(b <= 32);
+        __assert(b <= 32);
 
         if (b == 32)
                 return 0;
@@ -354,7 +354,7 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
                         excVal <<= b;
                         out[lpos] |= excVal;
 
-                        assert_debug(lpos < PFORDELTA_BLOCKSZ); 
+                        __assert(lpos < PFORDELTA_BLOCKSZ); 
                 }
 
                 out += PFORDELTA_BLOCKSZ; 

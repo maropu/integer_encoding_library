@@ -22,6 +22,13 @@ static void _sig_handler(int n);
 static FILE     *_log;
 static int      _init_utils;
 
+int
+err_utils::validate_address(void *ptr, uint32_t range)
+{
+        /* Not implimented yet */
+        return 0;
+}
+
 void 
 err_utils::err_print(const char *func, int32_t line, const char *fmt, ...)
 {

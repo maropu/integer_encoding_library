@@ -39,8 +39,6 @@ int
 main(int argc, char **argv)
 {
         int             decID;
-        uint32_t        i;
-        uint32_t        j;
         uint32_t        *list;
         uint32_t        *cmp_addr;
         uint32_t        *toc_addr;
@@ -114,18 +112,18 @@ main(int argc, char **argv)
         dints = 0;
         sum_sizes = 0;
 
-        for (i = 0, ip = toclen; i < NLOOP; i++, toclen = ip) {
+        for (uint32_t i = 0, ip = toclen; i < NLOOP;i++, toclen = ip) {
                 uint32_t        num;
                 uint32_t        prev_doc;
                 uint32_t        cmp_pos;
                 uint32_t        next_pos;
                 double          tm;
 
-                while (toclen + NUM_EACH_HEADER_TOC < lenmax) {
+                while (toclen + NUM_EACH_HEADER_TOC - 1 < lenmax) {
                         /* Read the header of each list */
                         num = __next_read(toc_addr, toclen);
 
-                        assert_debug(num < MAXLEN);
+                        __assert(num < MAXLEN);
 
                         prev_doc = __next_read(toc_addr, toclen);
                         cmp_pos = __next_read(toc_addr, toclen);
@@ -148,7 +146,7 @@ main(int argc, char **argv)
                                         fwrite(&num, 1, sizeof(uint32_t), dec);
                                         fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
 
-                                        for (j = 0; j < num - 1; j++) {
+                                        for (uint32_t j = 0; j < num - 1; j++) {
                                                 prev_doc += list[j] + 1;
                                                 fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
                                         }

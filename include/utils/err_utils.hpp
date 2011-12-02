@@ -34,15 +34,15 @@
                 err_utils::err_print(__func__, __LINE__, fmt, ##__VA_ARGS__);   \
         } while (0)
 
-#ifdef DEBUG
 /* Shortcuts for debug-prints */
- #define var_output(var)        \
+#ifdef DEBUG
+ #define __value(val)           \
         do {                    \
-                cerr << "Variable: " << #var << "=" << var <<   \
+                cerr << "Value: " << #val << "=" << val <<   \
                         " (" << __func__ << ":" << __LINE__ << ")" << endl;     \
         } while (0)
 
- #define ar_output(ar, num)     \
+ #define __array(ar, num)       \
         do {                    \
                 int     n;      \
 \
@@ -55,7 +55,7 @@
                 cerr << endl;   \
         } while (0)
 
- #define doutput(flag, fmt, ...)                \
+ #define __doutput(flag, fmt, ...)              \
         do {                                    \
                 if ((flag) == FILE_OUTPUT) {    \
                         err_utils::push_log(__func__, __LINE__, fmt, ##__VA_ARGS__);    \
@@ -66,19 +66,30 @@
                 }               \
         } while (0)
 #else
- #define var_output(var)
- #define ar_output(ar, num)
- #define doutput(flag, fmt, ...)
+ #define __value(var)
+ #define __array(ar, num)
+ #define __doutput(flag, fmt, ...)
 #endif /* DEBUG */
 
+/* Some other utilities for debugs */
 #ifdef DEBUG
- #define assert_debug(cond)     assert(cond)
+ #define __validate(ptr, range) \
+        do {                    \
+                if (err_utils::validate_address(ptr, range)) {  \
+                        eoutput("Exception: A invalidated memory access");      \
+        } while (0)
+
+ #define __assert(cond)         assert(cond)
 #else
- #define assert_debug(cond)
+ #define __validate(ptr, range)
+ #define __assert(cond)
 #endif /* DEBUG */
 
 class err_utils {
         public:
+        /* Debugging functions */
+        static int validate_address(void *ptr, uint32_t range);
+
         /* Logging functions */
         static void push_log(const char *func, int32_t line, const char *fmt, ...)
                 __attribute__ ((format (printf, 3, 4))); 
