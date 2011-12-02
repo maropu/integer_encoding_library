@@ -121,7 +121,7 @@ main(int argc, char **argv)
                 uint32_t        next_pos;
                 double          tm;
 
-                while (toclen < lenmax) {
+                while (toclen + NUM_EACH_HEADER_TOC < lenmax) {
                         /* Read the header of each list */
                         num = __next_read(toc_addr, toclen);
 
