@@ -21,12 +21,45 @@ static void _sig_handler(int n);
 
 static FILE     *_log;
 static int      _init_utils;
+static sigjmp_buf       ctx;
+
+void
+err_utils::sigsegv_handler(int sig)
+{
+        siglongjmp(ctx, 1);
+}
 
 int
 err_utils::validate_address(void *ptr, uint32_t range)
 {
-        /* Not implimented yet */
-        return 0;
+        int     ret;
+        struct sigaction        act;
+        struct sigaction        orig_act;
+
+        ret = 1;
+
+        sigemptyset(&act.sa_mask);
+
+        act.sa_flags = 0;
+        act.sa_handler = sigsegv_handler;
+
+        sigaction(SIGSEGV, &act, &orig_act);
+
+        if (sigsetjmp(ctx, 1) == 0) {
+                volatile uint8_t        d;
+                volatile uint8_t        *p;
+
+                p = (volatile uint8_t *)ptr;
+
+                for (uint32_t i = 0; i < range; i++, p++)
+                        d = *p;
+        } else {
+                ret = 0;
+        }
+
+        sigaction(SIGSEGV, &orig_act, NULL);
+
+        return ret;
 }
 
 void 
@@ -45,7 +78,7 @@ err_utils::err_print(const char *func, int32_t line, const char *fmt, ...)
 
         buf[n] = '\n';
 
-        cerr << "\"" << func << "(" << line << "): " << buf;
+        cerr << func << "(" << line << "): " << buf;
 
         exit(EXIT_FAILURE);
 }

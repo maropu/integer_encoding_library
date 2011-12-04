@@ -112,14 +112,20 @@ main(int argc, char **argv)
         dints = 0;
         sum_sizes = 0;
 
-        for (uint32_t i = 0, ip = toclen; i < NLOOP;i++, toclen = ip) {
+        /* Store a initial position */
+        ip = toclen;
+
+        for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
+                uint32_t        numHeaders;
                 uint32_t        num;
                 uint32_t        prev_doc;
                 uint32_t        cmp_pos;
                 uint32_t        next_pos;
                 double          tm;
 
-                while (toclen + NUM_EACH_HEADER_TOC - 1 < lenmax) {
+                numHeaders = lenmax / NUM_EACH_HEADER_TOC;
+
+                for (uint32_t j = 0; j < numHeaders; j++) {
                         /* Read the header of each list */
                         num = __next_read(toc_addr, toclen);
 
@@ -128,8 +134,12 @@ main(int argc, char **argv)
                         prev_doc = __next_read(toc_addr, toclen);
                         cmp_pos = __next_read(toc_addr, toclen);
 
-                        next_pos = (toclen + NUM_EACH_HEADER_TOC - 1 < lenmax)?
-                                __next_pos(toc_addr, toclen) : lenmax;
+                        if (__likely(j != numHeaders - 1))
+                                next_pos = __next_pos(toc_addr, toclen);
+                        else
+                                next_pos = lenmax;
+
+                        __assert(cmp_pos < next_pos);
 
                         /* Do decoding */
                         tm = int_utils::get_time();

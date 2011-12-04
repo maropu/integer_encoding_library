@@ -22,6 +22,8 @@
 #include <string.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <setjmp.h>
+#include <signal.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -75,7 +77,7 @@
 #ifdef DEBUG
  #define __validate(ptr, range) \
         do {                    \
-                if (err_utils::validate_address(ptr, range)) {  \
+                if (!err_utils::validate_address(ptr, range))   \
                         eoutput("Exception: A invalidated memory access");      \
         } while (0)
 
@@ -87,17 +89,18 @@
 
 class err_utils {
         public:
-        /* Debugging functions */
-        static int validate_address(void *ptr, uint32_t range);
+                /* Debugging functions */
+                static void sigsegv_handler(int sig);
+                static int validate_address(void *ptr, uint32_t range);
 
-        /* Logging functions */
-        static void push_log(const char *func, int32_t line, const char *fmt, ...)
-                __attribute__ ((format (printf, 3, 4))); 
-        static void flush_log(void);
+                /* Logging functions */
+                static void push_log(const char *func, int32_t line, const char *fmt, ...)
+                        __attribute__ ((format (printf, 3, 4))); 
+                static void flush_log(void);
 
-        /* Error functions */
-        static void err_print(const char *func, int32_t line, const char *fmt, ...)
-                __attribute__ ((format (printf, 3, 4))); 
+                /* Error functions */
+                static void err_print(const char *func, int32_t line, const char *fmt, ...)
+                        __attribute__ ((format (printf, 3, 4))); 
 };
 
 #endif  /* ERR_UTILS_HPP */
