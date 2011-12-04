@@ -90,9 +90,11 @@
 #ifdef __compiler_opt__
  #define __no_aliases__         __restrict__
  #define __likely(x)            __builtin_expect(!!(x), 1)
+ #define __unlikely(x)          __builtin_expect(!!(x), 0)
 #else
  #define __no_aliases__
  #define __likely(x)            (x) 
+ #define __unlikely(x)          (x) 
 #endif /* __compiler_opt__ */
 
 #endif /* INTEGER_CODERS_HPP */

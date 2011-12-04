@@ -106,24 +106,28 @@ main(int argc, char **argv)
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
+        uint32_t        nloop;
+        uint32_t        numHeaders;
 
         /* Counters initialized */
         dtime = 0.0;
         dints = 0;
         sum_sizes = 0;
 
+        nloop = 0;
+        numHeaders = lenmax / NUM_EACH_HEADER_TOC;
+
         /* Store a initial position */
         ip = toclen;
 
         for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
-                uint32_t        numHeaders;
                 uint32_t        num;
                 uint32_t        prev_doc;
                 uint32_t        cmp_pos;
                 uint32_t        next_pos;
                 double          tm;
 
-                numHeaders = lenmax / NUM_EACH_HEADER_TOC;
+                nloop++;
 
                 for (uint32_t j = 0; j < numHeaders; j++) {
                         /* Read the header of each list */
@@ -139,7 +143,11 @@ main(int argc, char **argv)
                         else
                                 next_pos = lenmax;
 
-                        __assert(cmp_pos < next_pos);
+                        __assert(cmp_pos <= next_pos);
+
+                        /* FIXME: Need to remove a code below in the future */
+                        if (__unlikely(cmp_pos >= next_pos))
+                                goto LOOP_END;
 
                         /* Do decoding */
                         tm = int_utils::get_time();
@@ -168,12 +176,13 @@ main(int argc, char **argv)
                         }
                 }
         }
+LOOP_END:
 
         cout << "Decoded ints: " << dints << endl;
         cout << "Time: " << dtime << " Secs" << endl;
         cout << "Performance: " << (dints + 0.0) / (dtime * 1000000) << " mis" << endl; 
-        cout << "Size: " << ((sum_sizes * NLOOP * 4) / 1024) << " KiB" << endl;
-        cout << "Size: " << ((sum_sizes * NLOOP) + 0.0) / (dints + 0.0) * 32 << " bpi" << endl;
+        cout << "Size: " << ((sum_sizes * nloop * 4) / 1024) << " KiB" << endl;
+        cout << "Size: " << ((sum_sizes * nloop) + 0.0) / (dints + 0.0) * 32 << " bpi" << endl;
 
         /* Finalization */
         int_utils::close_file(cmp_addr, cmpsz);
