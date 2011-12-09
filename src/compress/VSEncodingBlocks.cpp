@@ -21,7 +21,7 @@
 #define VSEBLOCKS_LENS_LEN      (1 << VSEBLOCKS_LOGLEN)
 #define VSEBLOCKS_LOGS_LEN      (1 << VSEBLOCKS_LOGLOG)
 
-#define __vseblocks_copy(src, dest)     \
+#define __vseblocks_copy16(src, dest)   \
         __asm__ __volatile__(           \
                 "movdqu %4, %%xmm0\n\t"         \
                 "movdqu %5, %%xmm1\n\t"         \
@@ -329,7 +329,12 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 K = (((*addr) >> (VSEBLOCKS_LOGDESC * 3)) & (VSEBLOCKS_LENS_LEN - 1));
 
                 if (B) {
-                        __vseblocks_copy(pblk[B], out);
+                        /*
+                         * NOTICE: If a max value in __vseblocks_possLens[] is
+                         * over 16, a code below needs to be fixed.
+                         * __vseblocks_copy16() just copies 16 values each.
+                         */
+                        __vseblocks_copy16(pblk[B], out);
                         pblk[B] += __vseblocks_possLens[K];
                         out += __vseblocks_possLens[K];
                 } else {
@@ -343,7 +348,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 K = (((*addr) >> (VSEBLOCKS_LOGDESC * 2)) & (VSEBLOCKS_LENS_LEN - 1));
 
                 if (B) {
-                        __vseblocks_copy(pblk[B], out);
+                        __vseblocks_copy16(pblk[B], out);
                         pblk[B] += __vseblocks_possLens[K];
                         out += __vseblocks_possLens[K];
                 } else {
@@ -356,7 +361,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 K = (((*addr) >> VSEBLOCKS_LOGDESC) & (VSEBLOCKS_LENS_LEN - 1));
 
                 if (B) {
-                        __vseblocks_copy(pblk[B], out);
+                        __vseblocks_copy16(pblk[B], out);
                         pblk[B] += __vseblocks_possLens[K];
                         out += __vseblocks_possLens[K];
                 } else {
@@ -369,7 +374,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 K = (*addr++) & (VSEBLOCKS_LENS_LEN - 1);
 
                 if (B) {
-                        __vseblocks_copy(pblk[B], out);
+                        __vseblocks_copy16(pblk[B], out);
                         pblk[B] += __vseblocks_possLens[K];
                         out += __vseblocks_possLens[K];
                 } else {
@@ -426,9 +431,7 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
 void
 __vseblocks_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 1) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 1) {
                 out[0] = in[0] >> 31;
                 out[1] = (in[0] >> 30) & 0x01;
                 out[2] = (in[0] >> 29) & 0x01;
@@ -467,9 +470,7 @@ __vseblocks_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 2) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 2) {
                 out[0] = in[0] >> 30;
                 out[1] = (in[0] >> 28) & 0x03;
                 out[2] = (in[0] >> 26) & 0x03;
@@ -508,9 +509,7 @@ __vseblocks_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 3) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 3) {
                 out[0] = in[0] >> 29;
                 out[1] = (in[0] >> 26) & 0x07;
                 out[2] = (in[0] >> 23) & 0x07;
@@ -551,9 +550,7 @@ __vseblocks_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 4) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 4) {
                 out[0] = in[0] >> 28;
                 out[1] = (in[0] >> 24) & 0x0f;
                 out[2] = (in[0] >> 20) & 0x0f;
@@ -592,9 +589,7 @@ __vseblocks_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 5) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 5) {
                 out[0] = in[0] >> 27;
                 out[1] = (in[0] >> 22) & 0x1f;
                 out[2] = (in[0] >> 17) & 0x1f;
@@ -637,9 +632,7 @@ __vseblocks_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 6) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 6) {
                 out[0] = in[0] >> 26;
                 out[1] = (in[0] >> 20) & 0x3f;
                 out[2] = (in[0] >> 14) & 0x3f;
@@ -682,9 +675,7 @@ __vseblocks_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 7) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 7) {
                 out[0] = in[0] >> 25;
                 out[1] = (in[0] >> 18) & 0x7f;
                 out[2] = (in[0] >> 11) & 0x7f;
@@ -728,9 +719,7 @@ __vseblocks_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
 
 void __vseblocks_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 8) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 8) {
                 out[0] = in[0] >> 24;
                 out[1] = (in[0] >> 16) & 0xff;
                 out[2] = (in[0] >> 8) & 0xff;
@@ -769,9 +758,7 @@ void __vseblocks_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 9) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 9) {
                 out[0] = in[0] >> 23;
                 out[1] = (in[0] >> 14) & 0x01ff;
                 out[2] = (in[0] >> 5) & 0x01ff;
@@ -818,9 +805,7 @@ __vseblocks_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 10) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 10) {
                 out[0] = in[0] >> 22;
                 out[1] = (in[0] >> 12) & 0x03ff;
                 out[2] = (in[0] >> 2) & 0x03ff;
@@ -867,9 +852,7 @@ __vseblocks_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 11) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 11) {
                 out[0] = in[0] >> 21;
                 out[1] = (in[0] >> 10) & 0x07ff;
                 out[2] = (in[0] << 1) & 0x07ff;
@@ -918,9 +901,7 @@ __vseblocks_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 12) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 12) {
                 out[0] = in[0] >> 20;
                 out[1] = (in[0] >> 8) & 0x0fff;
                 out[2] = (in[0] << 4) & 0x0fff;
@@ -967,9 +948,7 @@ __vseblocks_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 16) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 16) {
                 out[0] = in[0] >> 16;
                 out[1] = in[0] & 0xffff;
                 out[2] = in[1] >> 16;
@@ -1008,9 +987,7 @@ __vseblocks_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 20) {
+        for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 20) {
                 out[0] = in[0] >> 12;
                 out[1] = (in[0] << 8) & 0x0fffff;
                 out[1] |= in[1] >> 24;
@@ -1065,10 +1042,9 @@ __vseblocks_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vseblocks_unpack32(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 32) {
-                __vseblocks_copy(in, out);
+        for (uint32_t i = 0; i < bs;
+                        i += 16, out += 16, in += 16) {
+                __vseblocks_copy16(in, out);
         }
 }
 
