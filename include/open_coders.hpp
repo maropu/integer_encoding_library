@@ -46,9 +46,9 @@
 #define SKIP            32
 
 /* Magic numbers */
-#define MAGIC_NUM       0x0f823cb3
+#define MAGIC_NUM       0x0f823cb4
 #define VMAJOR          0
-#define VMINOR          1
+#define VMINOR          2
 
 /* A extension for a location file */
 #define TOCEXT          ".TOC"
@@ -67,10 +67,37 @@
  * Macros for reading files. A header for each compressed list
  * is composed of three etnries: the total of integers, a first
  * integer, and the next posision of a list.
+ *
+ * NOTICE: We assume that the size of each entry is 4B, and 
+ * the alignment follows little-endian.
  */
-#define NUM_EACH_HEADER_TOC     3
-#define __next_read(addr, len)  addr[len++]
-#define __next_pos(addr, len)   addr[len + NUM_EACH_HEADER_TOC - 1]
+#define EACH_HEADER_TOC_SZ      4
+
+#define __next_read32(addr, len)  addr[len++]
+
+#define __next_read64(addr, len)        \
+        ({      \
+                uint64_t        ret;    \
+\
+                ret = addr[len + 1];    \
+                ret = (ret << 32) | addr[len];  \
+                len += 2;               \
+\
+                ret;                    \
+         })
+
+#define __next_pos64(addr, len)         \
+        ({      \
+                uint64_t        nxlen;  \
+                uint64_t        ret;    \
+\
+                nxlen = len + EACH_HEADER_TOC_SZ - 2;   \
+\
+                ret = addr[nxlen + 1];  \
+                ret = (ret << 32) | addr[nxlen];        \
+\
+                ret;                    \
+         })
 
 #if HAVE_DECL_POSIX_FADVISE && defined(HAVE_POSIX_FADVISE)
  #define __fadvise_sequential(fd, len)   \

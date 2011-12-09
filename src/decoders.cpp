@@ -24,9 +24,9 @@ using namespace std;
                 uint32_t        vmajor; \
                 uint32_t        vminor; \
 \
-                magic = __next_read(addr, len);         \
-                vmajor = __next_read(addr, len);        \
-                vminor = __next_read(addr, len);        \
+                magic = __next_read32(addr, len);       \
+                vmajor = __next_read32(addr, len);      \
+                vminor = __next_read32(addr, len);      \
 \
                 if (magic != MAGIC_NUM ||               \
                         vmajor != VMAJOR || vminor != VMINOR)   \
@@ -45,9 +45,10 @@ main(int argc, char **argv)
         uint32_t        sum_sizes;
         uint64_t        dints;
         uint64_t        cmpsz;
+        uint64_t        cmplenmax;
         uint64_t        tocsz;
         uint64_t        toclen;
-        uint64_t        lenmax;
+        uint64_t        toclenmax;
         uint64_t        ip;
         char            *end;
         char            ifile[NFILENAME + NEXTNAME];
@@ -81,7 +82,9 @@ main(int argc, char **argv)
         strcat(ifile, TOCEXT);
         toc_addr = int_utils::open_and_mmap_file(ifile, false, tocsz);
 
-        lenmax = tocsz >> 2;
+        /* Initialize each size */
+        cmplenmax = cmpsz >> 2;
+        toclenmax = tocsz >> 2;
         toclen = 0;
 
         __header_validate(toc_addr, toclen);
@@ -115,7 +118,7 @@ main(int argc, char **argv)
         sum_sizes = 0;
 
         nloop = 0;
-        numHeaders = lenmax / NUM_EACH_HEADER_TOC;
+        numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
 
         /* Store a initial position */
         ip = toclen;
@@ -123,27 +126,28 @@ main(int argc, char **argv)
         for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
                 uint32_t        num;
                 uint32_t        prev_doc;
-                uint32_t        cmp_pos;
-                uint32_t        next_pos;
+                uint64_t        cmp_pos;
+                uint64_t        next_pos;
                 double          tm;
 
                 nloop++;
 
                 for (uint32_t j = 0; j < numHeaders; j++) {
                         /* Read the header of each list */
-                        num = __next_read(toc_addr, toclen);
+                        num = __next_read32(toc_addr, toclen);
 
                         __assert(num < MAXLEN);
 
-                        prev_doc = __next_read(toc_addr, toclen);
-                        cmp_pos = __next_read(toc_addr, toclen);
+                        prev_doc = __next_read32(toc_addr, toclen);
+                        cmp_pos = __next_read64(toc_addr, toclen);
 
                         if (__likely(j != numHeaders - 1))
-                                next_pos = __next_pos(toc_addr, toclen);
+                                next_pos = __next_pos64(toc_addr, toclen);
                         else
-                                next_pos = lenmax;
+                                next_pos = cmplenmax;
 
                         __assert(cmp_pos <= next_pos);
+                        __assert(next_pos - cmp_pos <= UINT32_MAX);
 
                         /* FIXME: Need to remove a code below in the future */
                         if (__unlikely(cmp_pos >= next_pos))
