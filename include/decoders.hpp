@@ -94,7 +94,7 @@ const char *dec_ext[] = {
         ".Simple9",
         ".Simple16",
         ".P4D",
-        ".OP4D",
+        ".OPT4D",
         ".VSE",
         ".VSERT",
         ".VSERest",
