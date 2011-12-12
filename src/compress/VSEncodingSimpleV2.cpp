@@ -200,10 +200,10 @@ VSEncodingSimpleV2::encodeArray(uint32_t *in, uint32_t len,
 
         nvalue = ds1_wt->written + ds2_wt->written + cd_wt->written;
 
+        delete[] logs;
         delete ds1_wt;
         delete ds2_wt;
         delete cd_wt;
-        delete logs;
 }
 
 void

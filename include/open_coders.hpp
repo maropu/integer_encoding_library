@@ -36,7 +36,9 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+
 #include <boost/shared_ptr.hpp>
+#define USE_BOOST_SHAREDPTR
 
 #include "utils/err_utils.hpp"
 #include "utils/int_utils.hpp"
