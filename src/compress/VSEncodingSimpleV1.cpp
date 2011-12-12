@@ -823,6 +823,7 @@ VSEncodingSimpleV1::encodeArray(uint32_t *in, uint32_t len,
 
         nvalue = ds_wt->written + cd_wt->written;
 
+        delete logs;
         delete ds_wt;
         delete cd_wt;
 }

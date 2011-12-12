@@ -203,6 +203,7 @@ VSEncodingSimpleV2::encodeArray(uint32_t *in, uint32_t len,
         delete ds1_wt;
         delete ds2_wt;
         delete cd_wt;
+        delete logs;
 }
 
 void
