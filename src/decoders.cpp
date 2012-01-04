@@ -42,7 +42,7 @@ main(int argc, char **argv)
         uint32_t        *list;
         uint32_t        *cmp_addr;
         uint32_t        *toc_addr;
-        uint32_t        sum_sizes;
+        uint64_t        sum_sizes;
         uint64_t        dints;
         uint64_t        cmpsz;
         uint64_t        cmplenmax;
@@ -185,8 +185,8 @@ LOOP_END:
         cout << "Decoded ints: " << dints << endl;
         cout << "Time: " << dtime << " Secs" << endl;
         cout << "Performance: " << (dints + 0.0) / (dtime * 1000000) << " mis" << endl; 
-        cout << "Size: " << ((sum_sizes * nloop * 4) / 1024) << " KiB" << endl;
-        cout << "Size: " << ((sum_sizes * nloop) + 0.0) / (dints + 0.0) * 32 << " bpi" << endl;
+        cout << "Size: " << (sum_sizes * nloop / 1024) * 4 << " KiB" << endl;
+        cout << "Size: " << ((sum_sizes * nloop + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
 
         /* Finalization */
         int_utils::close_file(cmp_addr, cmpsz);
