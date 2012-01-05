@@ -108,6 +108,11 @@
  #define __fadvise_sequential(fd, len)
 #endif
 
+/* Support for over 4GiB files on 32-bit platform */
+#if __i386__
+ #define FILE_OFFSET_BITS      64
+#endif
+
 /* For debugs */
 #if defined(DEBUG) && defined(__linux__)
  #define MALLOC_CHECK   2
