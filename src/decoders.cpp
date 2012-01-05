@@ -74,10 +74,10 @@ main(int argc, char **argv)
         ifile[NFILENAME - 1] = '\0';
         
         strcat(ifile, dec_ext[decID]);
-        if (decID != D_BINARYIPL)
-                cmp_addr = int_utils::open_and_mmap_file(ifile, false, cmpsz);
-        else
+        if (decID == D_VSEREST || decID == D_VSEHYB)
                 cmp_addr = int_utils::open_and_mmap_file(ifile, true, cmpsz);
+        else
+                cmp_addr = int_utils::open_and_mmap_file(ifile, false, cmpsz);
 
         strcat(ifile, TOCEXT);
         toc_addr = int_utils::open_and_mmap_file(ifile, false, tocsz);
