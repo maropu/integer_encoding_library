@@ -95,32 +95,32 @@ main(int argc, char **argv)
         {
                 uint32_t        prev_doc;
                 uint32_t        cur_doc;
-                uint32_t        cmp_pos;
+                uint64_t        cmp_pos;
                 uint32_t        cmp_size;
                 uint32_t        num;
                 uint64_t        len;
 
                 for (len = 0, cmp_pos = 0; len < lenmax; ) {
                         /* Read the numer of integers in a list */
-                        num = __next_read(addr, len);
+                        num = __next_read32(addr, len);
 
                         if (len + num > lenmax)
                                 goto LOOP_END;
 
                         /* Read the head of a list */
-                        prev_doc = __next_read(addr, len);
+                        prev_doc = __next_read32(addr, len);
 
-                        if (num > SKIP) {
+                        if (num > SKIP && num < MAXLEN) {
                                 /*
                                  * For any list, TOC will contain:
                                  *      (number of elements, first elements, pointer to the compressed list)
                                  */
                                 fwrite(&num, 1, sizeof(uint32_t), toc);
                                 fwrite(&prev_doc, 1, sizeof(uint32_t), toc);
-                                fwrite(&cmp_pos, 1, sizeof(uint32_t), toc);
-                                        
+                                fwrite(&cmp_pos, 1, sizeof(uint64_t), toc);
+
                                 for (i = 0; i < num - 1; i++) {
-                                        cur_doc = __next_read(addr, len);
+                                        cur_doc = __next_read32(addr, len);
 
                                         if (cur_doc < prev_doc)
                                                 cerr << "List ordering exception: list MUST be increasing" << endl;
@@ -139,19 +139,9 @@ main(int argc, char **argv)
                                 fwrite(cmp_array, sizeof(uint32_t), cmp_size, cmp);
                                 cmp_pos += cmp_size;
                         } else {
-                                for (i = 0; i < num - 1; i++) {
-                                        cur_doc = __next_read(addr, len);
-
-                                        if (cur_doc <= prev_doc)
-                                                cerr << "List ordering exception: list MUST be increasing" << endl;
-
-                                        if (encID != 5)
-                                                list[i] = cur_doc - prev_doc - 1;
-                                        else
-                                                list[i] = cur_doc;
-
-                                        prev_doc = cur_doc;
-                                }
+                                /* Read skipped data */
+                                for (i = 0; i < num - 1; i++)
+                                        cur_doc = __next_read32(addr, len);
                         }
                 }
         }

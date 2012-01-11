@@ -1,4 +1,5 @@
-/*----------------------------------------------------------------------------- *  PForDelta.cpp - A original implementation of PForDelta.
+/*-----------------------------------------------------------------------------
+ *  PForDelta.cpp - A original implementation of PForDelta.
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -15,16 +16,21 @@
 
 #define PFORDELTA_RATIO         0.1
 
+/* A flag below based on a original code given by Shuai Ding */
+#define PFORDELTA_USE_HARDCODE_SIMPLE16         1
+
 /*
- * Lemme resume the block's format here, just to not forget it too soon.
+ * Lemme resume the block's format here.
+ *
  *      |--------------------------------------------------|
  *      |       b | nExceptions | s16encodedExceptionSize  |
  *      |  6 bits |   10 bits   |         16 bits          |
  *      |--------------------------------------------------|
- *      |                s16(exceptions)                   |
- *      |--------------------------------------------------|
  *      |              fixed_b(codewords)                  |
  *      |--------------------------------------------------|
+ *      |                s16(exceptions)                   |
+ *      |--------------------------------------------------|
+ *
  */
 #define PFORDELTA_B             6
 #define PFORDELTA_NEXCEPT       10
@@ -117,6 +123,10 @@ static __p4delta_unpacker       __p4delta_unpack[] = {
         __p4delta_unpack32
 };
 
+/* A hard-corded Simple16 decoder wirtten in the original code */
+static inline void __p4delta_simple16_decode(uint32_t *in, uint32_t len,
+                uint32_t *out, uint32_t nvalue) __attribute__((always_inline));
+
 static uint32_t __p4delta_possLogs[] = {
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
 };
@@ -127,7 +137,7 @@ PForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
         uint32_t        i;
         uint32_t        curExcept;
 
-        assert_debug(b <= 32);
+        __assert(b <= 32);
 
         if (b == 32)
                 return 0;
@@ -177,8 +187,7 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
         BitsWriter      *wt;
 
         if (len > 0) {
-                /* FIXME: To be modified */
-                codewords = new uint32_t[MAXLEN + TAIL_MERGIN];
+                codewords = new uint32_t[len];
                 exceptionsPositions = new uint32_t[len];
                 exceptionsValues = new uint32_t[len];
                 exceptions = new uint32_t[2 * len];
@@ -214,14 +223,12 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                         if (curExcept > 0) {
                                 uint32_t        cur;
                                 uint32_t        prev;
-                                uint32_t        gap;
 
                                 for (i = curExcept - 1; i > 0; i--) {
                                         cur = exceptionsPositions[i];
                                         prev = exceptionsPositions[i - 1];
-                                        gap = cur - prev;
 
-                                        exceptionsPositions[i] = gap;
+                                        exceptionsPositions[i] = cur - prev;
                                 }
 
                                 for (i = 0; i < curExcept; i++) {
@@ -285,19 +292,23 @@ PForDelta::encodeArray(uint32_t *in, uint32_t len,
         nvalue = 1;
 
         for (i = 0; i < numBlocks; i++) {
-                if (i != numBlocks - 1) {
+                if (__likely(i != numBlocks - 1)) {
                         PForDelta::encodeBlock(in, PFORDELTA_BLOCKSZ,
                                         out, csize, PForDelta::findBestB); 
 
                         in += PFORDELTA_BLOCKSZ; 
                         out += csize;
                 } else {
-                        if ((len % PFORDELTA_BLOCKSZ) != 0)
-                                PForDelta::encodeBlock(in, len % PFORDELTA_BLOCKSZ,
-                                                out, csize, PForDelta::findBestB); 
-                        else
-                                PForDelta::encodeBlock(in, PFORDELTA_BLOCKSZ,
-                                                out, csize, PForDelta::findBestB); 
+                        /*
+                         * This is a code to pack gabage in the tail of lists.
+                         * I think it couldn't be a bottleneck.
+                         */
+                        uint32_t        nblk;
+
+                        nblk = ((len % PFORDELTA_BLOCKSZ) != 0)?
+                                len % PFORDELTA_BLOCKSZ : PFORDELTA_BLOCKSZ;
+                        PForDelta::encodeBlock(in, nblk,
+                                out, csize, PForDelta::findBestB);
                 }
 
                 nvalue += csize;
@@ -329,7 +340,10 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
 
                 encodedExceptionsSize = *in & ((1 << PFORDELTA_EXCEPTSZ) - 1); 
 
-                Simple16::decodeArray(++in, 2 * nExceptions, except, 2 * nExceptions);
+                if (PFORDELTA_USE_HARDCODE_SIMPLE16)
+                        __p4delta_simple16_decode(++in, 2 * nExceptions, except, 2 * nExceptions);
+                else
+                        Simple16::decodeArray(++in, 2 * nExceptions, except, 2 * nExceptions);
 
                 in += encodedExceptionsSize;
 
@@ -341,7 +355,7 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
                         excVal <<= b;
                         out[lpos] |= excVal;
 
-                        assert_debug(lpos < PFORDELTA_BLOCKSZ); 
+                        __assert(lpos < PFORDELTA_BLOCKSZ); 
                 }
 
                 out += PFORDELTA_BLOCKSZ; 
@@ -352,11 +366,297 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
 /* --- Intra functions below --- */
 
 void
+__p4delta_simple16_decode(uint32_t *in, uint32_t len,
+                uint32_t *out, uint32_t nvalue)
+{
+        uint32_t        hd;
+        uint32_t        nlen;
+
+        nlen = 0;
+
+        while (len > nlen) {
+                hd = *in >> 28;
+
+                switch (hd) {
+                case 0:
+                        *out++ = (*in >> 27) & 0x01;
+                        *out++ = (*in >> 26) & 0x01;
+                        *out++ = (*in >> 25) & 0x01;
+                        *out++ = (*in >> 24) & 0x01;
+                        *out++ = (*in >> 23) & 0x01;
+                        *out++ = (*in >> 22) & 0x01;
+                        *out++ = (*in >> 21) & 0x01;
+                        *out++ = (*in >> 20) & 0x01;
+                        *out++ = (*in >> 19) & 0x01;
+                        *out++ = (*in >> 18) & 0x01;
+                        *out++ = (*in >> 17) & 0x01;
+                        *out++ = (*in >> 16) & 0x01;
+                        *out++ = (*in >> 15) & 0x01;
+                        *out++ = (*in >> 14) & 0x01;
+                        *out++ = (*in >> 13) & 0x01;
+                        *out++ = (*in >> 12) & 0x01;
+                        *out++ = (*in >> 11) & 0x01;
+                        *out++ = (*in >> 10) & 0x01;
+                        *out++ = (*in >> 9) & 0x01;
+                        *out++ = (*in >> 8) & 0x01;
+                        *out++ = (*in >> 7) & 0x01;
+                        *out++ = (*in >> 6) & 0x01;
+                        *out++ = (*in >> 5) & 0x01;
+                        *out++ = (*in >> 4) & 0x01;
+                        *out++ = (*in >> 3) & 0x01;
+                        *out++ = (*in >> 2) & 0x01;
+                        *out++ = (*in >> 1) & 0x01;
+                        *out++ = *in++ & 0x01;
+
+                        nlen += 28;
+
+                        break;
+
+                case 1:
+                        *out++ = (*in >> 26) & 0x03;
+                        *out++ = (*in >> 24) & 0x03;
+                        *out++ = (*in >> 22) & 0x03;
+                        *out++ = (*in >> 20) & 0x03;
+                        *out++ = (*in >> 18) & 0x03;
+                        *out++ = (*in >> 16) & 0x03;
+                        *out++ = (*in >> 14) & 0x03;
+
+                        *out++ = (*in >> 13) & 0x01;
+                        *out++ = (*in >> 12) & 0x01;
+                        *out++ = (*in >> 11) & 0x01;
+                        *out++ = (*in >> 10) & 0x01;
+                        *out++ = (*in >> 9) & 0x01;
+                        *out++ = (*in >> 8) & 0x01;
+                        *out++ = (*in >> 7) & 0x01;
+                        *out++ = (*in >> 6) & 0x01;
+                        *out++ = (*in >> 5) & 0x01;
+                        *out++ = (*in >> 4) & 0x01;
+                        *out++ = (*in >> 3) & 0x01;
+                        *out++ = (*in >> 2) & 0x01;
+                        *out++ = (*in >> 1) & 0x01;
+                        *out++ = *in++ & 0x01;
+
+                        nlen += 21;
+
+                        break;
+
+                case 2:
+                        *out++ = (*in >> 27) & 0x01;
+                        *out++ = (*in >> 26) & 0x01;
+                        *out++ = (*in >> 25) & 0x01;
+                        *out++ = (*in >> 24) & 0x01;
+                        *out++ = (*in >> 23) & 0x01;
+                        *out++ = (*in >> 22) & 0x01;
+                        *out++ = (*in >> 21) & 0x01;
+
+                        *out++ = (*in >> 19) & 0x03;
+                        *out++ = (*in >> 17) & 0x03;
+                        *out++ = (*in >> 15) & 0x03;
+                        *out++ = (*in >> 13) & 0x03;
+                        *out++ = (*in >> 11) & 0x03;
+                        *out++ = (*in >> 9) & 0x03;
+                        *out++ = (*in >> 7) & 0x03;
+
+                        *out++ = (*in >> 6) & 0x01;
+                        *out++ = (*in >> 5) & 0x01;
+                        *out++ = (*in >> 4) & 0x01;
+                        *out++ = (*in >> 3) & 0x01;
+                        *out++ = (*in >> 2) & 0x01;
+                        *out++ = (*in >> 1) & 0x01;
+                        *out++ = *in++ & 0x01;
+
+                        nlen += 21;
+
+                        break;
+
+                case 3:
+                        *out++ = (*in >> 27) & 0x01;
+                        *out++ = (*in >> 26) & 0x01;
+                        *out++ = (*in >> 25) & 0x01;
+                        *out++ = (*in >> 24) & 0x01;
+                        *out++ = (*in >> 23) & 0x01;
+                        *out++ = (*in >> 22) & 0x01;
+                        *out++ = (*in >> 21) & 0x01;
+                        *out++ = (*in >> 20) & 0x01;
+                        *out++ = (*in >> 19) & 0x01;
+                        *out++ = (*in >> 18) & 0x01;
+                        *out++ = (*in >> 17) & 0x01;
+                        *out++ = (*in >> 16) & 0x01;
+                        *out++ = (*in >> 15) & 0x01;
+                        *out++ = (*in >> 14) & 0x01;
+
+                        *out++ = (*in >> 12) & 0x03;
+                        *out++ = (*in >> 10) & 0x03;
+                        *out++ = (*in >> 8) & 0x03;
+                        *out++ = (*in >> 6) & 0x03;
+                        *out++ = (*in >> 4) & 0x03;
+                        *out++ = (*in >> 2) & 0x03;
+                        *out++ = *in++ & 0x03;
+
+                        nlen += 21;
+
+                        break;
+
+                case 4:
+                        *out++ = (*in >> 26) & 0x03;
+                        *out++ = (*in >> 24) & 0x03;
+                        *out++ = (*in >> 22) & 0x03;
+                        *out++ = (*in >> 20) & 0x03;
+                        *out++ = (*in >> 18) & 0x03;
+                        *out++ = (*in >> 16) & 0x03;
+                        *out++ = (*in >> 14) & 0x03;
+                        *out++ = (*in >> 12) & 0x03;
+                        *out++ = (*in >> 10) & 0x03;
+                        *out++ = (*in >> 8) & 0x03;
+                        *out++ = (*in >> 6) & 0x03;
+                        *out++ = (*in >> 4) & 0x03;
+                        *out++ = (*in >> 2) & 0x03;
+                        *out++ = *in++ & 0x03;
+
+                        nlen += 14;
+
+                        break;
+
+                case 5:
+                        *out++ = (*in >> 24) & 0x0f;
+
+                        *out++ = (*in >> 21) & 0x07;
+                        *out++ = (*in >> 18) & 0x07;
+                        *out++ = (*in >> 15) & 0x07;
+                        *out++ = (*in >> 12) & 0x07;
+                        *out++ = (*in >> 9) & 0x07;
+                        *out++ = (*in >> 6) & 0x07;
+                        *out++ = (*in >> 3) & 0x07;
+                        *out++ = *in++ & 0x07;
+
+                        nlen += 9;
+
+                        break;
+
+                case 6:
+                        *out++ = (*in >> 25) & 0x07;
+
+                        *out++ = (*in >> 21) & 0x0f;
+                        *out++ = (*in >> 17) & 0x0f;
+                        *out++ = (*in >> 13) & 0x0f;
+                        *out++ = (*in >> 9) & 0x0f;
+
+                        *out++ = (*in >> 6) & 0x07;
+                        *out++ = (*in >> 3) & 0x07;
+                        *out++ = *in++ & 0x07;
+
+                        nlen += 8;
+
+                        break;
+
+                case 7:
+                        *out++ = (*in >> 24) & 0x0f;
+                        *out++ = (*in >> 20) & 0x0f;
+                        *out++ = (*in >> 16) & 0x0f;
+                        *out++ = (*in >> 12) & 0x0f;
+                        *out++ = (*in >> 8) & 0x0f;
+                        *out++ = (*in >> 4) & 0x0f;
+                        *out++ = *in++ & 0x0f;
+
+                        nlen += 7;
+
+                        break;
+
+                case 8:
+                        *out++ = (*in >> 23) & 0x1f;
+                        *out++ = (*in >> 18) & 0x1f;
+                        *out++ = (*in >> 13) & 0x1f;
+                        *out++ = (*in >> 8) & 0x1f;
+
+                        *out++ = (*in >> 4) & 0x0f;
+                        *out++ = *in++ & 0x0f;
+
+                        nlen += 6;
+
+                        break;
+
+                case 9:
+                        *out++ = (*in >> 24) & 0x0f;
+                        *out++ = (*in >> 20) & 0x0f;
+
+                        *out++ = (*in >> 15) & 0x1f;
+                        *out++ = (*in >> 10) & 0x1f;
+                        *out++ = (*in >> 5) & 0x1f;
+                        *out++ = *in++ & 0x1f;
+
+                        nlen += 6;
+
+                        break;
+
+                case 10:
+                        *out++ = (*in >> 22) & 0x3f;
+                        *out++ = (*in >> 16) & 0x3f;
+                        *out++ = (*in >> 10) & 0x3f;
+
+                        *out++ = (*in >> 5) & 0x1f;
+                        *out++ = *in++ & 0x1f;
+
+                        nlen += 5;
+
+                        break;
+
+                case 11:
+                        *out++ = (*in >> 23) & 0x1f;
+                        *out++ = (*in >> 18) & 0x1f;
+
+                        *out++ = (*in >> 12) & 0x3f;
+                        *out++ = (*in >> 6) & 0x3f;
+                        *out++ = *in++ & 0x3f;
+
+                        nlen += 5;
+
+                        break;
+
+                case 12:
+                        *out++ = (*in >> 21) & 0x7f;
+                        *out++ = (*in >> 14) & 0x7f;
+                        *out++ = (*in >> 7) & 0x7f;
+                        *out++ = *in++ & 0x7f;
+                       
+                        nlen += 4;
+
+                        break;
+
+                case 13:
+                        *out++ = (*in >> 18) & 0x03ff;
+
+                        *out++ = (*in >> 9) & 0x01ff;
+                        *out++ = *in++ & 0x01ff;
+
+                        nlen += 3;
+
+                        break;
+
+                case 14:
+                        *out++ = (*in >> 14) & 0x3fff;
+                        *out++ = *in++ & 0x3fff;
+
+                        nlen += 2;
+
+                        break;
+
+                case 15:
+                        *out++ = *in++ & 0x0fffffff;
+
+                        nlen += 1;
+
+                        break;
+
+                }
+        }
+}
+
+void
 __p4delta_unpack0(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32) {
                 __p4delta_zero32(out);
         }
@@ -367,7 +667,7 @@ __p4delta_unpack1(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 1) {
                 out[0] = in[0] >> 31;
                 out[1] = (in[0] >> 30) & 0x01;
@@ -409,7 +709,7 @@ __p4delta_unpack2(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 2) {
                 out[0] = in[0] >> 30;
                 out[1] = (in[0] >> 28) & 0x03;
@@ -451,7 +751,7 @@ __p4delta_unpack3(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 3) {
                 out[0] = in[0] >> 29;
                 out[1] = (in[0] >> 26) & 0x07;
@@ -495,7 +795,7 @@ __p4delta_unpack4(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 4) {
                 out[0] = in[0] >> 28;
                 out[1] = (in[0] >> 24) & 0x0f;
@@ -537,7 +837,7 @@ __p4delta_unpack5(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 5) {
                 out[0] = in[0] >> 27;
                 out[1] = (in[0] >> 22) & 0x1f;
@@ -583,7 +883,7 @@ __p4delta_unpack6(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 6) {
                 out[0] = in[0] >> 26;
                 out[1] = (in[0] >> 20) & 0x3f;
@@ -629,7 +929,7 @@ __p4delta_unpack7(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 7) {
                 out[0] = in[0] >> 25;
                 out[1] = (in[0] >> 18) & 0x7f;
@@ -677,7 +977,7 @@ __p4delta_unpack8(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 8) {
                 out[0] = in[0] >> 24;
                 out[1] = (in[0] >> 16) & 0xff;
@@ -719,7 +1019,7 @@ __p4delta_unpack9(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 9) {
                 out[0] = in[0] >> 23;
                 out[1] = (in[0] >> 14) & 0x01ff;
@@ -769,7 +1069,7 @@ __p4delta_unpack10(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 10) {
                 out[0] = in[0] >> 22;
                 out[1] = (in[0] >> 12) & 0x03ff;
@@ -819,7 +1119,7 @@ __p4delta_unpack11(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 11) {
                 out[0] = in[0] >> 21;
                 out[1] = (in[0] >> 10) & 0x07ff;
@@ -871,7 +1171,7 @@ __p4delta_unpack12(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 12) {
                 out[0] = in[0] >> 20;
                 out[1] = (in[0] >> 8) & 0x0fff;
@@ -921,7 +1221,7 @@ __p4delta_unpack13(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 13) {
                 out[0] = in[0] >> 19;
                 out[1] = (in[0] >> 6) & 0x1fff;
@@ -975,7 +1275,7 @@ __p4delta_unpack16(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 16) {
                 out[0] = in[0] >> 16;
                 out[1] = in[0] & 0xffff;
@@ -1017,7 +1317,7 @@ __p4delta_unpack20(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5);
+        for (i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 20) {
                 out[0] = in[0] >> 12;
                 out[1] = (in[0] << 8) & 0x0fffff;
@@ -1075,7 +1375,7 @@ __p4delta_unpack32(uint32_t *out, uint32_t *in)
 {
         uint32_t        i;
 
-        for (i = 0; i < (PFORDELTA_NBLOCK << 5); i += 16, out += 16, in += 16) {
+        for (i = 0; i < PFORDELTA_BLOCKSZ; i += 16, out += 16, in += 16) {
                 __p4delta_copy(in, out);
         }
 }

@@ -110,7 +110,7 @@ VariableByte::decodeArray(uint32_t *in, uint32_t len,
                 *out = d & VARIABLEBYTE_DATA;
 
                 for (j = 1; (d & VARIABLEBYTE_DESC) == 0; j++) {
-                        assert_debug(j <= 5);
+                        __assert(j <= 5);
 
                         d = rd->bit_reader(8);
                         *out |= (d & VARIABLEBYTE_DATA) << (7 * j);

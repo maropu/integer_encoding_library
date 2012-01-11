@@ -24,9 +24,9 @@ using namespace std;
                 uint32_t        vmajor; \
                 uint32_t        vminor; \
 \
-                magic = __next_read(addr, len);         \
-                vmajor = __next_read(addr, len);        \
-                vminor = __next_read(addr, len);        \
+                magic = __next_read32(addr, len);       \
+                vmajor = __next_read32(addr, len);      \
+                vminor = __next_read32(addr, len);      \
 \
                 if (magic != MAGIC_NUM ||               \
                         vmajor != VMAJOR || vminor != VMINOR)   \
@@ -39,17 +39,16 @@ int
 main(int argc, char **argv)
 {
         int             decID;
-        uint32_t        i;
-        uint32_t        j;
         uint32_t        *list;
         uint32_t        *cmp_addr;
         uint32_t        *toc_addr;
-        uint32_t        sum_sizes;
+        uint64_t        sum_sizes;
         uint64_t        dints;
         uint64_t        cmpsz;
+        uint64_t        cmplenmax;
         uint64_t        tocsz;
         uint64_t        toclen;
-        uint64_t        lenmax;
+        uint64_t        toclenmax;
         uint64_t        ip;
         char            *end;
         char            ifile[NFILENAME + NEXTNAME];
@@ -66,7 +65,8 @@ main(int argc, char **argv)
                 eoutput("Can't allocate memory");
 
         decID = strtol(argv[1], &end, 10);
-        if ((*end != '\0') || (decID < 0) || (decID >= NUMDECODERS) || (errno == ERANGE))
+        if ((*end != '\0') || (decID < 0) ||
+                        (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
 
         /* Read the file name, and open it */
@@ -74,12 +74,17 @@ main(int argc, char **argv)
         ifile[NFILENAME - 1] = '\0';
         
         strcat(ifile, dec_ext[decID]);
-        cmp_addr = int_utils::open_and_mmap_file(ifile, true, cmpsz);
+        if (decID == D_VSEREST || decID == D_VSEHYB)
+                cmp_addr = int_utils::open_and_mmap_file(ifile, true, cmpsz);
+        else
+                cmp_addr = int_utils::open_and_mmap_file(ifile, false, cmpsz);
 
         strcat(ifile, TOCEXT);
         toc_addr = int_utils::open_and_mmap_file(ifile, false, tocsz);
 
-        lenmax = tocsz >> 2;
+        /* Initialize each size */
+        cmplenmax = cmpsz >> 2;
+        toclenmax = tocsz >> 2;
         toclen = 0;
 
         __header_validate(toc_addr, toclen);
@@ -104,27 +109,49 @@ main(int argc, char **argv)
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
+        uint32_t        nloop;
+        uint32_t        numHeaders;
 
         /* Counters initialized */
         dtime = 0.0;
         dints = 0;
         sum_sizes = 0;
 
-        for (i = 0, ip = toclen; i < NLOOP; i++, toclen = ip) {
+        nloop = 0;
+        numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
+
+        /* Store a initial position */
+        ip = toclen;
+
+        for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
                 uint32_t        num;
                 uint32_t        prev_doc;
-                uint32_t        cmp_pos;
-                uint32_t        next_pos;
+                uint64_t        cmp_pos;
+                uint64_t        next_pos;
                 double          tm;
 
-                while (toclen < lenmax) {
-                        /* Read the header of each list */
-                        num = __next_read(toc_addr, toclen);
-                        prev_doc = __next_read(toc_addr, toclen);
-                        cmp_pos = __next_read(toc_addr, toclen);
+                nloop++;
 
-                        next_pos = (toclen + NUM_EACH_HEADER_TOC - 1 < lenmax)?
-                                __next_pos(toc_addr, toclen) : lenmax;
+                for (uint32_t j = 0; j < numHeaders; j++) {
+                        /* Read the header of each list */
+                        num = __next_read32(toc_addr, toclen);
+
+                        __assert(num < MAXLEN);
+
+                        prev_doc = __next_read32(toc_addr, toclen);
+                        cmp_pos = __next_read64(toc_addr, toclen);
+
+                        if (__likely(j != numHeaders - 1))
+                                next_pos = __next_pos64(toc_addr, toclen);
+                        else
+                                next_pos = cmplenmax;
+
+                        __assert(cmp_pos <= next_pos);
+                        __assert(next_pos - cmp_pos <= UINT32_MAX);
+
+                        /* FIXME: Need to remove a code below in the future */
+                        if (__unlikely(cmp_pos >= next_pos))
+                                goto LOOP_END;
 
                         /* Do decoding */
                         tm = int_utils::get_time();
@@ -141,7 +168,7 @@ main(int argc, char **argv)
                                         fwrite(&num, 1, sizeof(uint32_t), dec);
                                         fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
 
-                                        for (j = 0; j < num - 1; j++) {
+                                        for (uint32_t j = 0; j < num - 1; j++) {
                                                 prev_doc += list[j] + 1;
                                                 fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
                                         }
@@ -153,12 +180,13 @@ main(int argc, char **argv)
                         }
                 }
         }
+LOOP_END:
 
         cout << "Decoded ints: " << dints << endl;
         cout << "Time: " << dtime << " Secs" << endl;
         cout << "Performance: " << (dints + 0.0) / (dtime * 1000000) << " mis" << endl; 
-        cout << "Size: " << ((sum_sizes * NLOOP * 4) / 1024) << " KiB" << endl;
-        cout << "Size: " << ((sum_sizes * NLOOP) + 0.0) / (dints + 0.0) * 32 << " bpi" << endl;
+        cout << "Size: " << (sum_sizes * nloop / 1024) * 4 << " KiB" << endl;
+        cout << "Size: " << ((sum_sizes * nloop + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
 
         /* Finalization */
         int_utils::close_file(cmp_addr, cmpsz);

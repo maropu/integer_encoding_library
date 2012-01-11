@@ -50,12 +50,8 @@ class VSEncoding {
                                 uint32_t len, uint32_t fixCost, uint32_t &pSize);
 };
 
-#ifdef BOOST_SHARED_PTR_HPP_INCLUDED_
- #ifndef USE_BOOST_SHAREDPTR
-  #define USE_BOOST_SHAREDPTR
- #endif /* USE_BOOST_SHAREDPTR */
-
- typedef boost::shared_ptr<VSEncoding>   VSEncodingPtr;
-#endif /* BOOST_SHARED_PTR_HPP_INCLUDED */
+#ifdef USE_BOOST_SHAREDPTR
+typedef boost::shared_ptr<VSEncoding>   VSEncodingPtr;
+#endif /* USE_BOOST_SHAREDPTR */
 
 #endif /* VSENCODING_HPP */

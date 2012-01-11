@@ -9,7 +9,8 @@
 
 CC		= g++
 RM		= rm
-CFLAGS		= -O3 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= -O3 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		+= -DDEBUG -ftrapv -O3 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 WFLAGS		= -Wall -Winline
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I./include
@@ -42,7 +43,7 @@ $(DECODERS):	$(OBJS) $(OBJS_DEC)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_DEC) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
 
 .cpp.o:
-		$(CC) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(CPPFLAGS) $(LDFLAGS) $(LIBS) -c $< -o $@
+		$(CC) $(CPPFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $< -o $@
 
 .PHONY:test
 test:
@@ -50,13 +51,13 @@ test:
 
 .PHONY:utest
 utest:		$(OBJS_UTEST) gtest_main.a
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -lpthread $^ -o $(CODERS_UTEST)
+		$(CC) $(CPPFLAGS) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -lpthread $^ -o $(CODERS_UTEST)
 
 gtest-all.o:	$(GTEST_SRCS)	
-		$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc
+		$(CC) $(CPPFLAGS) -c $(GTEST_DIR)/src/gtest-all.cc
 
 gtest_main.o:	$(GTEST_SRCS)
-		$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc
+		$(CC) $(CPPFLAGS) $(CFLAGS) -c $(GTEST_DIR)/src/gtest_main.cc
 
 gtest.a:	gtest-all.o
 		$(AR) $(ARFLAGS) $@ $^
@@ -64,6 +65,9 @@ gtest.a:	gtest-all.o
 gtest_main.a:	gtest-all.o gtest_main.o
 		$(AR) $(ARFLAGS) $@ $^
 		
+#$(OBJS_UTEST):
+#		$(CC) $(CPPFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $(SRCS_UTEST) -o $@
+
 .PHONY:clean
 clean:
 		$(RM) -f *.log *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) $(OBJS_UTEST) \

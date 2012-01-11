@@ -22,6 +22,9 @@
 #define PFORDELTA_NBLOCK        1
 #define PFORDELTA_BLOCKSZ       (32 * PFORDELTA_NBLOCK)
 
+/* FIXME: There is a bug with 128 of PFORDELTA_BLOCKSZ */
+//#define PFORDELTA_BLOCKSZ       (128 * PFORDELTA_NBLOCK)
+
 class PForDelta {
         public:
                 static uint32_t tryB(uint32_t b, uint32_t *in,
