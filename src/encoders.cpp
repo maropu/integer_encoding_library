@@ -89,7 +89,7 @@ main(int argc, char **argv)
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
-        addr = int_utils::open_and_mmap_file(ifile, false, fsz);
+        addr = int_utils::open_and_mmap_file(ifile, fsz);
         lenmax = fsz >> 2;
 
         {

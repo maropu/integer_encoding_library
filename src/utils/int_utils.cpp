@@ -45,18 +45,14 @@ int_utils::get_time(void)
 }
 
 uint32_t
-*int_utils::open_and_mmap_file(char *filen,
-                bool write, uint64_t &len) {
+*int_utils::open_and_mmap_file(
+                char *filen, uint64_t &len) {
         int             file;
         int             ret;
         uint32_t        *addr;
         struct stat     sb;
 
-        if (write)
-                file = open(filen, O_RDWR);
-        else
-                file = open(filen, O_RDONLY);
-
+        file = open(filen, O_RDONLY);
         if (file == -1)
                 eoutput("oepn(): Can't open the file");
 
@@ -69,10 +65,7 @@ uint32_t
 
         __fadvise_sequential(file, len);
 
-        if (write)
-                addr = (uint32_t *)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, file, 0);
-        else
-                addr = (uint32_t *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, file, 0);
+        addr = (uint32_t *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, file, 0);
 
         if (addr == MAP_FAILED)
                 eoutput("mmap(): Can't map the file to memory");

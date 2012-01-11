@@ -754,7 +754,7 @@ static struct {
                 uint32_t        t;      \
                 uint32_t        tv;     \
 \
-                assert_debug(__base < __end);   \
+                __assert(__base < __end);       \
 \
                 __offset = 0;           \
 \
@@ -818,7 +818,7 @@ static struct {
 
 #define __vserest_push_pad(__nleft, __wt)       \
         ({                                      \
-                assert_debug(__nleft <= 32);    \
+                __assert(__nleft <= 32);        \
 \
                 if (__nleft != 32) {            \
                         __pad_st.nPad += __nleft;       \

@@ -31,8 +31,8 @@ class int_utils {
                 static int get_msb(uint32_t v);
                 static uint32_t div_roundup(uint32_t v, uint32_t div);
                 static double get_time(void);
-                static uint32_t *open_and_mmap_file(char *filen,
-                                bool write, uint64_t &len);
+                static uint32_t *open_and_mmap_file(
+                                char *filen, uint64_t &len);
                 static void close_file(uint32_t *adr, uint64_t len);
 };
 

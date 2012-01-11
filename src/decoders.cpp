@@ -40,6 +40,8 @@ main(int argc, char **argv)
 {
         int             decID;
         uint32_t        *list;
+        /* buffer for self-modified decoders */
+        uint32_t        *sbuf;
         uint32_t        *cmp_addr;
         uint32_t        *toc_addr;
         uint64_t        sum_sizes;
@@ -59,28 +61,31 @@ main(int argc, char **argv)
         if (argc < 3)
                 __usage(NULL);
 
-        list = new uint32_t[MAXLEN + TAIL_MERGIN];
-
-        if (list == NULL)
-                eoutput("Can't allocate memory");
-
         decID = strtol(argv[1], &end, 10);
         if ((*end != '\0') || (decID < 0) ||
                         (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
+
+        list = new uint32_t[MAXLEN + TAIL_MERGIN];
+        if (list == NULL)
+                eoutput("Can't allocate memory");
+
+        if (decID == D_VSEREST ||
+                        decID == D_VSEHYB) {
+                sbuf = new uint32_t[MAXLEN + TAIL_MERGIN];
+                if (sbuf == NULL)
+                        eoutput("Can't allocate memory");
+        }
 
         /* Read the file name, and open it */
         strncpy(ifile, argv[2], NFILENAME);
         ifile[NFILENAME - 1] = '\0';
         
         strcat(ifile, dec_ext[decID]);
-        if (decID == D_VSEREST || decID == D_VSEHYB)
-                cmp_addr = int_utils::open_and_mmap_file(ifile, true, cmpsz);
-        else
-                cmp_addr = int_utils::open_and_mmap_file(ifile, false, cmpsz);
+        cmp_addr = int_utils::open_and_mmap_file(ifile, cmpsz);
 
         strcat(ifile, TOCEXT);
-        toc_addr = int_utils::open_and_mmap_file(ifile, false, tocsz);
+        toc_addr = int_utils::open_and_mmap_file(ifile, tocsz);
 
         /* Initialize each size */
         cmplenmax = cmpsz >> 2;
@@ -124,6 +129,7 @@ main(int argc, char **argv)
         ip = toclen;
 
         for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
+                uint32_t        *ptr;
                 uint32_t        num;
                 uint32_t        prev_doc;
                 uint64_t        cmp_pos;
@@ -153,9 +159,17 @@ main(int argc, char **argv)
                         if (__unlikely(cmp_pos >= next_pos))
                                 goto LOOP_END;
 
+                        ptr = cmp_addr + cmp_pos;
+
+                        if (decID == D_VSEREST ||
+                                        decID == D_VSEHYB) {
+                                memcpy(sbuf, ptr, sizeof(uint32_t) * (num - 1));
+                                ptr = sbuf;
+                        }
+
                         /* Do decoding */
                         tm = int_utils::get_time();
-                        (decoders[decID])(cmp_addr + cmp_pos, next_pos - cmp_pos, list, num - 1);
+                        (decoders[decID])(ptr, next_pos - cmp_pos, list, num - 1);
 
                         /* Accumulate each count */
                         dtime += int_utils::get_time() - tm;
