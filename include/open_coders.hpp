@@ -109,8 +109,11 @@
 #endif
 
 /* Support for over 4GiB files on 32-bit platform */
+//#define MAP_HUGETLB             1
+
 #if __i386__
- #define FILE_OFFSET_BITS      64
+ #define LARGEFILE64_SOURCE     1
+ #define FILE_OFFSET_BITS       64
 #endif
 
 /* For debugs */

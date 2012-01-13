@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Number of integers
-T=10000000
+T=1000000
 
 # Maximum of random values
 N="8 128 2048 131072"
@@ -26,7 +26,8 @@ N="8 128 2048 131072"
 #       vsehybrid: VSEncodingBlocksHybrid, VSEncodingBlocksHybrid
 #       vsesimple-v1: VSEncodingSimpleV1, VSEncodingSimpleV2
 #       vsesimple-v2: VSEncodingSimpleV1, VSEncodingSimpleV2
-I="vseblocks vse-r vsesimple-v1 vsesimple-v2"
+#I="vseblocks vse-r vsesimple-v1 vsesimple-v2"
+I="vserest"
 
 if [ ! -x ./test/decbench ]; then
         echo 'Exception: decbench not existed'

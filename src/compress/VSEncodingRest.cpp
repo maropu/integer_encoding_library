@@ -735,7 +735,7 @@ static uint32_t __vserest_codeLogs[] = {
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-/* Remenber information for padding areas by ring buffers */
+/* A difinition to harness left padding areas */
 static struct {
         int     nPad;
         int     head;
@@ -748,86 +748,10 @@ static struct {
         } ent[32];
 } __pad_st;
 
-#define __vserest_fill_pad(__in, __base, __end, __bits, __offset, __wt) \
-        ({                              \
-                uint32_t        i;      \
-                uint32_t        t;      \
-                uint32_t        tv;     \
-\
-                __assert(__base < __end);       \
-\
-                __offset = 0;           \
-\
-                if (__pad_st.nPad >= 32) {      \
-                        for (i = 1; i <= (32 + __bits - 1) / __bits; i++)  {            \
-                                t = (__bits * i <= 32)? __bits : 32 % __bits;           \
-\
-                                if (__base + __offset < __end) {                        \
-                                        tv = __in[__base + __offset++] >> (__bits - t); \
-\
-                                        while (t > 0) {                                         \
-                                                if (t < __pad_st.ent[__pad_st.head].nleft) {    \
-                                                        *(__pad_st.ent[__pad_st.head].pos) |=                           \
-                                                                        tv << ((__pad_st.ent[__pad_st.head].nleft - t)  \
-                                                                        << __pad_st.ent[__pad_st.head].shift);          \
-                                                        __pad_st.ent[__pad_st.head].nleft -= t;                         \
-\
-                                                        t = 0;                          \
-                                                } else {                                \
-                                                        *(__pad_st.ent[__pad_st.head].pos) |=   \
-                                                                        (tv >> (t - __pad_st.ent[__pad_st.head].nleft))         \
-                                                                        << __pad_st.ent[__pad_st.head].shift;                   \
-                                                        tv &= (1ULL << (t - __pad_st.ent[__pad_st.head].nleft)) - 1;            \
-                                                        t -= __pad_st.ent[__pad_st.head].nleft;         \
-                                                        __pad_st.head = (__pad_st.head + 1) % 32;       \
-                                                }                                       \
-                                         }                                              \
-                                } else {                                                \
-                                        while (t > 0) {                                 \
-                                                if (t < __pad_st.ent[__pad_st.head].nleft) {    \
-                                                        __pad_st.ent[__pad_st.head].nleft -= t; \
-\
-                                                        __pad_st.nPad += t;                 \
-                                                        __pad_st.ent[__pad_st.tail].pos = __pad_st.ent[__pad_st.head].pos;      \
-                                                        __pad_st.ent[__pad_st.tail].nleft = t;                                  \
-                                                        __pad_st.ent[__pad_st.tail].shift = __pad_st.ent[__pad_st.head].nleft;  \
-                                                        __pad_st.tail = (__pad_st.tail + 1) % 32;                               \
-\
-                                                        t = 0;  \
-                                                } else {        \
-                                                        __pad_st.nPad += __pad_st.ent[__pad_st.head].nleft;                     \
-                                                        __pad_st.ent[__pad_st.tail].pos = __pad_st.ent[__pad_st.head].pos;      \
-                                                        __pad_st.ent[__pad_st.tail].nleft = __pad_st.ent[__pad_st.head].nleft;  \
-                                                        __pad_st.ent[__pad_st.tail].shift = 0;                          \
-                                                        __pad_st.tail = (__pad_st.tail + 1) % 32;                       \
-\
-                                                        t -= __pad_st.ent[__pad_st.head].nleft;         \
-                                                        __pad_st.head = (__pad_st.head + 1) % 32;       \
-                                                }       \
-                                         }              \
-                                }                       \
-                        }                               \
-\
-                        if ((__base + __offset < __end) && (32 % __bits > 0))                                           \
-                                __wt->bit_writer(__in[__base + __offset - 1] & ((1ULL << (__bits - 32 % __bits)) - 1),  \
-                                                __bits - 32 % __bits);                                                  \
-\
-                        __pad_st.nPad -= 32;    \
-                }                               \
-         })
-
-#define __vserest_push_pad(__nleft, __wt)       \
-        ({                                      \
-                __assert(__nleft <= 32);        \
-\
-                if (__nleft != 32) {            \
-                        __pad_st.nPad += __nleft;       \
-                        __pad_st.ent[__pad_st.tail].pos = __wt->ret_pos();      \
-                        __pad_st.ent[__pad_st.tail].nleft = __nleft;            \
-                        __pad_st.ent[__pad_st.tail].shift = 0;                  \
-                        __pad_st.tail = (__pad_st.tail + 1) % 32;               \
-                }                               \
-         })
+static void __vserest_init_pad(void);
+static void __vserest_fill_pad(uint32_t *base,
+                uint32_t *len, uint32_t maxB, BitsWriter *wt);
+static void __vserest_push_pad(uint32_t nleft, BitsWriter *wt);
 
 #ifdef USE_BOOST_SHAREDPTR
 static VSEncodingPtr __vserest =
@@ -849,21 +773,17 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
         uint32_t        numBlocks;
         uint32_t        pos;
         uint32_t        maxB;
-        uint32_t        offset;
         uint32_t        *logs;
         uint32_t        *part;
         BitsWriter      *ds_wt;
         BitsWriter      *cd_wt;
 
         logs = new uint32_t[len];
-
         if (logs == NULL)
                 eoutput("Can't allocate memory");
 
-        /* FIXME: A stupid initialization here, and it should be fixed */
-        __pad_st.nPad = 0;
-        __pad_st.head = 0;
-        __pad_st.tail = 0;
+        /* Initialize the ring buffer */
+        __vserest_init_pad();
 
         /* Compute logs of all numbers */
         for (i = 0; i < len; i++)
@@ -875,7 +795,6 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
 
     	/* Ready to write descripters for compressed integers */ 
         ds_wt = new BitsWriter(out);
-
         if (ds_wt == NULL)
                 eoutput("Can't initialize a class");
 
@@ -885,7 +804,6 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
 
     	/* Ready to write actual compressed integers */ 
         cd_wt = new BitsWriter(out + pos + 1);
-
         if (cd_wt == NULL)
                 eoutput("Can't initialize a class");
 
@@ -905,22 +823,21 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
 
                 /* A code for a buffering technique to exploit padding areas */
                 {
-                        uint32_t        base;
-                        uint32_t        end;
+                        uint32_t        offset;
 
-                        base = part[i];
-                        end = part[i + 1];
+                        offset = part[i + 1] - part[i];
 
-                        /* Fill padding areas */
-                        __vserest_fill_pad(in, base, end, maxB, offset, cd_wt);
+                        /* Fill the buffer */
+                        __vserest_fill_pad(&in[part[i]], &offset, maxB, cd_wt);
 
-                        if (base + offset < end) {
+                        if (part[i] + offset < part[i + 1]) {
                                 /* Write integers */
-                                for (j = base + offset; j < end; j++)
+                                for (j = part[i] + offset; j < part[i + 1]; j++)
                                         cd_wt->bit_writer(in[j], maxB);
 
                                 /* Remember the position of padding areas */
-                                __vserest_push_pad(32 - (((end - base) * maxB) % 32), cd_wt);
+                                __vserest_push_pad(
+                                        32 - ((part[i + 1] - part[i]) * maxB) % 32, cd_wt);
                         }
                 }
 
@@ -941,9 +858,138 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
         delete cd_wt;
 }
 
-#define __vserest_bufunfill(__in, __Fill, __buffer)     \
+void
+__vserest_init_pad(void)
+{
+        __pad_st.nPad = 0;
+        __pad_st.head = 0;
+        __pad_st.tail = 0;
+}
+
+#define CAN_FILL_PADDING()      (__pad_st.nPad >= 32)
+#define CAN_USE_CURBUF(wb)      (wb < __pad_st.ent[__pad_st.head].nleft)
+#define USE_CURBUF(wb, wv)      \
+        ({                      \
+                *(__pad_st.ent[__pad_st.head].pos) |=                   \
+                        wv << ((__pad_st.ent[__pad_st.head].nleft - wb) \
+                << __pad_st.ent[__pad_st.head].shift);                  \
+                        __pad_st.ent[__pad_st.head].nleft -= wb;        \
+\
+                __pad_st.nPad -= wb;    \
+\
+                wb = 0;                 \
+         })
+
+#define USE_CURBUF_ROTATE(wb, wv)       \
+        ({                              \
+                *(__pad_st.ent[__pad_st.head].pos) |=                           \
+                        (wv >> (wb - __pad_st.ent[__pad_st.head].nleft))        \
+                        << __pad_st.ent[__pad_st.head].shift;                   \
+\
+                __pad_st.nPad -= __pad_st.ent[__pad_st.head].nleft;             \
+\
+                wv &= (1ULL << (wb - __pad_st.ent[__pad_st.head].nleft)) - 1;   \
+                wb -= __pad_st.ent[__pad_st.head].nleft;                        \
+\
+                __pad_st.head = (__pad_st.head + 1) % 32;                       \
+         })
+
+#define RECYCLE_CURBUF(nleft)   \
+        ({                      \
+                __pad_st.ent[__pad_st.head].nleft -= nleft;     \
+\
+                __pad_st.ent[__pad_st.tail].pos =               \
+                        __pad_st.ent[__pad_st.head].pos;        \
+                __pad_st.ent[__pad_st.tail].nleft = nleft;      \
+                __pad_st.ent[__pad_st.tail].shift =             \
+                         __pad_st.ent[__pad_st.head].nleft;     \
+\
+                __pad_st.tail = (__pad_st.tail + 1) % 32;       \
+                nleft = 0;      \
+         })
+
+#define RECYCLE_CURBUF_ROTATE(nleft)    \
+        ({                              \
+                __pad_st.ent[__pad_st.tail].pos =               \
+                        __pad_st.ent[__pad_st.head].pos;        \
+                __pad_st.ent[__pad_st.tail].nleft =             \
+                        __pad_st.ent[__pad_st.head].nleft;      \
+                __pad_st.ent[__pad_st.tail].shift = 0;          \
+                __pad_st.tail = (__pad_st.tail + 1) % 32;       \
+\
+                nleft -= __pad_st.ent[__pad_st.head].nleft;     \
+                __pad_st.head = (__pad_st.head + 1) % 32;       \
+         })
+
+void
+__vserest_fill_pad(uint32_t *base, uint32_t *len,
+                uint32_t maxB, BitsWriter *wt)
+{
+        uint32_t        length;
+
+        length = *len;
+        *len = 0;
+
+        if (CAN_FILL_PADDING()) {
+                uint32_t        pos;
+                uint32_t        wb;
+                uint32_t        wv;
+
+                for (pos = 1; pos <= (32 + maxB - 1) / maxB; pos++)  {
+                        wb = (maxB * pos <= 32)? maxB : 32 % maxB;
+
+                        if (pos < length) {
+                                wv = base[pos - 1] >> (maxB - wb);
+
+                                while (wb > 0) {
+                                        if (CAN_USE_CURBUF(wb))
+                                                USE_CURBUF(wb, wv);
+                                        else
+                                                USE_CURBUF_ROTATE(wb, wv);
+                                 }
+                        } else {
+                                uint32_t        nleft;
+
+                                nleft = 32 - maxB * (pos - 1);
+
+                                while (nleft > 0) {
+                                        if (CAN_USE_CURBUF(nleft))
+                                                RECYCLE_CURBUF(nleft);
+                                        else
+                                                RECYCLE_CURBUF_ROTATE(nleft);
+                                }
+
+                                goto LOOP_END;
+                        }
+                }
+
+                if ((pos < length) && (32 % maxB > 0))
+                        wt->bit_writer(base[pos - 1] &
+                                ((1ULL << (maxB - 32 % maxB)) - 1),
+                                maxB - 32 % maxB);
+LOOP_END:
+                *len = pos - 1;
+        }
+}
+
+void
+__vserest_push_pad(uint32_t nleft, BitsWriter *wt)
+{
+        __assert(nleft <= 32);
+
+        if (nleft != 32) {
+                __pad_st.nPad += nleft;
+                __pad_st.ent[__pad_st.tail].pos = wt->ret_pos();
+                __pad_st.ent[__pad_st.tail].nleft = nleft;
+                __pad_st.ent[__pad_st.tail].shift = 0;
+                __pad_st.tail = (__pad_st.tail + 1) % 32;
+        }
+}
+
+#define __vserest_bufunfill(in, Fill, buffer)           \
         do {                                            \
-                (__Fill >= 32)? *(--__in) = __buffer >> (__Fill -= 32) : 0;     \
+                (Fill >= 32)? *(--in) =                 \
+                buffer >> (Fill -= 32) : 0;             \
         } while (0)
 
 void
