@@ -27,7 +27,7 @@ N="8 128 2048 131072"
 #       vsesimple-v1: VSEncodingSimpleV1, VSEncodingSimpleV2
 #       vsesimple-v2: VSEncodingSimpleV1, VSEncodingSimpleV2
 #I="vseblocks vse-r vsesimple-v1 vsesimple-v2"
-I="vserest"
+I="vserest vsehybrid"
 
 if [ ! -x ./test/decbench ]; then
         echo 'Exception: decbench not existed'

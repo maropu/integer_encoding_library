@@ -856,6 +856,7 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
 
         delete ds_wt;
         delete cd_wt;
+        delete[] logs;
 }
 
 void
@@ -871,8 +872,8 @@ __vserest_init_pad(void)
 #define USE_CURBUF(wb, wv)      \
         ({                      \
                 *(__pad_st.ent[__pad_st.head].pos) |=                   \
-                        wv << ((__pad_st.ent[__pad_st.head].nleft - wb) \
-                << __pad_st.ent[__pad_st.head].shift);                  \
+                        (wv << __pad_st.ent[__pad_st.head].shift)       \
+                        << (__pad_st.ent[__pad_st.head].nleft - wb);    \
                         __pad_st.ent[__pad_st.head].nleft -= wb;        \
 \
                 __pad_st.nPad -= wb;    \
@@ -927,6 +928,8 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
 {
         uint32_t        length;
 
+        __assert(*len != 0);
+
         length = *len;
         *len = 0;
 
@@ -951,6 +954,7 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
                                 uint32_t        nleft;
 
                                 nleft = 32 - maxB * (pos - 1);
+                                __assert(nleft < 32);
 
                                 while (nleft > 0) {
                                         if (CAN_USE_CURBUF(nleft))
@@ -963,10 +967,15 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
                         }
                 }
 
-                if (32 % maxB > 0)
-                        wt->bit_writer(base[pos - 1] &
+                if (32 % maxB > 0) {
+                        wt->bit_writer(base[(pos - 1) - 1] &
                                 ((1ULL << (maxB - 32 % maxB)) - 1),
                                 maxB - 32 % maxB);
+
+                        if (pos - 1 == length)
+                                __vserest_push_pad(
+                                        32 - (length * maxB) % 32, wt);
+                }
 LOOP_END:
                 *len = pos - 1;
         }
@@ -1288,10 +1297,10 @@ __vserest_unpack0_64(uint32_t **out, uint32_t **in, uint32_t &Fill, uint64_t &bu
 
 /* --- UNPACK 1 --- */
 
-#define __vserest_bufupdate(__val, __pad, __Fill, __buffer)     \
-        ({                                                      \
-                __buffer = (__buffer << __pad) | (__val & ((1ULL << __pad) - 1));  \
-                __Fill += __pad;        \
+#define __vserest_bufupdate(val, pad, Fill, buffer)     \
+        ({                                              \
+                buffer = (buffer << pad) | (val & ((1ULL << pad) - 1)); \
+                Fill += pad;    \
          })
 
 void
