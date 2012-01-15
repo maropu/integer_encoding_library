@@ -130,7 +130,7 @@ main(int argc, char **argv)
 
         /* Start benchmarking */
         st = int_utils::get_time();
-        (decoders[__clist[nlist].decID])(cmp_array, N, list2, N);
+        (decoders[__clist[nlist].decID])(cmp_array, cmp_size, list2, N);
         et = int_utils::get_time();
 
         /* Validation check */

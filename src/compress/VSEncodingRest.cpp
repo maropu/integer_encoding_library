@@ -938,7 +938,7 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
                 for (pos = 1; pos <= (32 + maxB - 1) / maxB; pos++)  {
                         wb = (maxB * pos <= 32)? maxB : 32 % maxB;
 
-                        if (pos < length) {
+                        if (pos <= length) {
                                 wv = base[pos - 1] >> (maxB - wb);
 
                                 while (wb > 0) {
@@ -963,7 +963,7 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
                         }
                 }
 
-                if ((pos < length) && (32 % maxB > 0))
+                if (32 % maxB > 0)
                         wt->bit_writer(base[pos - 1] &
                                 ((1ULL << (maxB - 32 % maxB)) - 1),
                                 maxB - 32 % maxB);
