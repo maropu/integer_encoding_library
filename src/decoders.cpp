@@ -70,6 +70,12 @@ main(int argc, char **argv)
         if (list == NULL)
                 eoutput("Can't allocate memory");
 
+        /*
+         * FIXME: VSEncodingRest self-modifies a compressed
+         * list during decoding, so it must copy data to
+         * sbuf[] with memcpy. 
+         */
+        sbuf = NULL;
         if (decID == D_VSEREST ||
                         decID == D_VSEHYB) {
                 sbuf = new uint32_t[MAXLEN + TAIL_MERGIN];

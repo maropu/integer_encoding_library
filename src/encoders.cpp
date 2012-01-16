@@ -31,13 +31,23 @@ using namespace std;
                 fwrite(&vminor,sizeof(uint32_t), 1, out);       \
         } while (0)
 
+#define PROG_PER_COUNT  1000000
+#define __show_progress(str, it, c, n)  \
+        ({                              \
+                if (it % (n/ PROG_PER_COUNT) == 0) {            \
+                        fprintf(stderr,                         \
+                                "%s: %llu/%llu(%lf)\r",         \
+                                str, c, n, (double)c/n);        \
+                        fflush(stderr);                         \
+                }       \
+         })
+
 static void __usage(const char *msg, ...);
 
 int 
 main(int argc, char **argv)
 {
         int             encID;
-        uint32_t        i;
         uint32_t        *list;
         uint32_t        *cmp_array;
         uint32_t        *addr;
@@ -100,7 +110,12 @@ main(int argc, char **argv)
                 uint32_t        num;
                 uint64_t        len;
 
-                for (len = 0, cmp_pos = 0; len < lenmax; ) {
+                len = 0;
+                cmp_pos = 0;
+
+                for (uint32_t i = 0; len < lenmax; i++) {
+                        __show_progress("Encoded", i, len, lenmax);
+
                         /* Read the numer of integers in a list */
                         num = __next_read32(addr, len);
 
@@ -119,16 +134,16 @@ main(int argc, char **argv)
                                 fwrite(&prev_doc, 1, sizeof(uint32_t), toc);
                                 fwrite(&cmp_pos, 1, sizeof(uint64_t), toc);
 
-                                for (i = 0; i < num - 1; i++) {
+                                for (uint32_t j = 0; j < num - 1; j++) {
                                         cur_doc = __next_read32(addr, len);
 
                                         if (cur_doc < prev_doc)
                                                 cerr << "List ordering exception: list MUST be increasing" << endl;
 
                                         if (encID != E_BINARYIPL)
-                                                list[i] = cur_doc - prev_doc - 1;
+                                                list[j] = cur_doc - prev_doc - 1;
                                         else
-                                                list[i] = cur_doc;
+                                                list[j] = cur_doc;
 
                                         prev_doc = cur_doc;
                                 }
@@ -140,7 +155,7 @@ main(int argc, char **argv)
                                 cmp_pos += cmp_size;
                         } else {
                                 /* Read skipped data */
-                                for (i = 0; i < num - 1; i++)
+                                for (uint32_t j = 0; j < num - 1; j++)
                                         cur_doc = __next_read32(addr, len);
                         }
                 }
