@@ -32,14 +32,18 @@ using namespace std;
         } while (0)
 
 #define PROG_PER_COUNT  1000000
+
+#ifdef __i386__
+ #define PROGRESS_FORMAT        "%s: %llu/%llu(%lf)\t\t\t\r"
+#else
+ #define PROGRESS_FORMAT        "%s: %lu/%lu(%lf)\t\t\t\r"
+#endif
+
 #define __show_progress(str, it, c, n)  \
         ({                              \
-                if (it % (n/ PROG_PER_COUNT) == 0) {            \
-                        fprintf(stderr,                         \
-                                "%s: %llu/%llu(%lf)\r",         \
+                if (it % (n/ PROG_PER_COUNT) == 0)              \
+                        fprintf(stderr, PROGRESS_FORMAT,        \
                                 str, c, n, (double)c/n);        \
-                        fflush(stderr);                         \
-                }       \
          })
 
 static void __usage(const char *msg, ...);
