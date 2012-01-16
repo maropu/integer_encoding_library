@@ -33,17 +33,29 @@ using namespace std;
 
 #define PROG_PER_COUNT  1000000
 
-#ifdef __i386__
- #define PROGRESS_FORMAT        "%s: %llu/%llu(%lf)\t\t\t\r"
-#else
- #define PROGRESS_FORMAT        "%s: %lu/%lu(%lf)\t\t\t\r"
-#endif
+static double __progress_start_time;
+static int __init_progress;
 
 #define __show_progress(str, it, c, n)  \
-        ({                              \
-                if (it % (n/ PROG_PER_COUNT) == 0)              \
-                        fprintf(stderr, PROGRESS_FORMAT,        \
-                                str, c, n, (double)c/n);        \
+        ({                      \
+                double  pg;     \
+                double  left;   \
+\
+                if (!__init_progress++)         \
+                        __progress_start_time = \
+                                int_utils::get_time();          \
+\
+                if (it % (n/ PROG_PER_COUNT) == 0) {            \
+                        pg = (double)c / n;                     \
+                        left = ((1.0 - pg) / pg) *              \
+                                (int_utils::get_time() -        \
+                                 __progress_start_time);        \
+\
+                        fprintf(stderr,                         \
+                                "%s: %.3lf done, %.1lfs left    \
+                                                        \r",    \
+                                str, pg, left);                 \
+                }       \
          })
 
 static void __usage(const char *msg, ...);
