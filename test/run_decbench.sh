@@ -4,7 +4,7 @@
 T=1000000
 
 # Maximum of random values
-N="8 128 2048 131072"
+N="8 16 32 64 128"
 
 # Coder-type to test (coder-type: EncoderName, DecoderName)
 #       n-gamma: Gamma, N Gamma
@@ -26,8 +26,7 @@ N="8 128 2048 131072"
 #       vsehybrid: VSEncodingBlocksHybrid, VSEncodingBlocksHybrid
 #       vsesimple-v1: VSEncodingSimpleV1, VSEncodingSimpleV2
 #       vsesimple-v2: VSEncodingSimpleV1, VSEncodingSimpleV2
-#I="vseblocks vse-r vsesimple-v1 vsesimple-v2"
-I="vserest vsehybrid"
+I="n-gamma n-delta varbyte simple9 simple16 p4delta optp4delta vseblocks vse-r vsesimple-v1 vsesimple-v2"
 
 if [ ! -x ./test/decbench ]; then
         echo 'Exception: decbench not existed'

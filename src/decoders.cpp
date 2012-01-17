@@ -18,21 +18,6 @@ using namespace std;
 
 #define NLOOP   1
 
-#define __header_validate(addr, len)    \
-        do {                            \
-                uint32_t        magic;  \
-                uint32_t        vmajor; \
-                uint32_t        vminor; \
-\
-                magic = __next_read32(addr, len);       \
-                vmajor = __next_read32(addr, len);      \
-                vminor = __next_read32(addr, len);      \
-\
-                if (magic != MAGIC_NUM ||               \
-                        vmajor != VMAJOR || vminor != VMINOR)   \
-                        eoutput("Not support input format");    \
-        } while (0);
-
 static void __usage(const char *msg, ...);
 
 int 
@@ -225,8 +210,6 @@ LOOP_END:
 void
 __usage(const char *msg, ...)
 {
-        cout << "Usage: decoders <DecoderID> <infilename> <outfilename>" << endl;
-
         if (msg != NULL) {
                 va_list vargs;
 
@@ -236,6 +219,8 @@ __usage(const char *msg, ...)
 
                 cout << endl;
         }
+
+        cout << "Usage: decoders <DecoderID> <infilename> <outfilename>" << endl;
 
         cout << endl << "DecoderID\tDecoderName" << endl;
         cout << "---" << endl;

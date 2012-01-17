@@ -65,6 +65,22 @@
  */
 #define TAIL_MERGIN     128
 
+/* A macro for header validation */
+#define __header_validate(addr, len)    \
+        do {                            \
+                uint32_t        magic;  \
+                uint32_t        vmajor; \
+                uint32_t        vminor; \
+\
+                magic = __next_read32(addr, len);       \
+                vmajor = __next_read32(addr, len);      \
+                vminor = __next_read32(addr, len);      \
+\
+                if (magic != MAGIC_NUM ||               \
+                        vmajor != VMAJOR || vminor != VMINOR)   \
+                        eoutput("Not support input format");    \
+        } while (0);
+
 /*
  * Macros for reading files. A header for each compressed list
  * is composed of three etnries: the total of integers, a first
