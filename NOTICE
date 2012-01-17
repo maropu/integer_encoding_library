@@ -102,6 +102,8 @@ PForDelta                        990.22         6.16
 OPTPForDelta                     842.96         5.36
 VSEncodingBlocks                 915.36         4.95
 VSE-R                            167.21         4.55
+VSEncodingRest                   586.07         4.69
+VSEncodingBlocksHybrid           616.58         4.82
 VSEncodingSimple v1             1701.11         6.40
 VSEncodingSimple v2             1812.66         6.79
 
