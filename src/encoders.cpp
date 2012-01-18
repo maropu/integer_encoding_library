@@ -61,7 +61,7 @@ static int      __init_progress;
                         __progress_start_time = \
                                 int_utils::get_time();          \
 \
-                if (c != 0 && it % (n/ PROG_PER_COUNT) == 0) {  \
+                if (c != 0 && it % (n / PROG_PER_COUNT) == 0) { \
                         pg = (double)c / n;                     \
                         left = ((1.0 - pg) / pg) *              \
                                 (int_utils::get_time() -        \
@@ -78,6 +78,7 @@ static int      __init_progress;
 #define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
         ({      \
                 if (it % CHECKPOINT_INTVL == 0) {       \
+                        __value(it);\
                         SET_RESUME_INFO(it, cmp_pos, len, lenmax, toc); \
                         fsync(fileno(cmp));     \
                         fsync(fileno(toc));     \
@@ -171,6 +172,9 @@ main(int argc, char **argv)
 
                 if (fread(hbuf, sizeof(uint32_t),
                                 HEADERSZ, toc) == HEADERSZ) {
+                        uint64_t        pos1;
+                        uint64_t        pos2;
+
                         __header_validate(hbuf, tlen);
 
                         it = GET_RESUME_NUM(hbuf);
@@ -180,11 +184,20 @@ main(int argc, char **argv)
 
                         __assert(len <= lenmax);
 
+                        pos1 = cmp_pos * sizeof(uint32_t);
+                        pos2 = (HEADERSZ +
+                                it * EACH_HEADER_TOC_SZ) *
+                                sizeof(uint32_t);
+
+                        /*
+                        if (int_utils::get_file_size(cmp) < pos1 ||
+                                        int_utils::get_file_size(toc) < pos2)
+                                goto NORESUME;
+                        */
+
                         /* Locate resumed positions */
-                        fseek(cmp, cmp_pos *
-                                        sizeof(uint32_t), SEEK_SET);
-                        fseek(toc, it * EACH_HEADER_TOC_SZ *
-                                        sizeof(uint32_t), SEEK_SET);
+                        fseek(cmp, pos1, SEEK_SET);
+                        fseek(toc, pos2, SEEK_SET);
 
                         goto RESUME;
                 }
