@@ -151,13 +151,13 @@ main(int argc, char **argv)
         /* Open a output file and tune buffer mode */
         strncpy(ofile, ifile, NFILENAME);
         strcat(ofile, enc_ext[encID]);
-        cmp = fopen(ofile, "w");
+        cmp = fopen(ofile, (try_resume == 0)? "w" : "r+");
 
         strcat(ofile, TOCEXT);
-        toc = fopen(ofile, "r+");
+        toc = fopen(ofile, (try_resume == 0)? "w" : "r+");
 
         if (cmp == NULL || toc == NULL)
-                eoutput("foepn(): Can't create a output file");
+                eoutput("foepn(): Can't open output files");
 
         setvbuf(cmp, NULL, _IOFBF, BUFSIZ);
         setvbuf(toc, NULL, _IOFBF, BUFSIZ);
