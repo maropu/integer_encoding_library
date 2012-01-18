@@ -80,7 +80,8 @@ main(int argc, char **argv)
 
         /* Initialize each size */
         cmplenmax = cmpsz >> 2;
-        toclenmax = tocsz >> 2;
+        toclenmax = (tocsz - HEADERSZ *
+                        sizeof(uint32_t)) >> 2;
         toclen = 0;
 
         __header_validate(toc_addr, toclen);

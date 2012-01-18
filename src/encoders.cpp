@@ -21,20 +21,36 @@ using namespace std;
                 uint32_t        magic;  \
                 uint32_t        vmajor; \
                 uint32_t        vminor; \
+                uint32_t        rs_num; \
+                uint32_t        rs_pos; \
+                uint64_t        rs_len; \
+                uint64_t        rs_lenmax;      \
 \
                 magic = MAGIC_NUM;      \
                 vmajor = VMAJOR;        \
                 vminor = VMINOR;        \
 \
+                rs_num = 0;     \
+                rs_pos = 0;     \
+                rs_len = 0;     \
+                rs_lenmax = UINT64_MAX; \
+\
                 fwrite(&magic, sizeof(uint32_t), 1, out);       \
-                fwrite(&vmajor,sizeof(uint32_t), 1, out);       \
-                fwrite(&vminor,sizeof(uint32_t), 1, out);       \
+                fwrite(&vmajor, sizeof(uint32_t), 1, out);      \
+                fwrite(&vminor, sizeof(uint32_t), 1, out);      \
+\
+                fwrite(&rs_num, sizeof(uint32_t), 1, out);      \
+                fwrite(&rs_pos, sizeof(uint32_t), 1, out);      \
+                fwrite(&rs_len, sizeof(uint64_t), 1, out);      \
+                fwrite(&rs_lenmax, sizeof(uint64_t), 1, out);   \
+\
+                fsync(fileno(out));     \
         } while (0)
 
 #define PROG_PER_COUNT  1000000
 
-static double __progress_start_time;
-static int __init_progress;
+static double   __progress_start_time;
+static int      __init_progress;
 
 #define __show_progress(str, it, c, n)  \
         ({                      \
@@ -59,7 +75,14 @@ static int __init_progress;
          })
 
 #define CHECKPOINT_INTVL        1000000       
-#define __periodical_checkpoint(it, cmp_pos, len, lenmax)
+#define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
+        ({      \
+                if (it % CHECKPOINT_INTVL == 0) {       \
+                        SET_RESUME_INFO(it, cmp_pos, len, lenmax, toc); \
+                        fsync(fileno(cmp));     \
+                        fsync(fileno(toc));     \
+                }       \
+         })
 
 static void __usage(const char *msg, ...);
 
@@ -68,7 +91,6 @@ main(int argc, char **argv)
 {
         int             encID;
         int             show_progress;
-        int             try_resume;
         uint32_t        *list;
         uint32_t        *cmp_array;
         uint32_t        *addr;
@@ -79,6 +101,11 @@ main(int argc, char **argv)
         char            *end;
         FILE            *cmp;
         FILE            *toc;
+        /* For a resume path */
+        int             try_resume;
+        uint32_t        it;
+        uint64_t        cmp_pos;
+        uint64_t        len;
 
         if (argc < 3)
                 __usage(NULL);
@@ -127,7 +154,7 @@ main(int argc, char **argv)
         cmp = fopen(ofile, "w");
 
         strcat(ofile, TOCEXT);
-        toc = fopen(ofile, "w");
+        toc = fopen(ofile, "r+");
 
         if (cmp == NULL || toc == NULL)
                 eoutput("foepn(): Can't create a output file");
@@ -135,9 +162,45 @@ main(int argc, char **argv)
         setvbuf(cmp, NULL, _IOFBF, BUFSIZ);
         setvbuf(toc, NULL, _IOFBF, BUFSIZ);
 
+        /* Resume */
+        if (try_resume) {
+                uint32_t        hbuf[HEADERSZ];
+                uint64_t        tlen;
+
+                tlen = 0;
+
+                if (fread(hbuf, sizeof(uint32_t),
+                                HEADERSZ, toc) == HEADERSZ) {
+                        __header_validate(hbuf, tlen);
+
+                        it = GET_RESUME_NUM(hbuf);
+                        cmp_pos = GET_RESUME_POS(hbuf);
+                        len = GET_RESUME_LEN(hbuf);
+                        lenmax = GET_RESUME_LENMAX(hbuf);
+
+                        __assert(len <= lenmax);
+
+                        /* Locate resumed positions */
+                        fseek(cmp, cmp_pos *
+                                        sizeof(uint32_t), SEEK_SET);
+                        fseek(toc, it * EACH_HEADER_TOC_SZ *
+                                        sizeof(uint32_t), SEEK_SET);
+
+                        goto RESUME;
+                }
+NORESUME:
+                fseek(toc, 0, SEEK_SET);
+        }
+
+        /* Initialization for a regular path */
+        it = 0;
+        len = 0;
+        cmp_pos = 0;
+
         /* First off, a header is written */
         __header_written(toc);
 
+RESUME:
         /*
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
@@ -148,17 +211,12 @@ main(int argc, char **argv)
         {
                 uint32_t        prev_doc;
                 uint32_t        cur_doc;
-                uint64_t        cmp_pos;
                 uint32_t        cmp_size;
                 uint32_t        num;
-                uint64_t        len;
 
-                len = 0;
-                cmp_pos = 0;
-
-                for (uint32_t i = 0; len < lenmax; i++) {
+                while (len < lenmax) {
                         if (show_progress)
-                                __show_progress("Encoded", i, len, lenmax);
+                                __show_progress("Encoded", it++, len, lenmax);
 
                         /* Read the numer of integers in a list */
                         num = __next_read32(addr, len);
@@ -203,7 +261,8 @@ main(int argc, char **argv)
                                         cur_doc = __next_read32(addr, len);
                         }
 
-                        __periodical_checkpoint(i, cmp_pos, len, lenmax);
+                        __periodical_checkpoint(
+                                        it, toc, cmp_pos, cmp, len, lenmax);
                 }
         }
 LOOP_END:

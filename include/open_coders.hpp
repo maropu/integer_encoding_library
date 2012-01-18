@@ -65,21 +65,62 @@
  */
 #define TAIL_MERGIN     128
 
-/* A macro for header validation */
+/* A macro for header accesses */
+#define HEADERSZ        9
+
+#define __do_read32(addr, len)  addr[len];
+#define __do_read64(addr, len)  \
+        ({      \
+                uint64_t        ret;    \
+\
+                ret = addr[len + 1];    \
+                ret = (ret << 32) | addr[len];  \
+\
+                ret;    \
+         })
+
 #define __header_validate(addr, len)    \
         do {                            \
                 uint32_t        magic;  \
                 uint32_t        vmajor; \
                 uint32_t        vminor; \
 \
-                magic = __next_read32(addr, len);       \
-                vmajor = __next_read32(addr, len);      \
-                vminor = __next_read32(addr, len);      \
+                magic = __do_read32(addr, 0);   \
+                vmajor = __do_read32(addr, 1);  \
+                vminor = __do_read32(addr, 2);  \
 \
                 if (magic != MAGIC_NUM ||               \
                         vmajor != VMAJOR || vminor != VMINOR)   \
                         eoutput("Not support input format");    \
+\
+                len += HEADERSZ;        \
         } while (0);
+
+#define RESUME_INFO_BASE        3
+#define GET_RESUME_NUM(addr)    __do_read32(addr, RESUME_INFO_BASE)
+#define GET_RESUME_POS(addr)    __do_read32(addr, RESUME_INFO_BASE + 1)
+#define GET_RESUME_LEN(addr)    __do_read64(addr, RESUME_INFO_BASE + 2)
+#define GET_RESUME_LENMAX(addr) __do_read64(addr, RESUME_INFO_BASE + 4)
+
+/*
+ * FIXME: Need to support for more than 4GiB files
+ * on 32-bit platforms.
+ */
+#define SET_RESUME_INFO(num, pos, len, lenmax, fp)      \
+        ({                              \
+                fpos_t  old;            \
+\
+                fgetpos(fp, &old);      \
+\
+                fseek(fp, RESUME_INFO_BASE *                    \
+                        sizeof(uint32_t), SEEK_SET);            \
+                fwrite(&num, sizeof(uint32_t), 1, fp);          \
+                fwrite(&pos, sizeof(uint32_t), 1, fp);          \
+                fwrite(&len, sizeof(uint64_t), 1, fp);          \
+                fwrite(&lenmax, sizeof(uint64_t), 1, fp);       \
+\
+                fsetpos(fp, &old);      \
+         })
 
 /*
  * Macros for reading files. A header for each compressed list
@@ -91,30 +132,30 @@
  */
 #define EACH_HEADER_TOC_SZ      4
 
-#define __next_read32(addr, len)  addr[len++]
+#define __next_read32(addr, len)        \
+        ({      \
+                uint32_t        ret;    \
+\
+                ret = __do_read32(addr, len);   \
+                len += 1;       \
+                ret;            \
+         })
 
 #define __next_read64(addr, len)        \
         ({      \
                 uint64_t        ret;    \
 \
-                ret = addr[len + 1];    \
-                ret = (ret << 32) | addr[len];  \
-                len += 2;               \
-\
-                ret;                    \
+                ret = __do_read64(addr, len);   \
+                len += 2;       \
+                ret;            \
          })
 
 #define __next_pos64(addr, len)         \
         ({      \
                 uint64_t        nxlen;  \
-                uint64_t        ret;    \
 \
                 nxlen = len + EACH_HEADER_TOC_SZ - 2;   \
-\
-                ret = addr[nxlen + 1];  \
-                ret = (ret << 32) | addr[nxlen];        \
-\
-                ret;                    \
+                __do_read64(addr, nxlen);               \
          })
 
 #if HAVE_DECL_POSIX_FADVISE && defined(HAVE_POSIX_FADVISE)

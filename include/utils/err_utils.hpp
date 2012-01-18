@@ -15,7 +15,7 @@
 #ifndef ERR_UTILS_HPP
 #define ERR_UTILS_HPP
 
-#define DEBUG
+//#define DEBUG
 
 #include <iostream>
 #include <stdio.h>

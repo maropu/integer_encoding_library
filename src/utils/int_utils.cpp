@@ -44,6 +44,22 @@ int_utils::get_time(void)
         return (utime + stime);
 }
 
+uint64_t
+int_utils::get_file_size(FILE *fp)
+{
+        fpos_t  old;
+        fpos_t  size;
+
+        fgetpos(fp, &old);
+
+        fseek(fp, 0, SEEK_END);
+        fgetpos(fp, &size);
+
+        fsetpos(fp, &old);
+
+        return static_cast<uint64_t>(size.__pos);
+}
+
 uint32_t
 *int_utils::open_and_mmap_file(
                 char *filen, uint64_t &len) {
@@ -62,6 +78,11 @@ uint32_t
                 eoutput("fstat(): Unknown the file size");
 
         len = sb.st_size;
+
+#if __i368__
+        if (len > UINT32_MAX)
+                eoutput("Unsupport more than 4GiB files on 32-bit platforms");
+#endif 
 
         __fadvise_sequential(file, len);
 
