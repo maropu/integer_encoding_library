@@ -753,6 +753,7 @@ static void __vserest_fill_pad(uint32_t *base,
                 uint32_t *len, uint32_t maxB, BitsWriter *wt);
 static void __vserest_push_pad(uint32_t nleft, BitsWriter *wt);
 
+/* FIXME: Stupid codes here, so it needs to be replaced */
 #ifdef USE_BOOST_SHAREDPTR
 static VSEncodingPtr __vserest =
                 VSEncodingPtr(new VSEncoding(&__vserest_possLens[0],
@@ -841,7 +842,7 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
                         }
                 }
 
-                /* Allign to 32-bit */
+                /* Align to 32-bit */
                 cd_wt->bit_flush(); 
 
                 /* Writes the value of B and K */
@@ -849,7 +850,7 @@ VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
                 ds_wt->bit_writer(k, VSEREST_LOGLEN);
         }
 
-        /* Allign to 32-bit */
+        /* Align to 32-bit */
         ds_wt->bit_flush(); 
 
         nvalue = ds_wt->written + cd_wt->written;
@@ -872,10 +873,10 @@ __vserest_init_pad(void)
 #define USE_CURBUF(wb, wv)      \
         ({                      \
                 *(__pad_st.ent[__pad_st.head].pos) |=                   \
-                        (wv << __pad_st.ent[__pad_st.head].shift)       \
-                        << (__pad_st.ent[__pad_st.head].nleft - wb);    \
-                        __pad_st.ent[__pad_st.head].nleft -= wb;        \
+                        (wv << __pad_st.ent[__pad_st.head].shift) <<    \
+                        (__pad_st.ent[__pad_st.head].nleft - wb);       \
 \
+                __pad_st.ent[__pad_st.head].nleft -= wb;                \
                 __pad_st.nPad -= wb;    \
 \
                 wb = 0;                 \
@@ -903,7 +904,8 @@ __vserest_init_pad(void)
                         __pad_st.ent[__pad_st.head].pos;        \
                 __pad_st.ent[__pad_st.tail].nleft = nleft;      \
                 __pad_st.ent[__pad_st.tail].shift =             \
-                         __pad_st.ent[__pad_st.head].nleft;     \
+                        __pad_st.ent[__pad_st.head].nleft +     \
+                        __pad_st.ent[__pad_st.head].shift;      \
 \
                 __pad_st.tail = (__pad_st.tail + 1) % 32;       \
                 nleft = 0;      \
@@ -915,7 +917,8 @@ __vserest_init_pad(void)
                         __pad_st.ent[__pad_st.head].pos;        \
                 __pad_st.ent[__pad_st.tail].nleft =             \
                         __pad_st.ent[__pad_st.head].nleft;      \
-                __pad_st.ent[__pad_st.tail].shift = 0;          \
+                __pad_st.ent[__pad_st.tail].shift =             \
+                        __pad_st.ent[__pad_st.head].shift;      \
                 __pad_st.tail = (__pad_st.tail + 1) % 32;       \
 \
                 nleft -= __pad_st.ent[__pad_st.head].nleft;     \
@@ -954,7 +957,7 @@ __vserest_fill_pad(uint32_t *base, uint32_t *len,
                                 uint32_t        nleft;
 
                                 nleft = 32 - maxB * (pos - 1);
-                                __assert(nleft < 32);
+                                __assert(nleft > 0 && nleft < 32);
 
                                 while (nleft > 0) {
                                         if (CAN_USE_CURBUF(nleft))
@@ -998,7 +1001,7 @@ __vserest_push_pad(uint32_t nleft, BitsWriter *wt)
 #define __vserest_bufunfill(in, Fill, buffer)           \
         do {                                            \
                 (Fill >= 32)? *(--in) =                 \
-                buffer >> (Fill -= 32) : 0;             \
+                        buffer >> (Fill -= 32) : 0;     \
         } while (0)
 
 void
@@ -1009,6 +1012,7 @@ VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
         uint32_t        *bin;
         uint32_t        *data;
         uint32_t        *end;
+
         /* To harness the padding areas of each partition */
         uint32_t        Fill;
         uint64_t        buffer;
@@ -1020,6 +1024,8 @@ VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
 
         end = bin + len;
         data = bin + *bin + 1;
+
+        __assert(*bin < len);
 
         do {
                 /* Read B and K */

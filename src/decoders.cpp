@@ -155,7 +155,8 @@ main(int argc, char **argv)
 
                         if (decID == D_VSEREST ||
                                         decID == D_VSEHYB) {
-                                memcpy(sbuf, ptr, sizeof(uint32_t) * (num - 1));
+                                memcpy(sbuf, ptr, sizeof(uint32_t) *
+                                                (next_pos - cmp_pos));
                                 ptr = sbuf;
                         }
 

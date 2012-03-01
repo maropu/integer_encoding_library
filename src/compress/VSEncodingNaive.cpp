@@ -47,6 +47,7 @@ static uint32_t __vsenaive_codeLogs[] = {
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
+/* FIXME: Stupid codes here, so it needs to be replaced */
 #ifdef USE_BOOST_SHAREDPTR
 static VSEncodingPtr __vsenaive =
                 VSEncodingPtr(new VSEncoding(&__vsenaive_possLens[0],

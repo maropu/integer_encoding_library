@@ -137,7 +137,7 @@ main(int argc, char **argv)
         for (i = 0; i < N; i++) {
                 if (list1[i] != list2[i])
                         cerr << "Decoding Exception(" << i << "): "
-                                <<list1[i] << " != " << list2[i] << endl;
+                                << list1[i] << " != " << list2[i] << endl;
         }
 
         /* Show results */
@@ -159,7 +159,7 @@ uint32_t
 __get_random(int d)
 {
         if  (!_init_rand++)
-                srand(0);
+                srand(time(NULL));
 
         return (uint32_t)(d * ((double)rand() / UINT_MAX));
 }

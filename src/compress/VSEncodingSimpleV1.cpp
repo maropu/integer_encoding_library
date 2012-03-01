@@ -738,6 +738,7 @@ static uint32_t __vsesimplev1_codeLogs[] = {
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
+/* FIXME: Stupid codes here, so it needs to be replaced */
 #ifdef USE_BOOST_SHAREDPTR
  static VSEncodingPtr __vsesimplev1 =
                 VSEncodingPtr(new VSEncoding(&__vsesimplev1_possLens[0],

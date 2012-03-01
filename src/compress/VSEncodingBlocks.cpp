@@ -125,6 +125,7 @@ static uint32_t __vseblocks_possLogs[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 32
 };
 
+/* FIXME: Stupid codes here, so it needs to be replaced */
 #ifdef USE_BOOST_SHAREDPTR
  static VSEncodingPtr __vseblocks =
                 VSEncodingPtr(new VSEncoding(&__vseblocks_possLens[0],
