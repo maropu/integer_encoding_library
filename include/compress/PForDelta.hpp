@@ -26,21 +26,21 @@
 //#define PFORDELTA_BLOCKSZ       (128 * PFORDELTA_NBLOCK)
 
 class PForDelta {
-        public:
-                static uint32_t tryB(uint32_t b, uint32_t *in,
-                                uint32_t len);
-                static uint32_t findBestB(uint32_t *in, uint32_t len);
+public:
+        static uint32_t tryB(uint32_t b, uint32_t *in,
+                        uint32_t len);
+        static uint32_t findBestB(uint32_t *in, uint32_t len);
 
-                /* A last argument for OPTPForDelta */
-                static void encodeBlock(uint32_t *in,
-                                uint32_t len, uint32_t *out,
-                                uint32_t &nvalue,
-                                uint32_t (*find)(uint32_t *in, uint32_t len));
+        /* A last argument for OPTPForDelta */
+        static void encodeBlock(uint32_t *in,
+                        uint32_t len, uint32_t *out,
+                        uint32_t &nvalue,
+                        uint32_t (*find)(uint32_t *in, uint32_t len));
 
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue);
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue);
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue);
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue);
 };
 
 #endif /* PFORDELTA_HPP */

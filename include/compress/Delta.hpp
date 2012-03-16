@@ -20,41 +20,41 @@
 #include "io/BitsReader.hpp"
 
 class Delta {
-        public:
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue) {
-                        BitsWriter *wt = new BitsWriter(out);
-                        nvalue = wt->N_DeltaArray(in, len);
-                        delete wt;
-                }
+public:
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue) {
+                BitsWriter *wt = new BitsWriter(out);
+                nvalue = wt->N_DeltaArray(in, len);
+                delete wt;
+        }
 
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue) {
-                        BitsReader *rd = new BitsReader(in);
-                        rd->N_DeltaArray(out, nvalue);
-                        delete rd;
-                }
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue) {
+                BitsReader *rd = new BitsReader(in);
+                rd->N_DeltaArray(out, nvalue);
+                delete rd;
+        }
 
-                static void FU_decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue) {
-                        BitsReader *rd = new BitsReader(in);
-                        rd->FU_DeltaArray(out, nvalue);
-                        delete rd;
-                }
+        static void FU_decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue) {
+                BitsReader *rd = new BitsReader(in);
+                rd->FU_DeltaArray(out, nvalue);
+                delete rd;
+        }
 
-                static void FG_decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue) {
-                        BitsReader *rd = new BitsReader(in);
-                        rd->FG_DeltaArray(out, nvalue);
-                        delete rd;
-                }
+        static void FG_decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue) {
+                BitsReader *rd = new BitsReader(in);
+                rd->FG_DeltaArray(out, nvalue);
+                delete rd;
+        }
 
-                static void F_decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue) {
-                        BitsReader *rd = new BitsReader(in);
-                        rd->F_DeltaArray(out, nvalue);
-                        delete rd;
-                }
+        static void F_decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue) {
+                BitsReader *rd = new BitsReader(in);
+                rd->F_DeltaArray(out, nvalue);
+                delete rd;
+        }
 };
 
 #endif /* DELTA_HPP */

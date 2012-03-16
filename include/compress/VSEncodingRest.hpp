@@ -20,11 +20,11 @@
 #include "io/BitsWriter.hpp"
 
 class VSEncodingRest {
-        public:
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue);
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue);
+public:
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue);
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue);
 };
 
 #endif /* VSENCODING_REST_HPP */

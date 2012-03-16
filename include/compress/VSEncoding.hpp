@@ -26,28 +26,28 @@
 #define VSENCODING_BLOCKSZ      65536U
 
 class VSEncoding {
-        private:
-                /*
-                 * In some cases, there might be asymmetry between possible
-                 * lenghts of blocks if they are formed by zeros(posszLens)
-                 * or larger numbers(possLens).
-                 */
-                bool            aligned;
-                uint32_t        *possLens;
-                uint32_t        *posszLens;
-                uint32_t        poss_sz;
-                uint32_t        maxBlk;
-                
-        public:
-                VSEncoding(uint32_t *lens, uint32_t *zlens, uint32_t size, bool cflag);
+private:
+        /*
+         * In some cases, there might be asymmetry between possible
+         * lenghts of blocks if they are formed by zeros(posszLens)
+         * or larger numbers(possLens).
+         */
+        bool            aligned;
+        uint32_t        *possLens;
+        uint32_t        *posszLens;
+        uint32_t        poss_sz;
+        uint32_t        maxBlk;
+        
+public:
+        VSEncoding(uint32_t *lens, uint32_t *zlens, uint32_t size, bool cflag);
 
-                /*
-                 * Compute the optimal sub-lists from lists.
-                 *      len: The length of the sequence of lists
-                 *      fixCost: The fix cost in bits that we pay for  each block
-                 */
-                uint32_t *compute_OptPartition(uint32_t *seq,
-                                uint32_t len, uint32_t fixCost, uint32_t &pSize);
+        /*
+         * Compute the optimal sub-lists from lists.
+         *      len: The length of the sequence of lists
+         *      fixCost: The fix cost in bits that we pay for  each block
+         */
+        uint32_t *compute_OptPartition(uint32_t *seq,
+                        uint32_t len, uint32_t fixCost, uint32_t &pSize);
 };
 
 #ifdef USE_BOOST_SHAREDPTR

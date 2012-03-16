@@ -20,26 +20,26 @@
 #include "io/BitsWriter.hpp"
 
 class VSEncodingBlocks {
-        public:
-                static void encodeVS(uint32_t len, uint32_t *in,
-                                uint32_t &size, uint32_t *out);
+public:
+        static void encodeVS(uint32_t len, uint32_t *in,
+                        uint32_t &size, uint32_t *out);
 
-                static void decodeVS(uint32_t len, uint32_t *in,
-                                uint32_t *out, uint32_t *aux);
+        static void decodeVS(uint32_t len, uint32_t *in,
+                        uint32_t *out, uint32_t *aux);
 
-                /*
-                 * It assumes that values start form 0.
-                 *  - *in: points to the first d-gap to be encoded
-                 *  - *out: points to the first int that will countain the compress
-                 * It returns the compress size in number of int   
-                 *
-                 * Note: *out must be large enough to contain the compress.
-                 */
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue);
+        /*
+         * It assumes that values start form 0.
+         *  - *in: points to the first d-gap to be encoded
+         *  - *out: points to the first int that will countain the compress
+         * It returns the compress size in number of int   
+         *
+         * Note: *out must be large enough to contain the compress.
+         */
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue);
 
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue);
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue);
 };
 
 #endif /* VSENCODINGBLOCKS_HPP */

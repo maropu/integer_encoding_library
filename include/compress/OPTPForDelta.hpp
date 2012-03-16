@@ -25,15 +25,15 @@
 #include "io/BitsWriter.hpp"
 
 class OPTPForDelta {
-        public:
-                static uint32_t tryB(uint32_t b, uint32_t *in,
-                                uint32_t len);
-                static uint32_t findBestB(uint32_t *in, uint32_t len);
+public:
+        static uint32_t tryB(uint32_t b, uint32_t *in,
+                        uint32_t len);
+        static uint32_t findBestB(uint32_t *in, uint32_t len);
 
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue);
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue);
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue);
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue);
 };
 
 #endif /* OPTPFORDELTAV1_HPP */

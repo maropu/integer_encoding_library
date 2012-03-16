@@ -20,32 +20,32 @@
 #include "io/BitsReader.hpp"
 
 class BinaryInterpolative {
-        public:
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue) {
-                        BitsWriter      *wt;
+public:
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue) {
+                BitsWriter      *wt;
 
-                        /* Preprocessing for Binary Interpolative */
-                        wt = new BitsWriter(out + 1);
+                /* Preprocessing for Binary Interpolative */
+                wt = new BitsWriter(out + 1);
 
-                        out[0] = in[len - 1];
+                out[0] = in[len - 1];
 
-                        wt->InterpolativeArray(in, len, 0, 0, in[len - 1]);
-                        wt->bit_flush();
-                        nvalue = wt->written + 1;
+                wt->InterpolativeArray(in, len, 0, 0, in[len - 1]);
+                wt->bit_flush();
+                nvalue = wt->written + 1;
 
-                        delete wt;
-                }
+                delete wt;
+        }
 
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue) {
-                        BitsReader      *rd;
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue) {
+                BitsReader      *rd;
 
-                        rd = new BitsReader(in + 1);
-                        rd->InterpolativeArray(out, nvalue, 0, 0, *in);
+                rd = new BitsReader(in + 1);
+                rd->InterpolativeArray(out, nvalue, 0, 0, *in);
 
-                        delete rd;
-                }
+                delete rd;
+        }
 };
 
 #endif /* BINARY_INTERPOLATIVE_HPP */

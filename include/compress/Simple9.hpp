@@ -19,25 +19,25 @@
 #include "io/BitsWriter.hpp"
 
 class Simple9 {
-        private:
-                /*
-                 * These functions judging how many integers to
-                 * include in a single 32-bit area.
-                 */
-                static bool try28_1bit (uint32_t *n, uint32_t nvalue);
-                static bool try14_2bit (uint32_t *n, uint32_t nvalue);
-                static bool try9_3bit (uint32_t *n, uint32_t nvalue);
-                static bool try7_4bit (uint32_t *n, uint32_t nvalue);
-                static bool try5_5bit (uint32_t *n, uint32_t nvalue);
-                static bool try4_7bit (uint32_t *n, uint32_t nvalue);
-                static bool try3_9bit (uint32_t *n, uint32_t nvalue);
-                static bool try2_14bit (uint32_t *n, uint32_t nvalue);
+private:
+        /*
+         * These functions judging how many integers to
+         * include in a single 32-bit area.
+         */
+        static bool try28_1bit (uint32_t *n, uint32_t nvalue);
+        static bool try14_2bit (uint32_t *n, uint32_t nvalue);
+        static bool try9_3bit (uint32_t *n, uint32_t nvalue);
+        static bool try7_4bit (uint32_t *n, uint32_t nvalue);
+        static bool try5_5bit (uint32_t *n, uint32_t nvalue);
+        static bool try4_7bit (uint32_t *n, uint32_t nvalue);
+        static bool try3_9bit (uint32_t *n, uint32_t nvalue);
+        static bool try2_14bit (uint32_t *n, uint32_t nvalue);
 
-        public:
-                static void encodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t &nvalue);
-                static void decodeArray(uint32_t *in, uint32_t len,
-                                uint32_t *out, uint32_t nvalue);
+public:
+        static void encodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t &nvalue);
+        static void decodeArray(uint32_t *in, uint32_t len,
+                        uint32_t *out, uint32_t nvalue);
 };
 
 #endif /* SIMPLE9_HPP */

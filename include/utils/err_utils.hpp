@@ -90,19 +90,19 @@
 #endif /* DEBUG */
 
 class err_utils {
-        public:
-                /* Debugging functions */
-                static void sigsegv_handler(int sig);
-                static int validate_address(void *ptr, uint32_t range);
+public:
+        /* Debugging functions */
+        static void sigsegv_handler(int sig);
+        static int validate_address(void *ptr, uint32_t range);
 
-                /* Logging functions */
-                static void push_log(const char *func, int32_t line, const char *fmt, ...)
-                        __attribute__ ((format (printf, 3, 4))); 
-                static void flush_log(void);
+        /* Logging functions */
+        static void push_log(const char *func, int32_t line, const char *fmt, ...)
+                __attribute__ ((format (printf, 3, 4))); 
+        static void flush_log(void);
 
-                /* Error functions */
-                static void err_print(const char *func, int32_t line, const char *fmt, ...)
-                        __attribute__ ((format (printf, 3, 4))); 
+        /* Error functions */
+        static void err_print(const char *func, int32_t line, const char *fmt, ...)
+                __attribute__ ((format (printf, 3, 4))); 
 };
 
 #endif  /* ERR_UTILS_HPP */

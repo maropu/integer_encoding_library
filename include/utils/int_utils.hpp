@@ -27,16 +27,16 @@
 #define __array_size(x)         (sizeof(x) / sizeof(x[0]))
 
 class int_utils {
-        public:
-                static int get_msb(uint32_t v);
-                static uint32_t div_roundup(uint32_t v, uint32_t div);
-                static double get_time(void);
-                static uint64_t get_file_size(FILE *fp);
+public:
+        static int get_msb(uint32_t v);
+        static uint32_t div_roundup(uint32_t v, uint32_t div);
+        static double get_time(void);
+        static uint64_t get_file_size(FILE *fp);
 
-                /* Operations for files */
-                static uint32_t *open_and_mmap_file(
-                                char *filen, uint64_t &len);
-                static void close_file(uint32_t *adr, uint64_t len);
+        /* Operations for files */
+        static uint32_t *open_and_mmap_file(
+                        char *filen, uint64_t &len);
+        static void close_file(uint32_t *adr, uint64_t len);
 };
 
 #endif  /* INT_UTILS_HPP */
