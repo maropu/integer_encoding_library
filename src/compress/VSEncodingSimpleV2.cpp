@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingSimpleV2.cpp - A optimized implementation of VSEncoding.
+ *  VSEncodingSimpleV2.cpp - A optimized implementation of VSEncoding
  *      This code of VSEncoding removes the buffering technique of
  *      VSEncodingRest, and makes the bits of K 8-bits to save the
  *      padding areas of paritions with Dynamic Programming.
@@ -22,6 +22,8 @@
 
 #define VSESIMPLEV2_LENS_LEN    (1 << VSESIMPLEV2_LOGLEN)
 #define VSESIMPLEV2_LOGS_LEN    (1 << VSESIMPLEV2_LOGLOG)
+
+using namespace opc;
 
 /* A set of unpacking functions */
 static inline void __vsesimplev2_unpack0(uint32_t **out, uint32_t **in, uint32_t len)
@@ -102,109 +104,96 @@ static uint32_t __vsesimplev2_codeLogs[] = {
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-/* FIXME: Stupid codes here, so it needs to be replaced */
-#ifdef USE_BOOST_SHAREDPTR
- static VSEncodingPtr __vsesimplev2 =
-                VSEncodingPtr(new VSEncoding(&__vsesimplev2_possLens[0],
-                NULL, VSESIMPLEV2_LENS_LEN, true));
-#else
- static VSEncoding *__vsesimplev2 =
-                new VSEncoding(&__vsesimplev2_possLens[0],
+static VSEncoding __vsesimplev2(
+                &__vsesimplev2_possLens[0],
                 NULL, VSESIMPLEV2_LENS_LEN, true);
-#endif /* USE_BOOST_SHAREDPTR */
 
 void
 VSEncodingSimpleV2::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        j;
-        uint32_t        numBlocks;
-        uint32_t        pos1;
-        uint32_t        pos2;
         uint32_t        maxB;
-        uint32_t        *logs;
-        uint32_t        *part;
-        BitsWriter      *ds1_wt;
-        BitsWriter      *ds2_wt;
-        BitsWriter      *cd_wt;
+        uint32_t        numBlocks;
 
-        logs = new uint32_t[len];
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
 
+        uint32_t *logs = new uint32_t[len];
         if (logs == NULL)
-                eoutput("Can't allocate memory");
+                eoutput("Can't allocate memory: logs");
+
+        uint32_t *parts = new uint32_t[len  + 1];
+        if (parts == NULL)
+                eoutput("Can't allocate memory: parts");
 
         /* Compute logs of all numbers */
-        for (i = 0; i < len; i++)
-                logs[i] = __vsesimplev2_remapLogs[1 + int_utils::get_msb(in[i])];
+        for (uint32_t i = 0; i < len; i++)
+                logs[i] = __vsesimplev2_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        part = __vsesimplev2->compute_OptPartition(logs, len,
-                        VSESIMPLEV2_LOGLEN + VSESIMPLEV2_LOGLOG, numBlocks);
+        __vsesimplev2.compute_OptPartition(logs, len,
+                        VSESIMPLEV2_LOGLEN + VSESIMPLEV2_LOGLOG,
+                        parts, numBlocks);
 
     	/* Ready to write descripters for compressed integers */ 
-        ds1_wt = new BitsWriter(out);
-
-        if (ds1_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter ds1_wt(out);
 
      	/* Write the initial position of compressed integers */
-        pos1 = int_utils::div_roundup(numBlocks, 32 / VSESIMPLEV2_LOGLOG);
-        pos2 = int_utils::div_roundup(numBlocks, 32 / VSESIMPLEV2_LOGLEN);
+        uint32_t pos1 = __div_roundup(numBlocks, 32 / VSESIMPLEV2_LOGLOG);
+        uint32_t pos2 = __div_roundup(numBlocks, 32 / VSESIMPLEV2_LOGLEN);
 
-        ds1_wt->bit_writer(pos1, 32);
-        ds1_wt->bit_writer(pos1 + pos2, 32);
+        ds1_wt.bit_writer(pos1, 32);
+        ds1_wt.bit_writer(pos1 + pos2, 32);
 
     	/* Ready to write actual compressed integers */ 
-        ds2_wt = new BitsWriter(out + pos1 + 2);
-        cd_wt = new BitsWriter(out + pos1 + pos2 + 2);
-
-        if (ds2_wt == NULL || cd_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter ds2_wt(out + pos1 + 2);
+        BitsWriter cd_wt(out + pos1 + pos2 + 2);
 
         /* Write descripters & integers */
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 /* Compute max B in the block */
-                for (j = part[i], maxB = 0; j < part[i + 1]; j++) {
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
                 }
 
                 if (maxB) {
                         /* Write integers */
-                        for (j = part[i]; j < part[i + 1]; j++) 
-                                cd_wt->bit_writer(in[j], maxB);
+                        for (uint32_t j = parts[i]; j < parts[i + 1]; j++) 
+                                cd_wt.bit_writer(in[j], maxB);
 
                         /* Allign to 32-bit */
-                        cd_wt->bit_flush(); 
+                        cd_wt.bit_flush(); 
                 }
 
                 /* Writes the value of B and K */
-                ds1_wt->bit_writer(__vsesimplev2_codeLogs[maxB], VSESIMPLEV2_LOGLOG);
+                ds1_wt.bit_writer(__vsesimplev2_codeLogs[maxB], VSESIMPLEV2_LOGLOG);
 
                 /* Compute the code for the block length.
                  * A original code is below though, it's too slow due to many loops.
                  * So, it's replace with a stupid code temporarily.
                  *
                  * for (k = 0; k < VSESIMPLEV2_LENS_LEN; k++)
-                 *         if (part[i + 1] - part[i] == __vsesimplev2_possLens[k])
+                 *         if (parts[i + 1] - parts[i] == __vsesimplev2_possLens[k])
                  *                 break;
                  *
-                 * ds2_wt->bit_writer(k, VSESIMPLEV2_LOGLEN);
+                 * ds2_wt.bit_writer(k, VSESIMPLEV2_LOGLEN);
                  */
-                 ds2_wt->bit_writer(part[i + 1] - part[i] - 1, VSESIMPLEV2_LOGLEN);
+                 ds2_wt.bit_writer(parts[i + 1] - parts[i] - 1, VSESIMPLEV2_LOGLEN);
         }
 
         /* Allign to 32-bit */
-        ds1_wt->bit_flush(); 
-        ds2_wt->bit_flush(); 
+        ds1_wt.bit_flush(); 
+        ds2_wt.bit_flush(); 
 
-        nvalue = ds1_wt->written + ds2_wt->written + cd_wt->written;
+        nvalue = ds1_wt.get_written()
+                        + ds2_wt.get_written()
+                        + cd_wt.get_written();
 
         delete[] logs;
-        delete ds1_wt;
-        delete ds2_wt;
-        delete cd_wt;
+        delete[] parts;
 }
 
 void
@@ -213,15 +202,11 @@ VSEncodingSimpleV2::decodeArray(uint32_t *in, uint32_t len,
 {
         uint32_t        B;
         uint32_t        K;
-        uint32_t        *bin;
-        uint32_t        *kin;
-        uint32_t        *data;
-        uint32_t        *end;
 
-        bin = in + 2;
-        kin = in + *in + 2;
-        data = in + *(in + 1) + 2;
-        end = out + nvalue;
+        uint32_t *bin = in + 2;
+        uint32_t *kin = in + *in + 2;
+        uint32_t *data = in + *(in + 1) + 2;
+        uint32_t *end = out + nvalue;
         
         while (1) {
                 /* Unpacking integers with a first 4/8-bit */
@@ -285,12 +270,10 @@ VSEncodingSimpleV2::decodeArray(uint32_t *in, uint32_t len,
 void
 __vsesimplev2_unpack0(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 4); i++, pout += 4) {
+        for (uint32_t i = 0; i < __div_roundup(len, 4);
+                        i++, pout += 4) {
                 __asm__ __volatile__(
                         "pxor   %%xmm0, %%xmm0\n\t"
                         "movdqu %%xmm0, %0\n\t"
@@ -304,12 +287,10 @@ __vsesimplev2_unpack0(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack1(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, *in += 1) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, *in += 1) {
                 pout[0] = *in[0] >> 31;
                 pout[1] = (*in[0] >> 30) & 0x01;
                 pout[2] = (*in[0] >> 29) & 0x01;
@@ -350,12 +331,10 @@ __vsesimplev2_unpack1(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack2(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 16); i++, pout += 16, *in += 1) {
+        for (uint32_t i = 0; i < __div_roundup(len, 16);
+                        i++, pout += 16, *in += 1) {
                 pout[0] = *in[0] >> 30;
                 pout[1] = (*in[0] >> 28) & 0x03;
                 pout[2] = (*in[0] >> 26) & 0x03;
@@ -380,14 +359,11 @@ __vsesimplev2_unpack2(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack3(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, pin += 3) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, pin += 3) {
                 pout[0] = pin[0] >> 29;
                 pout[1] = (pin[0] >> 26) & 0x07;
                 pout[2] = (pin[0] >> 23) & 0x07;
@@ -424,19 +400,17 @@ __vsesimplev2_unpack3(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[31] = pin[2] & 0x07;
         }
 
-        *in += int_utils::div_roundup(3 * len, 32);
+        *in += __div_roundup(3 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack4(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 8); i++, pout += 8, *in += 1) {
+        for (uint32_t i = 0; i < __div_roundup(len, 8);
+                        i++, pout += 8, *in += 1) {
                 pout[0] = *in[0] >> 28;
                 pout[1] = (*in[0] >> 24) & 0x0f;
                 pout[2] = (*in[0] >> 20) & 0x0f;
@@ -453,14 +427,11 @@ __vsesimplev2_unpack4(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack5(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, pin += 5) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, pin += 5) {
                 pout[0] = pin[0] >> 27;
                 pout[1] = (pin[0] >> 22) & 0x1f;
                 pout[2] = (pin[0] >> 17) & 0x1f;
@@ -499,21 +470,18 @@ __vsesimplev2_unpack5(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[31] = pin[4] & 0x1f;
         }
 
-        *in += int_utils::div_roundup(5 * len, 32);
+        *in += __div_roundup(5 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack6(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 16); i++, pout += 16, pin += 3) {
+        for (uint32_t i = 0; i < __div_roundup(len, 16);
+                        i++, pout += 16, pin += 3) {
                 pout[0] = pin[0] >> 26;
                 pout[1] = (pin[0] >> 20) & 0x3f;
                 pout[2] = (pin[0] >> 14) & 0x3f;
@@ -534,21 +502,18 @@ __vsesimplev2_unpack6(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[15] = pin[2] & 0x3f;
         }
 
-        *in += int_utils::div_roundup(6 * len, 32);
+        *in += __div_roundup(6 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack7(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, pin += 7) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, pin += 7) {
                 pout[0] = pin[0] >> 25;
                 pout[1] = (pin[0] >> 18) & 0x7f;
                 pout[2] = (pin[0] >> 11) & 0x7f;
@@ -589,19 +554,17 @@ __vsesimplev2_unpack7(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[31] = pin[6] & 0x7f;
         }
 
-        *in += int_utils::div_roundup(7 * len, 32);
+        *in += __div_roundup(7 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack8(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 4); i++, pout += 4, *in += 1) {
+        for (uint32_t i = 0; i < __div_roundup(len, 4);
+                        i++, pout += 4, *in += 1) {
                 pout[0] = *in[0] >> 24;
                 pout[1] = (*in[0] >> 16) & 0xff;
                 pout[2] = (*in[0] >> 8) & 0xff;
@@ -614,14 +577,11 @@ __vsesimplev2_unpack8(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack9(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, pin += 9) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, pin += 9) {
                 pout[0] = pin[0] >> 23;
                 pout[1] = (pin[0] >> 14) & 0x01ff;
                 pout[2] = (pin[0] >> 5) & 0x01ff;
@@ -664,21 +624,18 @@ __vsesimplev2_unpack9(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[31] = pin[8] & 0x01ff;
         }
 
-        *in += int_utils::div_roundup(9 * len, 32);
+        *in += __div_roundup(9 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack10(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 16); i++, pout += 16, pin += 5) {
+        for (uint32_t i = 0; i < __div_roundup(len, 16);
+                        i++, pout += 16, pin += 5) {
                 pout[0] = pin[0] >> 22;
                 pout[1] = (pin[0] >> 12) & 0x03ff;
                 pout[2] = (pin[0] >> 2) & 0x03ff;
@@ -701,21 +658,18 @@ __vsesimplev2_unpack10(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[15] = pin[4] & 0x03ff;
         }
 
-        *in += int_utils::div_roundup(10 * len, 32);
+        *in += __div_roundup(10 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack11(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 32); i++, pout += 32, pin += 11) {
+        for (uint32_t i = 0; i < __div_roundup(len, 32);
+                        i++, pout += 32, pin += 11) {
                 pout[0] = pin[0] >> 21;
                 pout[1] = (pin[0] >> 10) & 0x07ff;
                 pout[2] = (pin[0] << 1) & 0x07ff;
@@ -760,21 +714,18 @@ __vsesimplev2_unpack11(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[31] = pin[10] & 0x07ff;
         }
 
-        *in += int_utils::div_roundup(11 * len, 32);
+        *in += __div_roundup(11 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack12(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 8); i++, pout += 8, pin += 3) {
+        for (uint32_t i = 0; i < __div_roundup(len, 8);
+                        i++, pout += 8, pin += 3) {
                 pout[0] = pin[0] >> 20;
                 pout[1] = (pin[0] >> 8) & 0x0fff;
                 pout[2] = (pin[0] << 4) & 0x0fff;
@@ -787,19 +738,17 @@ __vsesimplev2_unpack12(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[7] = pin[2] & 0x0fff;
         }
 
-        *in += int_utils::div_roundup(12 * len, 32);
+        *in += __div_roundup(12 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack16(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pout;
+        uint32_t *pout = *out;
 
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 2); i++, pout += 2, *in += 1) {
+        for (uint32_t i = 0; i < __div_roundup(len, 2);
+                        i++, pout += 2, *in += 1) {
                 pout[0] = *in[0] >> 16;
                 pout[1] = *in[0] & 0xffff;
         }
@@ -810,14 +759,11 @@ __vsesimplev2_unpack16(uint32_t **out, uint32_t **in, uint32_t len)
 void
 __vsesimplev2_unpack20(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 8); i++, pout += 8, pin += 5) {
+        for (uint32_t i = 0; i < __div_roundup(len, 8);
+                        i++, pout += 8, pin += 5) {
                 pout[0] = pin[0] >> 12;
                 pout[1] = (pin[0] << 8) & 0x0fffff;
                 pout[1] |= (pin[1] >> 24);
@@ -832,21 +778,18 @@ __vsesimplev2_unpack20(uint32_t **out, uint32_t **in, uint32_t len)
                 pout[7] = pin[4] & 0x0fffff;
         }
 
-        *in += int_utils::div_roundup(20 * len, 32);
+        *in += __div_roundup(20 * len, 32);
         *out += len;
 }
 
 void
 __vsesimplev2_unpack32(uint32_t **out, uint32_t **in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        *pin;
-        uint32_t        *pout;
+        uint32_t *pin = *in;
+        uint32_t *pout = *out;
 
-        pin = *in;
-        pout = *out;
-
-        for (i = 0; i < int_utils::div_roundup(len, 4); i++, pout += 4, pin += 4) {
+        for (uint32_t i = 0; i < __div_roundup(len, 4);
+                        i++, pout += 4, pin += 4) {
                __asm__ __volatile__(
                         "movdqu %1, %%xmm0\n\t"
                         "movdqu %%xmm0, %0\n\t"

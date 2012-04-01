@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decUnary.hpp - A transformation table for Unary codes.
+ *  decUnary.hpp - A transformation table for Unary codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef DECUNARY_HPP
-#define DECUNARY_HPP
+#ifndef __DECUNARY_HPP__
+#define __DECUNARY_HPP__
 
+#include <stdint.h>
+
+namespace opc {
 extern unsigned short int decUnary[1 << 16];
+}; /* namespace: opc */
 
-#endif /* DECUNARY_HPP */
+#endif /* __DECUNARY_HPP__ */

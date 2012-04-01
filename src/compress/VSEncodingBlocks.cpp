@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingBlocks.cpp - A naive implementation of VSEncoding.
+ *  VSEncodingBlocks.cpp - A naive implementation of VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -20,6 +20,8 @@
 
 #define VSEBLOCKS_LENS_LEN      (1 << VSEBLOCKS_LOGLEN)
 #define VSEBLOCKS_LOGS_LEN      (1 << VSEBLOCKS_LOGLOG)
+
+using namespace opc;
 
 #define __vseblocks_copy16(src, dest)   \
         __asm__ __volatile__(           \
@@ -125,137 +127,141 @@ static uint32_t __vseblocks_possLogs[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 20, 32
 };
 
-/* FIXME: Stupid codes here, so it needs to be replaced */
-#ifdef USE_BOOST_SHAREDPTR
- static VSEncodingPtr __vseblocks =
-                VSEncodingPtr(new VSEncoding(&__vseblocks_possLens[0],
-                &__vseblocks_posszLens[0], VSEBLOCKS_LENS_LEN, false));
-#else
- static VSEncoding *__vseblocks =
-                new VSEncoding(&__vseblocks_possLens[0],
-                &__vseblocks_posszLens[0], VSEBLOCKS_LENS_LEN, false);
-#endif /* USE_BOOST_SHAREDPTR */
-
-static uint32_t *__tmp = new uint32_t[VSENCODING_BLOCKSZ * 2 + TAIL_MERGIN];
+static VSEncoding __vseblocks(
+                 &__vseblocks_possLens[0],
+                 &__vseblocks_posszLens[0],
+                 VSEBLOCKS_LENS_LEN, false);
 
 void
 VSEncodingBlocks::encodeVS(uint32_t len,
                 uint32_t *in, uint32_t &size, uint32_t *out)
 {
-        uint32_t        i;
-        uint32_t        j;
-        uint32_t        *logs;
-        uint32_t        numBlocks;
         uint32_t        maxB;
-        uint32_t        ntotal;
-        uint32_t        *part;
-        uint32_t        *blocks[VSEBLOCKS_LOGS_LEN];
-        uint32_t        blockCur[VSEBLOCKS_LOGS_LEN];
-        uint32_t        countBlocksLogs[VSEBLOCKS_LOGS_LEN];
-        BitsWriter      *wt;
+        uint32_t        numBlocks;
 
-        logs = new uint32_t[len];
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
 
+        uint32_t *logs = new uint32_t[len];
         if (logs == NULL)
-                eoutput("Can't allocate memory");
+                eoutput("Can't allocate memory: logs");
+
+        uint32_t *parts = new uint32_t[len + 1];
+        if (parts == NULL)
+                eoutput("Can't allocate memory: parts");
 
         /* Compute logs of all numbers */
-        for (i = 0; i < len; i++)
-                logs[i] = __vseblocks_remapLogs[1 + int_utils::get_msb(in[i])];
+        for (uint32_t i = 0; i < len; i++)
+                logs[i] = __vseblocks_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        part = __vseblocks->compute_OptPartition(logs, len,
-                        VSEBLOCKS_LOGLEN + VSEBLOCKS_LOGLOG, numBlocks);
-
-    	/* Ready to write */ 
-        wt = new BitsWriter(out);
-
-        if (wt == NULL)
-                eoutput("Can't initialize a class");
+        __vseblocks.compute_OptPartition(logs, len,
+                        VSEBLOCKS_LOGLEN + VSEBLOCKS_LOGLOG,
+                        parts, numBlocks);
 
         /* countBlocksLogs[i] says how many blocks uses i bits */
-        for (i = 0; i < VSEBLOCKS_LOGS_LEN; i++) {
+        uint32_t        blockCur[VSEBLOCKS_LOGS_LEN];
+        uint32_t        countBlocksLogs[VSEBLOCKS_LOGS_LEN];
+
+        for (uint32_t i = 0; i < VSEBLOCKS_LOGS_LEN; i++) {
                 countBlocksLogs[i] = 0;
                 blockCur[i] = 0;
         }
 
     	/* Count number of occs of each log */
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
        		/* Compute max B in the block */
-                for (maxB = 0, j = part[i]; j < part[i + 1]; j++)
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
+                }
 
-                countBlocksLogs[__vseblocks_codeLogs[maxB]] += part[i + 1] - part[i];
+                countBlocksLogs[__vseblocks_codeLogs[maxB]] += parts[i + 1] - parts[i];
         }
 
-        for (ntotal = 0, i = 1; i < VSEBLOCKS_LOGS_LEN; i++)
+        uint32_t ntotal = 0;
+
+        for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
                 if (countBlocksLogs[i] > 0)
                         ntotal++;
+        }
 
      	/* Write occs. zero is assumed to be present */
-        wt->bit_writer(ntotal, 32);
+        BitsWriter wt(out);
+        wt.bit_writer(ntotal, 32);
 
-        /* For each logs write it and the number of its occurrences */
-        for (i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
+        for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
                 if (countBlocksLogs[i] > 0) {
-                        wt->bit_writer(countBlocksLogs[i], 28);
-                        wt->bit_writer(i, 4);
+                        wt.bit_writer(countBlocksLogs[i], 28);
+                        wt.bit_writer(i, 4);
                 }
         }
 
         /* Prepare arrays to store groups of elements */
-        for (blocks[0] = 0, i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
+        uint32_t        *blocks[VSEBLOCKS_LOGS_LEN];
+
+        blocks[0] = 0;
+
+        for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
                 if (countBlocksLogs[i] > 0) {
                         blocks[i] = new uint32_t[countBlocksLogs[i]];
 
                         if (blocks[i] == NULL)
-                                eoutput("Can't allocate memory");
+                                eoutput("Can't allocate memory: blocks[]");
                 } else {
                         blocks[i] = NULL;
                 }
         }
 
     	/* Permute the elements based on their values of B */
-        for (i = 0; i < numBlocks; i++) {
-                for (maxB = 0, j = part[i]; j < part[i + 1]; j++)
+        for (uint32_t i = 0; i < numBlocks; i++) {
+       		/* Compute max B in the block */
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
+                }
 
                 if (!maxB)
                         continue;
 
-                for (j = part[i]; j < part[i + 1]; j++) {
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         /* Save current element in its bucket */
-                        blocks[__vseblocks_codeLogs[maxB]][blockCur[__vseblocks_codeLogs[maxB]]] = in[j];
+                        blocks[__vseblocks_codeLogs[maxB]][
+                                blockCur[__vseblocks_codeLogs[maxB]]] = in[j];
                         blockCur[__vseblocks_codeLogs[maxB]]++;
                 }
         }
 
         /* Write each bucket ... keeping byte alligment */ 
-        for (i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
-                for (j = 0; j < countBlocksLogs[i]; j++)
-                        wt->bit_writer(blocks[i][j], __vseblocks_possLogs[i]);
+        for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
+                for (uint32_t j = 0; j < countBlocksLogs[i]; j++)
+                        wt.bit_writer(blocks[i][j], __vseblocks_possLogs[i]);
 
                 /* Align to next word */
                 if (countBlocksLogs[i] > 0)
-                        wt->bit_flush();
+                        wt.bit_flush();
         }
 
-        wt->bit_flush();
-
     	/* write block codes... a byte each */
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 /* Compute max B in the block */
-                for (j = part[i], maxB = 0; j < part[i + 1]; j++) {
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
                 }
 
+                uint32_t idx = 0;
+
                 if (maxB) {
        			/* Compute the code for the block length */
-                        for (j = 0; j < VSEBLOCKS_LENS_LEN; j++) {
-                                if (part[i + 1] - part[i] == __vseblocks_possLens[j])
+                        for (; idx < VSEBLOCKS_LENS_LEN; idx++) {
+                                if (parts[i + 1] - parts[i] == __vseblocks_possLens[idx])
                                         break;
                         }
                 } else {
@@ -263,52 +269,46 @@ VSEncodingBlocks::encodeVS(uint32_t len,
                          * Treat runs of 0 in a different way.
                          * Compute the code for the block length.
                          */
-                        for (j = 0; j < VSEBLOCKS_LENS_LEN; j++) {
-                                if (part[i + 1] - part[i] == __vseblocks_posszLens[j])
+                        for (; idx < VSEBLOCKS_LENS_LEN; idx++) {
+                                if (parts[i + 1] - parts[i] == __vseblocks_posszLens[idx])
                                         break;
                         }
                 }
 
                 /* Writes the value of B and K */
-                wt->bit_writer(__vseblocks_codeLogs[maxB], VSEBLOCKS_LOGLOG);
-                wt->bit_writer(j, VSEBLOCKS_LOGLEN);
+                wt.bit_writer(__vseblocks_codeLogs[maxB], VSEBLOCKS_LOGLOG);
+                wt.bit_writer(idx, VSEBLOCKS_LOGLEN);
         }
 
         /* Align to 32-bit */
-        wt->bit_flush(); 
+        wt.bit_flush(); 
+
+        size = wt.get_written();
 
         /* Finalization */
-        for (i = 0; i < VSEBLOCKS_LOGS_LEN; i++)
+        for (uint32_t i = 0; i < VSEBLOCKS_LOGS_LEN; i++)
                 delete[] blocks[i]; 
 
-        delete[] part;
+        delete[] parts;
         delete[] logs;
-
-        size = wt->written;
-
-        delete wt;
 }
 
 void
 VSEncodingBlocks::decodeVS(uint32_t len,
                 uint32_t *in, uint32_t *out, uint32_t *aux)
 {
-        int             ntotal;
-        uint32_t        nblk;
-        uint32_t        *addr;
-        uint32_t        *pblk[VSEBLOCKS_LOGS_LEN];
         uint32_t        B;
         uint32_t        K;
-        uint32_t        *end;
+        uint32_t        *pblk[VSEBLOCKS_LOGS_LEN];
 
         __validate(in, len);
 
-        ntotal = *in++;
-        addr = in + ntotal;
+        int ntotal = *in++;
+        uint32_t *addr = in + ntotal;
 
         while (ntotal-- > 0) {
                 B = (*in) & (VSEBLOCKS_LOGS_LEN - 1);
-                nblk = *(in++) >> VSEBLOCKS_LOGLEN;
+                uint32_t nblk = *(in++) >> VSEBLOCKS_LOGLEN;
 
                 /* Do unpacking */
                 (__vseblocks_unpack[B])(aux, addr, nblk);
@@ -322,7 +322,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
          * FIXME: We assume that a 32-bit block is processed in a loop here.
          * I might think some amount of 32-bit blocks are processed simutaneously.
          */
-        end = out + len;
+        uint32_t *end = out + len;
 
         do {
                 /* Permuting integers with a first 8-bit */
@@ -398,9 +398,8 @@ VSEncodingBlocks::encodeArray(uint32_t *in,
                         res > VSENCODING_BLOCKSZ;
                         res -= VSENCODING_BLOCKSZ, lin += VSENCODING_BLOCKSZ,
                         lout += csize, nvalue += csize + 1) {
-                encodeVS(VSENCODING_BLOCKSZ, lin, csize, __tmp);
-                *lout++ = csize;
-                memcpy(lout, __tmp, csize * sizeof(uint32_t));
+                encodeVS(VSENCODING_BLOCKSZ, lin, csize, ++lout);
+                *(lout - 1) = csize;
         }
 
         encodeVS(res, lin, csize, lout);
@@ -421,10 +420,10 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
                         out += VSENCODING_BLOCKSZ, in += sum,
                         res -= VSENCODING_BLOCKSZ) {
                 sum = *in++;
-                decodeVS(VSENCODING_BLOCKSZ, in, out, __tmp);
+                decodeVS(VSENCODING_BLOCKSZ, in, out, __vsencoding_aux);
         }
 
-        decodeVS(res, in, out, __tmp);
+        decodeVS(res, in, out, __vsencoding_aux);
 }
 
 /* --- Intra functions below --- */

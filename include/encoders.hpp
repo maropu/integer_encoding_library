@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  encoders.hpp - A header for a variety of encoders.
+ *  encoders.hpp - A header for a variety of encoders
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,10 +12,8 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef ENCODERS_HPP
-#define ENCODERS_HPP
-
-#include "open_coders.hpp"
+#ifndef __ENCODERS_HPP__
+#define __ENCODERS_HPP__
 
 /* Header files for a variety of compressions */
 #include "compress/Gamma.hpp"
@@ -51,6 +49,8 @@
 #define E_VSESIMPLEV1   12
 #define E_VSESIMPLEV2   13
 
+using namespace opc;
+
 typedef void (*pt2Enc)(uint32_t *, uint32_t, uint32_t *, uint32_t &);
 
 pt2Enc encoders[NUMENCODERS] = {
@@ -70,22 +70,5 @@ pt2Enc encoders[NUMENCODERS] = {
         VSEncodingSimpleV2::encodeArray
 };	
 
-/* Extensions for these coresspinding indices */
-const char *enc_ext[] = {
-        ".Gamma",
-        ".Delta",
-        ".VariableByte",
-        ".Interpolative",
-        ".Simple9",
-        ".Simple16",
-        ".P4D",
-        ".OPT4D",
-        ".VSE",
-        ".VSERT",
-        ".VSERest",
-        ".VSEH",
-        ".VSESimpleV1",
-        ".VSESimpleV2"
-};
+#endif /* __ENCODERS_HPP__  */
 
-#endif /* ENCODERS_HPP */

@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
- *  open_coders.hpp - A header for global variables, or something.
+ *  open_coders.hpp - A header for global variables, or something
  *
- *  Coding-Style:
+ *  Coding-Style
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
  *      vi) tabstop: 8, expandtab
  *
@@ -12,158 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef INTEGER_CODERS_HPP
-#define INTEGER_CODERS_HPP
+#ifndef __INTEGER_CODERS_HPP__
+#define __INTEGER_CODERS_HPP__
 
 #define __STDC_LIMIT_MACROS
 
-#include <cstdio>
-#include <string>
-#include <cstring>
-#include <iomanip>
 #include <stdint.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <limits.h>
-#include <math.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 
-#include <boost/shared_ptr.hpp>
-#define USE_BOOST_SHAREDPTR
-
-#include "utils/err_utils.hpp"
-#include "utils/int_utils.hpp"
-
-/* Configure parameters */
-#define MAXLEN          200000000
-#define SKIP            32
-
-/* Magic numbers */
-#define MAGIC_NUM       0x0f823cb4
-#define VMAJOR          0
-#define VMINOR          2
-
-/* A extension for a location file */
-#define TOCEXT          ".TOC"
-#define DECEXT          ".DEC"
-#define NFILENAME       256
-#define NEXTNAME        32
-
-/*
- * FIXME: Some encoders might overrun the length of given
- * memory. This makes a code simple but unobvious, so we
- * need to remove it.
- */
-#define TAIL_MERGIN     128
-
-/* A macro for header accesses */
-#define HEADERSZ        9
-
-#define __do_read32(addr, len)  addr[len];
-#define __do_read64(addr, len)  \
-        ({      \
-                uint64_t        ret;    \
-\
-                ret = addr[len + 1];    \
-                ret = (ret << 32) | addr[len];  \
-\
-                ret;    \
-         })
-
-#define __header_validate(addr, len)    \
-        do {                            \
-                uint32_t        magic;  \
-                uint32_t        vmajor; \
-                uint32_t        vminor; \
-\
-                magic = __do_read32(addr, 0);   \
-                vmajor = __do_read32(addr, 1);  \
-                vminor = __do_read32(addr, 2);  \
-\
-                if (magic != MAGIC_NUM ||               \
-                        vmajor != VMAJOR || vminor != VMINOR)   \
-                        eoutput("Not support input format");    \
-\
-                len += HEADERSZ;        \
-        } while (0);
-
-#define RESUME_INFO_BASE        3
-#define GET_RESUME_NUM(addr)    __do_read32(addr, RESUME_INFO_BASE)
-#define GET_RESUME_POS(addr)    __do_read32(addr, RESUME_INFO_BASE + 1)
-#define GET_RESUME_LEN(addr)    __do_read64(addr, RESUME_INFO_BASE + 2)
-#define GET_RESUME_LENMAX(addr) __do_read64(addr, RESUME_INFO_BASE + 4)
-
-/*
- * FIXME: Need to support for more than 4GiB files
- * on 32-bit platforms.
- */
-#define SET_RESUME_INFO(num, pos, len, lenmax, fp)      \
-        ({                              \
-                fpos_t  old;            \
-\
-                fgetpos(fp, &old);      \
-\
-                fseek(fp, RESUME_INFO_BASE *                    \
-                        sizeof(uint32_t), SEEK_SET);            \
-                fwrite(&num, sizeof(uint32_t), 1, fp);          \
-                fwrite(&pos, sizeof(uint32_t), 1, fp);          \
-                fwrite(&len, sizeof(uint64_t), 1, fp);          \
-                fwrite(&lenmax, sizeof(uint64_t), 1, fp);       \
-\
-                fsetpos(fp, &old);      \
-         })
-
-/*
- * Macros for reading files. A header for each compressed list
- * is composed of three etnries: the total of integers, a first
- * integer, and the next posision of a list.
- *
- * NOTICE: We assume that the size of each entry is 4B, and 
- * the alignment follows little-endian.
- */
-#define EACH_HEADER_TOC_SZ      4
-
-#define __next_read32(addr, len)        \
-        ({      \
-                uint32_t        ret;    \
-\
-                ret = __do_read32(addr, len);   \
-                len += 1;       \
-                ret;            \
-         })
-
-#define __next_read64(addr, len)        \
-        ({      \
-                uint64_t        ret;    \
-\
-                ret = __do_read64(addr, len);   \
-                len += 2;       \
-                ret;            \
-         })
-
-#define __next_pos64(addr, len)         \
-        ({      \
-                uint64_t        nxlen;  \
-\
-                nxlen = len + EACH_HEADER_TOC_SZ - 2;   \
-                __do_read64(addr, nxlen);               \
-         })
-
-#if HAVE_DECL_POSIX_FADVISE && defined(HAVE_POSIX_FADVISE)
- #define __fadvise_sequential(fd, len)   \
-        posix_fadvise(fd, 0, len, POSIX_FADV_SEQUENTIAL)
-#else
- #define __fadvise_sequential(fd, len)
-#endif
+#include "encoders.hpp"
+#include "decoders.hpp"
 
 /* Support for over 4GiB files on 32-bit platform */
 //#define MAP_HUGETLB             1
@@ -173,22 +30,4 @@
  #define FILE_OFFSET_BITS       64
 #endif
 
-/* For debugs */
-#if defined(DEBUG) && defined(__linux__)
- #define MALLOC_CHECK   2
-#endif
-
-/* Keywords for compiler optimization */
-#define __compiler_opt__
-
-#ifdef __compiler_opt__
- #define __no_aliases__         __restrict__
- #define __likely(x)            __builtin_expect(!!(x), 1)
- #define __unlikely(x)          __builtin_expect(!!(x), 0)
-#else
- #define __no_aliases__
- #define __likely(x)            (x) 
- #define __unlikely(x)          (x) 
-#endif /* __compiler_opt__ */
-
-#endif /* INTEGER_CODERS_HPP */
+#endif /* __INTEGER_CODERS_HPP__ */

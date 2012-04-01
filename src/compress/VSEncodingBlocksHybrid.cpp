@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingBlocksHybrid.cpp - A hybrid implementation of VSEncoding.
+ *  VSEncodingBlocksHybrid.cpp - A hybrid implementation of VSEncoding
  *      VSEncodingBlocksHybrid uses VSEncodingRest for lists of length up to
  *      VSEHYBRID_THRES and VSEncodingBlocks for longer lists.
  *
@@ -16,11 +16,7 @@
 
 #include "compress/VSEncodingBlocksHybrid.hpp"
 
-#define VSEHYBRID_THRES         4096
-
-/* FIXME: Whe de-allocated? */
-static uint32_t *__tmp =
-                new uint32_t[VSENCODING_BLOCKSZ * 2 + TAIL_MERGIN];
+using namespace opc;
 
 void
 VSEncodingBlocksHybrid::encodeArray(uint32_t *in, uint32_t len,
@@ -31,13 +27,15 @@ VSEncodingBlocksHybrid::encodeArray(uint32_t *in, uint32_t len,
         uint32_t        *lout;
         uint32_t        csize;
 
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
+
         for (nvalue = 0, res = len, lin = in, lout = out; 
                         res > VSENCODING_BLOCKSZ;
                         res -= VSENCODING_BLOCKSZ, lin += VSENCODING_BLOCKSZ,
                         lout += csize, nvalue += csize + 1) {
-                VSEncodingBlocks::encodeVS(VSENCODING_BLOCKSZ, lin, csize, __tmp);
-                *lout++ = csize;
-                memcpy(lout, __tmp, csize * sizeof(uint32_t));
+                VSEncodingBlocks::encodeVS(VSENCODING_BLOCKSZ, lin, csize, ++lout);
+                *(lout - 1) = csize;
         }
 
         if (res <= VSEHYBRID_THRES)
@@ -59,12 +57,14 @@ VSEncodingBlocksHybrid::decodeArray(uint32_t *in, uint32_t len,
                         out += VSENCODING_BLOCKSZ, in += sum,
                         len -= sum, res -= VSENCODING_BLOCKSZ) {
                 sum = *in++;
-                VSEncodingBlocks::decodeVS(VSENCODING_BLOCKSZ, in, out, __tmp);
+                VSEncodingBlocks::decodeVS(
+                                VSENCODING_BLOCKSZ,
+                                in, out, __vsencoding_aux);
         }
 
         if (res <= VSEHYBRID_THRES)
                 VSEncodingRest::decodeArray(in, len, out, res);
         else
-                VSEncodingBlocks::decodeVS(res, in, out, __tmp);
+                VSEncodingBlocks::decodeVS(res, in, out, __vsencoding_aux);
 }
 

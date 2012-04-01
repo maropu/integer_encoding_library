@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VariableByte.cpp - A implementation of VariableByte.
+ *  VariableByte.cpp - A implementation of VariableByte
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -19,6 +19,8 @@
 
 #define VARIABLEBYTE_EXT7BITS(value, num)         (value >> (7 * num)) & 0x7f
 
+using namespace opc;
+
 void
 VariableByte::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
@@ -32,7 +34,7 @@ VariableByte::encodeArray(uint32_t *in, uint32_t len,
         uint32_t t;
 
         for (i = 0; i < len; i++) {
-                nwords = int_utils::get_msb(in[i]) / 7;
+                nwords = __get_msb(in[i]) / 7;
 
                 switch(nwords) {
                 case 0:
@@ -88,7 +90,7 @@ VariableByte::encodeArray(uint32_t *in, uint32_t len,
         }
 
         wt->bit_flush();
-        nvalue = wt->written;
+        nvalue = wt->get_written();
 
         delete wt;
 }

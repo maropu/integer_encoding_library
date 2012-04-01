@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  encoders.cpp - Encoders implementing many types of copression algorithms.
+ *  encoders.cpp - Encoders implementing many types of copression algorithms
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "encoders.hpp"
+#include "open_coders.hpp"
+
+#include "xxx_common.hpp"
+#include "misc/benchmarks.hpp"
 
 using namespace std;
+using namespace opc;
 
 #define __header_written(out)   \
         do {                    \
@@ -58,14 +62,12 @@ static int      __init_progress;
                 double  left;   \
 \
                 if (!__init_progress++)         \
-                        __progress_start_time = \
-                                int_utils::get_time();          \
+                        __progress_start_time = __get_time();   \
 \
                 if (c != 0 && it % (n / PROG_PER_COUNT) == 0) { \
                         pg = (double)c / n;                     \
                         left = ((1.0 - pg) / pg) *              \
-                                (int_utils::get_time() -        \
-                                 __progress_start_time);        \
+                                (__get_time() - __progress_start_time); \
 \
                         fprintf(stderr,                         \
                                 "%s: %.3lf done, %.1lfs left    \
@@ -78,7 +80,6 @@ static int      __init_progress;
 #define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
         ({      \
                 if (it % CHECKPOINT_INTVL == 0) {       \
-                        __value(it);\
                         SET_RESUME_INFO(it, cmp_pos, len, lenmax, toc); \
                         fsync(fileno(cmp));     \
                         fsync(fileno(toc));     \
@@ -90,47 +91,31 @@ static void __usage(const char *msg, ...);
 int 
 main(int argc, char **argv)
 {
-        int             encID;
-        int             show_progress;
-        uint32_t        *list;
-        uint32_t        *cmp_array;
-        uint32_t        *addr;
-        uint64_t        fsz;
-        uint64_t        lenmax;
-        char            ifile[NFILENAME];
-        char            ofile[NFILENAME + NEXTNAME];
-        char            *end;
-        FILE            *cmp;
-        FILE            *toc;
-        /* For a resume path */
-        int             try_resume;
-        uint32_t        it;
-        uint64_t        cmp_pos;
-        uint64_t        len;
-
         if (argc < 3)
                 __usage(NULL);
 
-        list = new uint32_t[MAXLEN + TAIL_MERGIN];
-        cmp_array = new uint32_t[MAXLEN + TAIL_MERGIN];
+        uint32_t *list = new uint32_t[MAXLEN];
+        if (list == NULL)
+                eoutput("Can't allocate memory: list");
 
-        if (list == NULL || cmp_array == NULL)
-                eoutput("Can't allocate memory");
+        uint32_t *cmp_array = new uint32_t[MAXLEN];
+        if (cmp_array == NULL)
+                eoutput("Can't allocate memory: cmp_array");
 
         /* Process input options */
-        int     res;
+        int     ret;
 
-        show_progress = 0;
-        try_resume = 0;
+        bool show_progress = false;
+        bool try_resume = false;
 
-        while ((res = getopt(argc, argv, "rp")) != -1) {
-                switch (res) {
+        while ((ret = getopt(argc, argv, "rp")) != -1) {
+                switch (ret) {
                 case 'r':
-                        try_resume = 1;
+                        try_resume = true;
                         break;
 
                 case 'p':
-                        show_progress = 1;
+                        show_progress = true;
                         break;
 
                 case '?':
@@ -140,35 +125,46 @@ main(int argc, char **argv)
         }
 
         /* Read EncoderID */
-        encID = strtol(argv[optind++], &end, 10);
+        char            *end;
+
+        int encID = strtol(argv[optind++], &end, 10);
         if ((*end != '\0') || (encID < 0) ||
                         (encID >= NUMENCODERS) ||(errno == ERANGE))
                 __usage("EncoderID '%s' invalid", argv[1]);
 
-        /* Read file name */
+        /* Open a output file and tune buffer mode */
+        char            ifile[NFILENAME];
+        char            ofile[NFILENAME + NEXTNAME];
+
         strncpy(ifile, argv[optind++], NFILENAME);
         ifile[NFILENAME - 1] = '\0';
 
-        /* Open a output file and tune buffer mode */
         strncpy(ofile, ifile, NFILENAME);
         strcat(ofile, enc_ext[encID]);
-        cmp = fopen(ofile, (try_resume == 0)? "w" : "r+");
+
+        FILE *cmp = fopen(ofile, (try_resume == 0)? "w" : "r+");
+        if (cmp == NULL)
+                eoutput("foepn(): Can't open output files");
 
         strcat(ofile, TOCEXT);
-        toc = fopen(ofile, (try_resume == 0)? "w" : "r+");
+        FILE *toc = fopen(ofile, (try_resume == 0)? "w" : "r+");
 
-        if (cmp == NULL || toc == NULL)
+        if (toc == NULL)
                 eoutput("foepn(): Can't open output files");
 
         setvbuf(cmp, NULL, _IOFBF, BUFSIZ);
         setvbuf(toc, NULL, _IOFBF, BUFSIZ);
 
-        /* Resume */
+        /* Try to resume path first */
+        uint32_t it = 0;
+        uint64_t len = 0;
+        uint64_t lenmax = 0;
+        uint64_t cmp_pos = 0;
+
         if (try_resume) {
                 uint32_t        hbuf[HEADERSZ];
-                uint64_t        tlen;
 
-                tlen = 0;
+                uint64_t tlen = 0;
 
                 if (fread(hbuf, sizeof(uint32_t),
                                 HEADERSZ, toc) == HEADERSZ) {
@@ -179,6 +175,7 @@ main(int argc, char **argv)
 
                         it = GET_RESUME_NUM(hbuf);
                         cmp_pos = GET_RESUME_POS(hbuf);
+
                         len = GET_RESUME_LEN(hbuf);
                         lenmax = GET_RESUME_LENMAX(hbuf);
 
@@ -189,11 +186,9 @@ main(int argc, char **argv)
                                 it * EACH_HEADER_TOC_SZ) *
                                 sizeof(uint32_t);
 
-                        /*
-                        if (int_utils::get_file_size(cmp) < pos1 ||
-                                        int_utils::get_file_size(toc) < pos2)
+                        if (__get_file_size(cmp) < pos1 ||
+                                        __get_file_size(toc) < pos2)
                                 goto NORESUME;
-                        */
 
                         /* Locate resumed positions */
                         fseek(cmp, pos1, SEEK_SET);
@@ -205,11 +200,6 @@ NORESUME:
                 fseek(toc, 0, SEEK_SET);
         }
 
-        /* Initialization for a regular path */
-        it = 0;
-        len = 0;
-        cmp_pos = 0;
-
         /* First off, a header is written */
         __header_written(toc);
 
@@ -218,7 +208,9 @@ RESUME:
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
-        addr = int_utils::open_and_mmap_file(ifile, fsz);
+        uint64_t        fsz;
+
+        uint32_t *addr = __open_and_mmap_file(ifile, fsz);
         lenmax = fsz >> 2;
 
         {
@@ -281,7 +273,7 @@ RESUME:
 LOOP_END:
 
         /* Finalization */
-        int_utils::close_file(addr, fsz);
+        __close_file(addr, fsz);
 
         fclose(cmp);
         fclose(toc);
@@ -332,3 +324,4 @@ __usage(const char *msg, ...)
 
         exit(1);
 }
+

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingSimpleV2.hpp - A encoder/decoder for optimized VSEncoding.
+ *  VSEncodingSimpleV2.hpp - A encoder/decoder for optimized VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,12 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODING_SIMPLE_V2_HPP
-#define VSENCODING_SIMPLE_V2_HPP
+#ifndef __VSENCODING_SIMPLE_V2_HPP__
+#define __VSENCODING_SIMPLE_V2_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/VSEncoding.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class VSEncodingSimpleV2 {
 public:
@@ -25,6 +28,9 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSEncodingSimpleV2 */
 
-#endif /* VSENCODING_SIMPLE_V2_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSENCODING_SIMPLE_V2_HPP__ */
+

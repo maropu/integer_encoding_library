@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  BitsReader.hpp - A coder interface to read compressed data.
+ *  BitsReader.hpp - A coder interface to read compressed data
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,64 +12,69 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef BITSREADER_HPP
-#define BITSREADER_HPP
+#ifndef __BITSREADER_HPP__
+#define __BITSREADER_HPP__
 
-#include <iostream>
-#include <stdint.h>
+#include "xxx_common.hpp"
 
-#include "open_coders.hpp"
 /* A transformation table for fast decoding */
 #include "compress/decUnary.hpp"
 #include "compress/decGamma.hpp"
 #include "compress/decDelta.hpp"
 
-using namespace std;
+namespace opc {
 
 class BitsReader {
-        private:
-                uint64_t        buffer;
-                uint32_t        Fill; 
-                uint32_t        *data;
+private:
+        uint32_t        *data;
+        uint64_t        buffer;
+        uint32_t        Fill; 
 
-        public:
-                BitsReader(uint32_t *in);
-			
-                uint32_t bit_reader(uint32_t bits);
+public:
+        /* Constructor */
+        BitsReader(uint32_t *in);
 
-                /* Unary code */
-                void N_UnaryArray(uint32_t *out, uint32_t nvalues);
-                void F_UnaryArray(uint32_t *out, uint32_t nvalues);
+        /* Destructor */
+        ~BitsReader();
+                
+        uint32_t bit_reader(uint32_t bits);
 
-                uint32_t N_Unary();
-                uint32_t F_Unary();
-                uint32_t F_Unary32();
-                uint32_t F_Unary16();
-		
-                /* Gamma code */
-                void N_GammaArray(uint32_t *out, uint32_t nvalues);
-                void F_GammaArray(uint32_t *out, uint32_t nvalues);
-                void FU_GammaArray(uint32_t *out, uint32_t nvalues);
+        /* Unary code */
+        void N_UnaryArray(uint32_t *out, uint32_t nvalues);
+        void F_UnaryArray(uint32_t *out, uint32_t nvalues);
 
-                uint32_t N_Gamma();
-                uint32_t F_Gamma();
-                uint32_t FU_Gamma();
+        uint32_t N_Unary();
+        uint32_t F_Unary();
+        uint32_t F_Unary32();
+        uint32_t F_Unary16();
+        
+        /* Gamma code */
+        void N_GammaArray(uint32_t *out, uint32_t nvalues);
+        void F_GammaArray(uint32_t *out, uint32_t nvalues);
+        void FU_GammaArray(uint32_t *out, uint32_t nvalues);
 
-                /* Delta code */
-                void N_DeltaArray(uint32_t *out, uint32_t nvalues);
-                void FU_DeltaArray(uint32_t *out, uint32_t nvalues);
-                void FG_DeltaArray(uint32_t *out, uint32_t nvalues);
-                void F_DeltaArray(uint32_t* out, uint32_t nvalues);
+        uint32_t N_Gamma();
+        uint32_t F_Gamma();
+        uint32_t FU_Gamma();
 
-                uint32_t N_Delta();
-                uint32_t F_Delta();
-                uint32_t FU_Delta();
+        /* Delta code */
+        void N_DeltaArray(uint32_t *out, uint32_t nvalues);
+        void FU_DeltaArray(uint32_t *out, uint32_t nvalues);
+        void FG_DeltaArray(uint32_t *out, uint32_t nvalues);
+        void F_DeltaArray(uint32_t* out, uint32_t nvalues);
 
-                /* Binary Interpolative code */
-                void InterpolativeArray(uint32_t* out, uint32_t nvalues,
-                                uint32_t offset, uint32_t lo, uint32_t hi);
+        uint32_t N_Delta();
+        uint32_t F_Delta();
+        uint32_t FU_Delta();
 
-                uint32_t readMinimalBinary(uint32_t b);
-};
+        /* Binary Interpolative code */
+        void InterpolativeArray(uint32_t* out, uint32_t nvalues,
+                        uint32_t offset, uint32_t lo, uint32_t hi);
 
-#endif /* BITSREADER_HPP */
+        uint32_t readMinimalBinary(uint32_t b);
+}; /* BitsReader */
+
+}; /* namespace: opc */
+
+#endif /* __BITSREADER_HPP__  */
+

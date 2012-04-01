@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingNaive.hpp - A naive implementation of VSEncoding.
+ *  VSEncodingNaive.hpp - A naive implementation of VSEncoding
  *      This implementation is used by VSE-R.
  *
  *  Coding-Style:
@@ -13,13 +13,16 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODINGNAIVE_HPP
-#define VSENCODINGNAIVE_HPP
+#ifndef __VSENCODINGNAIVE_HPP__
+#define __VSENCODINGNAIVE_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/VSEncoding.hpp"
 #include "io/BitsReader.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class VSEncodingNaive {
 public:
@@ -27,6 +30,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSEncodingNaive */
 
-#endif /* VSENCODINGNAIVE_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSENCODINGNAIVE_HPP__ */

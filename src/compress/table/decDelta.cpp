@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decDelta.cpp - A transformation table for Delta codes.
+ *  decDelta.cpp - A transformation table for Delta codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,9 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <stdint.h>
+#include "compress/decDelta.hpp"
 
-uint32_t decDelta[1 << 16] = {
+uint32_t opc::decDelta[1 << 16] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 

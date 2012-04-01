@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSE-R.hpp - A encoder/decoder for a other version of VSEncoding.
+ *  VSE-R.hpp - A encoder/decoder for a other version of VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,15 +12,18 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSE_R_HPP
-#define VSE_R_HPP
+#ifndef __VSE_R_HPP__
+#define __VSE_R_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/Delta.hpp"
 #include "compress/VSEncoding.hpp"
 #include "compress/VSEncodingNaive.hpp"
 #include "io/BitsReader.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class VSE_R {
 public:
@@ -28,6 +31,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSE_R */
 
-#endif /* VSE_R_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSE_R_HPP__ */

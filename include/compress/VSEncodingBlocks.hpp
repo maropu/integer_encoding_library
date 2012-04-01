@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingBlocks.hpp - A original and simple implementation of VSEncoding.
+ *  VSEncodingBlocks.hpp - A original and simple implementation of VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,12 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODINGBLOCKS_HPP
-#define VSENCODINGBLOCKS_HPP
+#ifndef __VSENCODINGBLOCKS_HPP__
+#define __VSENCODINGBLOCKS_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/VSEncoding.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class VSEncodingBlocks {
 public:
@@ -40,6 +43,9 @@ public:
 
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSEncodingBlocks */
 
-#endif /* VSENCODINGBLOCKS_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSENCODINGBLOCKS_HPP__ */
+

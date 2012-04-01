@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  BitsReader.h - A code to read compressed data for decoding.
+ *  BitsReader.cpp - A code to read compressed data for decoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -24,13 +24,15 @@
                 Fill += 32;     \
         }
 
+using namespace opc;
 
 BitsReader::BitsReader(uint32_t *in)
+                : data(in), buffer(0), Fill(32)
 {
-        data = in;
-        Fill = 32;
         buffer = *data++;
 }
+
+BitsReader::~BitsReader() {}
 
 uint32_t
 BitsReader::bit_reader(uint32_t bits)
@@ -53,9 +55,8 @@ BitsReader::bit_reader(uint32_t bits)
 uint32_t
 BitsReader::N_Unary()
 {
-        uint32_t        count;
+        uint32_t count = 0;
 
-        count = 0;
         while (bit_reader(1) == 0)
                 count++;
 
@@ -65,11 +66,8 @@ BitsReader::N_Unary()
 void
 BitsReader::N_UnaryArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-        uint32_t        count;
-
-        i = 0;
-        count = 0;
+        uint32_t i = 0;
+        uint32_t count = 0;
 
         while (i < nvalues) {
                 while (bit_reader(1) == 0)
@@ -83,9 +81,7 @@ BitsReader::N_UnaryArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::F_UnaryArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = F_Unary();
@@ -104,11 +100,10 @@ BitsReader::F_Unary()
 uint32_t
 BitsReader::F_Unary32()
 {
-        uint32_t        dec;
-
         BITSRD_BUFFILL();
 
-        dec = decUnary[(buffer >> (Fill - 16)) & BITSRD_M64];
+        uint32_t dec = decUnary[
+                (buffer >> (Fill - 16)) & BITSRD_M64];
 
         if (dec == 16) {
                 Fill -= 16;
@@ -125,11 +120,10 @@ BitsReader::F_Unary32()
 uint32_t
 BitsReader::F_Unary16()
 {
-        uint32_t        dec;
-
         BITSRD_BUFFILL();
 
-        dec = decUnary[(buffer >> (Fill - 16)) & BITSRD_M64];
+        uint32_t dec = decUnary[
+                (buffer >> (Fill - 16)) & BITSRD_M64];
         Fill -= dec + 1;
 
         return dec;
@@ -138,31 +132,28 @@ BitsReader::F_Unary16()
 uint32_t
 BitsReader::N_Gamma()
 {
-        uint32_t        d;
-        uint32_t        count;
-
-        count = 0;
+        uint32_t count = 0;
 
         while (bit_reader(1) == 0)
                 count++;
 
-        d = ((1 << count) | bit_reader(count));
+        uint32_t d = ((1 << count)
+                        | bit_reader(count));
 
         return d - 1;
 }
 
 /*
  * The F_Gamma decoding uses decUn:2exp16 Gamma
- * indicized table, from decGamma.h
+ * indicized table, from decGamma.hpp
  */
 uint32_t
 BitsReader::F_Gamma()
 {
-        uint32_t        dec;
-
         BITSRD_BUFFILL();
 
-        dec = decGamma[(buffer >> (Fill - 16)) & BITSRD_M64];
+        uint32_t dec = decGamma[
+                (buffer >> (Fill - 16)) & BITSRD_M64];
 
         if (dec == 0) {
                 return N_Gamma();
@@ -175,19 +166,16 @@ BitsReader::F_Gamma()
 uint32_t
 BitsReader::FU_Gamma()
 {
-        uint32_t        count;
+        uint32_t count = F_Unary32();
 
-        count = F_Unary32();
-
-        return ((1 << count) | bit_reader(count)) - 1;
+        return ((1 << count)
+                        | bit_reader(count)) - 1;
 }
 
 void
 BitsReader::N_GammaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = N_Gamma();
@@ -196,9 +184,7 @@ BitsReader::N_GammaArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::F_GammaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = F_Gamma();
@@ -207,9 +193,7 @@ BitsReader::F_GammaArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::FU_GammaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = FU_Gamma();
@@ -218,11 +202,9 @@ BitsReader::FU_GammaArray(uint32_t *out, uint32_t nvalues)
 uint32_t
 BitsReader::N_Delta()
 {
-        uint32_t        count;
-
-        count = N_Gamma();
-
-        return ((1 << count) | bit_reader(count)) - 1;
+        uint32_t count = N_Gamma();
+        return ((1 << count)
+                        | bit_reader(count)) - 1;
 }
 
 /*
@@ -232,11 +214,10 @@ BitsReader::N_Delta()
 uint32_t
 BitsReader::F_Delta()
 {
-        uint32_t        dec;
-
         BITSRD_BUFFILL();
 
-        dec = decDelta[(buffer >> (Fill - 16)) & BITSRD_M64];
+        uint32_t dec = decDelta[
+                (buffer >> (Fill - 16)) & BITSRD_M64];
 
         if (dec == 0) {
                 return N_Delta();
@@ -249,11 +230,9 @@ BitsReader::F_Delta()
 uint32_t
 BitsReader::FU_Delta()
 {
-        uint32_t        count;
-        uint32_t        log;
-
-        count = F_Unary16();
-        log = ((1 << count) | bit_reader(count)) - 1;
+        uint32_t count = F_Unary16();
+        uint32_t log = ((1 << count)
+                        | bit_reader(count)) - 1;
 
         return ((1 << log) | bit_reader(log)) - 1;
 }
@@ -261,9 +240,7 @@ BitsReader::FU_Delta()
 void
 BitsReader::N_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = N_Delta();
@@ -272,9 +249,7 @@ BitsReader::N_DeltaArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::FU_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = FU_Delta();
@@ -283,13 +258,10 @@ BitsReader::FU_DeltaArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::FG_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
-        uint32_t        i;
-        uint32_t        count;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues) {
-                count = F_Gamma();
+                uint32_t count = F_Gamma();
                 out[i++] = ((1 << count) | bit_reader(count)) - 1;
         }
 }
@@ -297,9 +269,7 @@ BitsReader::FG_DeltaArray(uint32_t *out, uint32_t nvalues)
 void
 BitsReader::F_DeltaArray(uint32_t* out, uint32_t nvalues)
 {
-        uint32_t        i;
-
-        i = 0;
+        uint32_t i = 0;
 
         while (i < nvalues)
                 out[i++] = F_Delta();
@@ -312,16 +282,12 @@ BitsReader::F_DeltaArray(uint32_t* out, uint32_t nvalues)
 uint32_t
 BitsReader::readMinimalBinary(uint32_t b)
 {
-        uint32_t        m;
-        uint32_t        x;
-        uint32_t        d;
-
         __assert(data != NULL);
 
-        d = int_utils::get_msb(b);
-        m = (1ULL << (d + 1)) - b;
+        uint32_t d = __get_msb(b);
+        uint32_t m = (1ULL << (d + 1)) - b;
 
-        x = bit_reader(d);
+        uint32_t x = bit_reader(d);
 
         if (x < m)
                 return x;
@@ -333,9 +299,6 @@ void
 BitsReader::InterpolativeArray(uint32_t* out, uint32_t nvalues, 
                 uint32_t offset, uint32_t lo, uint32_t hi)
 {
-        uint32_t        h;
-        uint32_t        m;
-
         __assert(lo <= hi);
 
         if (nvalues == 0)
@@ -350,13 +313,15 @@ BitsReader::InterpolativeArray(uint32_t* out, uint32_t nvalues,
                 return;
         }
 
-        h = nvalues / 2;
-        m = readMinimalBinary(hi - nvalues + h + 1 - (lo + h) + 1) + lo + h;
+        uint32_t h = nvalues / 2;
+        uint32_t m = readMinimalBinary(
+                        hi - nvalues + h + 1 - (lo + h) + 1) + lo + h;
 
         if (out != NULL)
                 out[offset + h] = m;
 
         InterpolativeArray(out, h, offset, lo, m - 1);
-        InterpolativeArray(out, nvalues - h - 1, offset + h + 1, m + 1, hi);
+        InterpolativeArray(out, nvalues - h - 1,
+                        offset + h + 1, m + 1, hi);
 }
 

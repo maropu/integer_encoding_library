@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSE-R.cpp - A original implementation of VSEncoding.
+ *  VSE-R.cpp - A original implementation of VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -15,6 +15,8 @@
 #include "compress/VSE-R.hpp"
 
 #define VSER_LOGS_LEN   32
+
+using namespace opc;
 
 /* A set of unpacking functions */
 static void __vser_unpack1(uint32_t *out, uint32_t *in, uint32_t bs);
@@ -76,23 +78,19 @@ void
 VSE_R::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        maxL;
         uint32_t        csize;
-        uint32_t        *logs;
-        uint32_t        *p;
-        uint32_t        hist[VSER_LOGS_LEN + 1];
-        BitsWriter      *wt[VSER_LOGS_LEN + 1];
 
-        logs = new uint32_t[len];
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
 
+        uint32_t *logs = new uint32_t[len];
         if (logs == NULL)
-                eoutput("Can't allocate memory");
+                eoutput("Can't allocate memory: logs");
 
         /* Compute logs of all numbers */
-        for (i = 0; i < len; i++) {
+        for (uint32_t i = 0; i < len; i++) {
                 if (in[i] != 0)
-                        logs[i] = int_utils::get_msb(in[i] + 1);
+                        logs[i] = __get_msb(in[i] + 1);
                 else
                         logs[i] = 0;
         }
@@ -108,16 +106,20 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
          * hist[i] stores the number of occs of number whose
          * log is equal to i.
          */
-        for (i = 0; i <= VSER_LOGS_LEN; i++)
+        uint32_t        hist[VSER_LOGS_LEN + 1];
+
+        for (uint32_t i = 0; i <= VSER_LOGS_LEN; i++)
                 hist[i] = 0;
 
         /* Count the number of occs */
-        for (i = 0; i < len; i++) {
+        uint32_t maxL = 0;
+
+        for (uint32_t i = 0; i < len; i++) {
                 if (logs[i] != 0)
                         hist[logs[i]]++;
         }
 
-        for (i = 0, maxL = 0; i <= VSER_LOGS_LEN; i++) {
+        for (uint32_t i = 0; i <= VSER_LOGS_LEN; i++) {
                 if (hist[i] != 0)
                         maxL = i;
         }
@@ -132,23 +134,27 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
         nvalue += csize + 1;
 
         /* Ready to write each integer */
-        for (i = 1, csize = 0, p = out; i <= maxL; i++) {
+        uint32_t        *p = out;
+        BitsWriter      *wt[VSER_LOGS_LEN + 1];
+
+        csize = 0;
+        for (uint32_t i = 1; i <= maxL; i++) {
                 if (hist[i] != 0) {
                         wt[i] = new BitsWriter(p);
-                        csize += int_utils::div_roundup(i * hist[i], 32);
-                        p += int_utils::div_roundup(i * hist[i], 32);
+                        csize += __div_roundup(i * hist[i], 32);
+                        p += __div_roundup(i * hist[i], 32);
                 }
         }
 
         nvalue += csize;
 
         /* Write the number in blocks depending on their logs */
-        for (i = 0; i < len; i++) {
+        for (uint32_t i = 0; i < len; i++) {
                 if (logs[i] != 0)
                         wt[logs[i]]->bit_writer(in[i] + 1, logs[i]);
         }
 
-        for (i = 1; i <= maxL; i++) {
+        for (uint32_t i = 1; i <= maxL; i++) {
                 if (hist[i] != 0) {
                         wt[i]->bit_flush();
                         delete wt[i];
@@ -162,45 +168,37 @@ void
 VSE_R::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t        i;
-        uint32_t        n;
-        uint32_t        nlen;
-        uint32_t        maxL;
-        uint32_t        *ins;
-        uint32_t        *outs;
-        uint32_t        *pblk[VSER_LOGS_LEN + 1];
-        BitsReader      *rd;
-
-        outs = new uint32_t[nvalue + TAIL_MERGIN];
-
+        uint32_t *outs = new uint32_t[nvalue + 128];
         if (outs == NULL)
-                eoutput("Can't allocate memory");
-        
-        rd = new BitsReader(in + *in + 2);
-
-        if (rd == NULL)
-                eoutput("Can't initialize a class");
+                eoutput("Can't allocate memory: outs");
 
         VSEncodingNaive::decodeArray(in + 1, nvalue, out, nvalue);
+        in += *in + 1;
 
         /* *in stores the length of the Delta encoded block */
-        in += *in + 1;
-        ins = in + *in + 1;
+        uint32_t        *pblk[VSER_LOGS_LEN + 1];
 
-        for (i = 1, nlen = 0, pblk[0] = outs,
-                        maxL = rd->F_Delta(); i <= maxL; i++) {
-                n = rd->F_Delta();
+        pblk[0] = outs;
+
+        uint32_t nlen = 0;
+        uint32_t *ins = in + *in + 1;
+
+        BitsReader rd(in + 1);
+        uint32_t maxL = rd.F_Delta();
+
+        for (uint32_t i = 1; i <= maxL; i++) {
+                uint32_t n = rd.F_Delta();
 
                 if (n != 0) {
                         pblk[i] = &outs[nlen];
-                        (__vser_unpack[i - 1])(&outs[nlen], ins,
-                                        int_utils::div_roundup(n * i, 32));
-                        ins += int_utils::div_roundup(n * i, 32);
+                        (__vser_unpack[i - 1])(&outs[nlen],
+                                        ins, __div_roundup(n * i, 32));
+                        ins += __div_roundup(n * i, 32);
                         nlen +=  n;
                 }
         }
 
-        for (i = 0; i < nvalue; i++)
+        for (uint32_t i = 0; i < nvalue; i++)
                 out[i] = (out[i] == 0)? 0 : *(pblk[out[i]])++ - 1;
 
         delete[] outs;
@@ -211,9 +209,7 @@ VSE_R::decodeArray(uint32_t *in, uint32_t len,
 void
 __vser_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 1, out += 32, in += 1) {
+        for (uint32_t i = 0; i < bs; i += 1, out += 32, in += 1) {
                 out[0] = (1 << 1) | ((in[0] >> 31));
                 out[1] = (1 << 1) | ((in[0] >> 30) & 0x01);
                 out[2] = (1 << 1) | ((in[0] >> 29) & 0x01);
@@ -252,9 +248,7 @@ __vser_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 2, out += 32, in += 2) {
+        for (uint32_t i = 0; i < bs; i += 2, out += 32, in += 2) {
                 out[0] = (1 << 2) | ((in[0] >> 30));
                 out[1] = (1 << 2) | ((in[0] >> 28) & 0x03);
                 out[2] = (1 << 2) | ((in[0] >> 26) & 0x03);
@@ -293,9 +287,7 @@ __vser_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 3, out += 32, in += 3) {
+        for (uint32_t i = 0; i < bs; i += 3, out += 32, in += 3) {
                 out[0] = (1 << 3) | ((in[0] >> 29));
                 out[1] = (1 << 3) | ((in[0] >> 26) & 0x07);
                 out[2] = (1 << 3) | ((in[0] >> 23) & 0x07);
@@ -336,9 +328,7 @@ __vser_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 4, out += 32, in += 4) {
+        for (uint32_t i = 0; i < bs; i += 4, out += 32, in += 4) {
                 out[0] = (1 << 4) | ((in[0] >> 28));
                 out[1] = (1 << 4) | ((in[0] >> 24) & 0x0f);
                 out[2] = (1 << 4) | ((in[0] >> 20) & 0x0f);
@@ -377,9 +367,7 @@ __vser_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 5, out += 32, in += 5) {
+        for (uint32_t i = 0; i < bs; i += 5, out += 32, in += 5) {
                 out[0] = (1 << 5) | ((in[0] >> 27));
                 out[1] = (1 << 5) | ((in[0] >> 22) & 0x1f);
                 out[2] = (1 << 5) | ((in[0] >> 17) & 0x1f);
@@ -422,9 +410,7 @@ __vser_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 6, out += 32, in += 6) {
+        for (uint32_t i = 0; i < bs; i += 6, out += 32, in += 6) {
                 out[0] = (1 << 6) | ((in[0] >> 26));
                 out[1] = (1 << 6) | ((in[0] >> 20) & 0x3f);
                 out[2] = (1 << 6) | ((in[0] >> 14) & 0x3f);
@@ -467,9 +453,7 @@ __vser_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 7, out += 32, in += 7) {
+        for (uint32_t i = 0; i < bs; i += 7, out += 32, in += 7) {
                 out[0] = (1 << 7) | ((in[0] >> 25));
                 out[1] = (1 << 7) | ((in[0] >> 18) & 0x7f);
                 out[2] = (1 << 7) | ((in[0] >> 11) & 0x7f);
@@ -514,9 +498,7 @@ __vser_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 8, out += 32, in += 8) {
+        for (uint32_t i = 0; i < bs; i += 8, out += 32, in += 8) {
                 out[0] = (1 << 8) | ((in[0] >> 24));
                 out[1] = (1 << 8) | ((in[0] >> 16) & 0xff);
                 out[2] = (1 << 8) | ((in[0] >> 8) & 0xff);
@@ -555,8 +537,7 @@ __vser_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-        for (i = 0; i < bs; i += 9, out += 32, in += 9) {
+        for (uint32_t i = 0; i < bs; i += 9, out += 32, in += 9) {
                 out[0] = (1 << 9) | ((in[0] >> 23));
                 out[1] = (1 << 9) | ((in[0] >> 14) & 0x01ff);
                 out[2] = (1 << 9) | ((in[0] >> 5) & 0x01ff);
@@ -603,9 +584,7 @@ __vser_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 10, out += 32, in += 10) {
+        for (uint32_t i = 0; i < bs; i += 10, out += 32, in += 10) {
                 out[0] = (1 << 10) | ((in[0] >> 22));
                 out[1] = (1 << 10) | ((in[0] >> 12) & 0x03ff);
                 out[2] = (1 << 10) | ((in[0] >> 2) & 0x03ff);
@@ -652,9 +631,7 @@ __vser_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 11, out += 32, in += 11) {
+        for (uint32_t i = 0; i < bs; i += 11, out += 32, in += 11) {
                 out[0] = (1 << 11) | ((in[0] >> 21));
                 out[1] = (1 << 11) | ((in[0] >> 10) & 0x07ff);
                 out[2] = (in[0] << 1) & 0x07ff;
@@ -703,9 +680,7 @@ __vser_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 12, out += 32, in += 12) {
+        for (uint32_t i = 0; i < bs; i += 12, out += 32, in += 12) {
                 out[0] = (1 << 12) | ((in[0] >> 20));
                 out[1] = (1 << 12) | ((in[0] >> 8) & 0x0fff);
                 out[2] = (in[0] << 4) & 0x0fff;
@@ -752,9 +727,7 @@ __vser_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack13(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 13, out += 32, in += 13) {
+        for (uint32_t i = 0; i < bs; i += 13, out += 32, in += 13) {
                 out[0] = (1 << 13) | ((in[0] >> 19));
                 out[1] = (1 << 13) | ((in[0] >> 6) & 0x1fff);
                 out[2] = (in[0] << 7) & 0x1fff;
@@ -805,9 +778,7 @@ __vser_unpack13(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack14(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 14, out += 32, in += 14) {
+        for (uint32_t i = 0; i < bs; i += 14, out += 32, in += 14) {
                 out[0] = (1 << 14) | ((in[0] >> 18));
                 out[1] = (1 << 14) | ((in[0] >> 4) & 0x3fff);
                 out[2] = (in[0] << 10) & 0x3fff;
@@ -858,9 +829,7 @@ __vser_unpack14(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack15(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 15, out += 32, in += 15) {
+        for (uint32_t i = 0; i < bs; i += 15, out += 32, in += 15) {
                 out[0] = (1 << 15) | ((in[0] >> 17));
                 out[1] = (1 << 15) | ((in[0] >> 2) & 0x7fff);
                 out[2] = (in[0] << 13) & 0x7fff;
@@ -913,9 +882,7 @@ __vser_unpack15(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 16, out += 32, in += 16) {
+        for (uint32_t i = 0; i < bs; i += 16, out += 32, in += 16) {
                 out[0] = (1 << 16) | ((in[0] >> 16));
                 out[1] = (1 << 16) | (in[0] & 0xffff);
                 out[2] = (1 << 16) | ((in[1] >> 16));
@@ -954,9 +921,7 @@ __vser_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack17(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 17, out += 32, in += 17) {
+        for (uint32_t i = 0; i < bs; i += 17, out += 32, in += 17) {
                 out[0] = (1 << 17) | ((in[0] >> 15));
                 out[1] = (in[0] << 2) & 0x01ffff;
                 out[1] |=  (1 << 17) | ((in[1] >> 30));
@@ -1011,9 +976,7 @@ __vser_unpack17(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack18(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 18, out += 32, in += 18) {
+        for (uint32_t i = 0; i < bs; i += 18, out += 32, in += 18) {
                 out[0] = (1 << 18) | ((in[0] >> 14));
                 out[1] = (in[0] << 4) & 0x03ffff;
                 out[1] |=  (1 << 18) | ((in[1] >> 28));
@@ -1068,9 +1031,7 @@ __vser_unpack18(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack19(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 19, out += 32, in += 19) {
+        for (uint32_t i = 0; i < bs; i += 19, out += 32, in += 19) {
                 out[0] = (1 << 19) | ((in[0] >> 13));
                 out[1] = (in[0] << 6) & 0x07ffff;
                 out[1] |=  (1 << 19) | ((in[1] >> 26));
@@ -1127,9 +1088,7 @@ __vser_unpack19(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 20, out += 32, in += 20) {
+        for (uint32_t i = 0; i < bs; i += 20, out += 32, in += 20) {
                 out[0] = (1 << 20) | ((in[0] >> 12));
                 out[1] = (in[0] << 8) & 0x0fffff;
                 out[1] |=  (1 << 20) | ((in[1] >> 24));
@@ -1184,9 +1143,7 @@ __vser_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack21(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 21, out += 32, in += 21) {
+        for (uint32_t i = 0; i < bs; i += 21, out += 32, in += 21) {
                 out[0] = (1 << 21) | ((in[0] >> 11));
                 out[1] = (in[0] << 10) & 0x1fffff;
                 out[1] |=  (1 << 21) | ((in[1] >> 22));
@@ -1245,9 +1202,7 @@ __vser_unpack21(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack22(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 22, out += 32, in += 22) {
+        for (uint32_t i = 0; i < bs; i += 22, out += 32, in += 22) {
                 out[0] = (1 << 22) | ((in[0] >> 10));
                 out[1] = (in[0] << 12) & 0x3fffff;
                 out[1] |=  (1 << 22) | ((in[1] >> 20));
@@ -1306,9 +1261,7 @@ __vser_unpack22(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack23(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 23, out += 32, in += 23) {
+        for (uint32_t i = 0; i < bs; i += 23, out += 32, in += 23) {
                 out[0] = (1 << 23) | ((in[0] >> 9));
                 out[1] = (in[0] << 14) & 0x7fffff;
                 out[1] |=  (1 << 23) | ((in[1] >> 18));
@@ -1369,9 +1322,7 @@ __vser_unpack23(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack24(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 24, out += 32, in += 24) {
+        for (uint32_t i = 0; i < bs; i += 24, out += 32, in += 24) {
                 out[0] = (1 << 24) | ((in[0] >> 8));
                 out[1] = (in[0] << 16) & 0xffffff;
                 out[1] |=  (1 << 24) | ((in[1] >> 16));
@@ -1426,9 +1377,7 @@ __vser_unpack24(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack25(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 25, out += 32, in += 25) {
+        for (uint32_t i = 0; i < bs; i += 25, out += 32, in += 25) {
                 out[0] = (1 << 25) | ((in[0] >> 7));
                 out[1] = (in[0] << 18) & 0x01ffffff;
                 out[1] |=  (1 << 25) | ((in[1] >> 14));
@@ -1491,9 +1440,7 @@ __vser_unpack25(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack26(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 26, out += 32, in += 26) {
+        for (uint32_t i = 0; i < bs; i += 26, out += 32, in += 26) {
                 out[0] = (1 << 26) | ((in[0] >> 6));
                 out[1] = (in[0] << 20) & 0x03ffffff;
                 out[1] |=  (1 << 26) | ((in[1] >> 12));
@@ -1556,9 +1503,7 @@ __vser_unpack26(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack27(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 27, out += 32, in += 27) {
+        for (uint32_t i = 0; i < bs; i += 27, out += 32, in += 27) {
                 out[0] = (1 << 27) | ((in[0] >> 5));
                 out[1] = (in[0] << 22) & 0x07ffffff;
                 out[1] |=  (1 << 27) | ((in[1] >> 10));
@@ -1623,9 +1568,7 @@ __vser_unpack27(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack28(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 28, out += 32, in += 28) {
+        for (uint32_t i = 0; i < bs; i += 28, out += 32, in += 28) {
                 out[0] = (1 << 28) | ((in[0] >> 4));
                 out[1] = (in[0] << 24) & 0x0fffffff;
                 out[1] |=  (1 << 28) | ((in[1] >> 8));
@@ -1688,9 +1631,7 @@ __vser_unpack28(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack29(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 29, out += 32, in += 29) {
+        for (uint32_t i = 0; i < bs; i += 29, out += 32, in += 29) {
                 out[0] = (1 << 29) | ((in[0] >> 3));
                 out[1] = (in[0] << 26) & 0x1fffffff;
                 out[1] |=  (1 << 29) | ((in[1] >> 6));
@@ -1757,9 +1698,7 @@ __vser_unpack29(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack30(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 30, out += 32, in += 30) {
+        for (uint32_t i = 0; i < bs; i += 30, out += 32, in += 30) {
                 out[0] = (1 << 30) | ((in[0] >> 2));
                 out[1] = (in[0] << 28) & 0x3fffffff;
                 out[1] |=  (1 << 30) | ((in[1] >> 4));
@@ -1826,9 +1765,7 @@ __vser_unpack30(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack31(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 31, out += 32, in += 31) {
+        for (uint32_t i = 0; i < bs; i += 31, out += 32, in += 31) {
                 out[0] = (1 << 31) | ((in[0] >> 1));
                 out[1] = (in[0] << 30) & 0x7fffffff;
                 out[1] |=  (1 << 31) | ((in[1] >> 2));
@@ -1897,9 +1834,8 @@ __vser_unpack31(uint32_t *out, uint32_t *in, uint32_t bs)
 void
 __vser_unpack32(uint32_t *out, uint32_t *in, uint32_t bs)
 {
-        uint32_t        i;
-
-        for (i = 0; i < bs; i += 32, out += 32, in += 32) {
+        for (uint32_t i = 0; i < bs;
+                        i += 32, out += 32, in += 32) {
                 out[0] = in[0];
                 out[1] = in[1];
                 out[2] = in[2];

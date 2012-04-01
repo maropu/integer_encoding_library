@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  Gamma.hpp - A encoder/decoder for Gamma.
+ *  Gamma.hpp - A encoder/decoder for Gamma
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,42 +12,44 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef GAMMA_HPP
-#define GAMMA_HPP
+#ifndef __GAMMA_HPP__
+#define __GAMMA_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "io/BitsWriter.hpp"
 #include "io/BitsReader.hpp"
+
+namespace opc {
 
 class Gamma {
 public:
         static void encodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t &nvalue) {
-                BitsWriter *wt = new BitsWriter(out);
-                nvalue = wt->N_GammaArray(in, len);
-                delete wt;
+                BitsWriter wt(out);
+                nvalue = wt.N_GammaArray(in, len);
         }
 
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue) {
-                BitsReader *rd = new BitsReader(in);
-                rd->N_GammaArray(out, nvalue);
-                delete rd;
+                BitsReader rd(in);
+                rd.N_GammaArray(out, nvalue);
         }
 
         static void FU_decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue) {
-                BitsReader *rd = new BitsReader(in);
-                rd->FU_GammaArray(out, nvalue);
-                delete rd;
+                BitsReader rd(in);
+                rd.FU_GammaArray(out, nvalue);
         }
 
         static void F_decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue) {
-                BitsReader *rd = new BitsReader(in);
-                rd->F_GammaArray(out, nvalue);
-                delete rd;
+                BitsReader rd(in);
+                rd.F_GammaArray(out, nvalue);
         }
-};
+}; /* Gamma */
 
-#endif /* GAMMA_HPP */
+}; /* namespace: opc */
+
+#endif /* __GAMMA_HPP__ */
+

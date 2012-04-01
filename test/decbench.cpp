@@ -14,8 +14,8 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "encoders.hpp"
-#include "decoders.hpp"
+#include "open_coders.hpp"
+#include "misc/benchmarks.hpp"
 
 using namespace std;
 
@@ -67,16 +67,6 @@ main(int argc, char **argv)
 {
         char            buf[NCTYPENAME];
         char            *end;
-        int             nlist;
-        uint32_t        i;
-        uint32_t        N;
-        uint32_t        L;
-        uint32_t        *list1;
-        uint32_t        *list2;
-        uint32_t        *cmp_array;
-        uint32_t        cmp_size;
-        double          st;
-        double          et;
 
         if (argc < 4)
                 __usage(NULL);
@@ -84,38 +74,47 @@ main(int argc, char **argv)
         strncpy(buf, argv[1], NCTYPENAME);
         buf[NCTYPENAME - 1] = '\0';
 
-        for (i = 0, nlist = -1; i < __array_size(__clist); i++)
+        int nlist = -1;
+        for (uint32_t i = 0; i < __array_size(__clist); i++) {
                 if (!strcmp(buf, __clist[i].name))
                         nlist = i;
+        }
 
         if (nlist == -1)
                 __usage("Invalid coder-type: %s\n", buf);
 
-        N = strtol(argv[2], &end, 10);
+        uint32_t N = strtol(argv[2], &end, 10);
 
         if (N >= MAX_N || N <= MIN_N)
                 __usage("Invalid N: %d\n", N);
 
-        L = strtol(argv[3], &end, 10);
+        uint32_t L = strtol(argv[3], &end, 10);
 
         if (L >= MAX_RAVG || L <= MIN_RAVG)
                 __usage("Invalid Lambda: %d\n", L);
 
         /* Generate test data sets */
-        list1 = new uint32_t[N + TAIL_MERGIN];
-        list2 = new uint32_t[N + TAIL_MERGIN];
-        cmp_array = new uint32_t[MAXLEN + TAIL_MERGIN];
-
-        if (list1 == NULL || list2 == NULL || cmp_array == NULL)
+        uint32_t *list1 = new uint32_t[N];
+        if (list1 == NULL)
                 eoutput("Can't allocate memory");
 
+        uint32_t *list2 = new uint32_t[N];
+        if (list2 == NULL)
+                eoutput("Can't allocate memory");
+
+        uint32_t *cmp_array = new uint32_t[N];
+        if (cmp_array == NULL)
+                eoutput("Can't allocate memory");
+
+
         if (__clist[nlist].encID != E_BINARYIPL) {
-                for (i = 0; i < N; i++)
+                for (uint32_t i = 0; i < N; i++)
                         list1[i] = __get_random(L);
         } else {
                 uint32_t        r;
 
-                for (i = 1, list1[0] = 0; i < N; i++) {
+                list1[0] = 0;
+                for (uint32_t i = 1; i < N; i++) {
                         r = __get_random(L) + 1;
 
                         if (UINT32_MAX - list1[i - 1] < r)
@@ -126,15 +125,17 @@ main(int argc, char **argv)
         }
 
         /* Do encoding */
+        uint32_t        cmp_size;
+
         (encoders[__clist[nlist].encID])(list1, N, cmp_array, cmp_size);
 
         /* Start benchmarking */
-        st = int_utils::get_time();
+        double st = __get_time();
         (decoders[__clist[nlist].decID])(cmp_array, cmp_size, list2, N);
-        et = int_utils::get_time();
+        double et = __get_time();
 
         /* Validation check */
-        for (i = 0; i < N; i++) {
+        for (uint32_t i = 0; i < N; i++) {
                 if (list1[i] != list2[i])
                         cerr << "Decoding Exception(" << i << "): "
                                 << list1[i] << " != " << list2[i] << endl;

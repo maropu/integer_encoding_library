@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  BinaryInterpolative.hpp - A encoder/decoder for Binary Interpolative.
+ *  BinaryInterpolative.hpp - A encoder/decoder for Binary Interpolative
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,40 +12,37 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef BINARYINTERPOLATIVE_HPP
-#define BINARYINTERPOLATIVE_HPP
+#ifndef __BINARYINTERPOLATIVE_HPP__
+#define __BINARYINTERPOLATIVE_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "io/BitsWriter.hpp"
 #include "io/BitsReader.hpp"
+
+namespace opc {
 
 class BinaryInterpolative {
 public:
         static void encodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t &nvalue) {
-                BitsWriter      *wt;
-
-                /* Preprocessing for Binary Interpolative */
-                wt = new BitsWriter(out + 1);
-
                 out[0] = in[len - 1];
 
-                wt->InterpolativeArray(in, len, 0, 0, in[len - 1]);
-                wt->bit_flush();
-                nvalue = wt->written + 1;
+                BitsWriter wt(out + 1);
+                wt.InterpolativeArray(in, len, 0, 0, in[len - 1]);
+                wt.bit_flush();
 
-                delete wt;
+                nvalue = wt.get_written() + 1;
         }
 
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue) {
-                BitsReader      *rd;
-
-                rd = new BitsReader(in + 1);
-                rd->InterpolativeArray(out, nvalue, 0, 0, *in);
-
-                delete rd;
+                BitsReader rd(in + 1);
+                rd.InterpolativeArray(out, nvalue, 0, 0, *in);
         }
-};
+}; /* BinaryInterpolative */
 
-#endif /* BINARY_INTERPOLATIVE_HPP */
+}; /* namespace: opc */
+
+#endif /* __BINARY_INTERPOLATIVE_HPP__ */
+

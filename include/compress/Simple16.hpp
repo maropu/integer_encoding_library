@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  Simple16.hpp - A encoder/decoder for Simple16.
+ *  Simple16.hpp - A encoder/decoder for Simple16
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,11 +12,14 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef SIMPLE16_HPP
-#define SIMPLE16_HPP
+#ifndef __SIMPLE16_HPP__
+#define __SIMPLE16_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class Simple16 {
 private:
@@ -52,6 +55,9 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* Simple16 */
 
-#endif /* SIMPLE16_HPP */
+}; /* namespace: opc */
+
+#endif /* __SIMPLE16_HPP__ */
+

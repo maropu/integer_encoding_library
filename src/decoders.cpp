@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decoders.cpp - Decoders de-compressing correspinding encorded integers.
+ *  decoders.cpp - Decoders de-compressing correspinding encorded integers
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "decoders.hpp"
+#include "open_coders.hpp"
+
+#include "xxx_common.hpp"
+#include "misc/benchmarks.hpp"
 
 using namespace std;
+using namespace opc;
 
 #define NLOOP   1
 
@@ -23,35 +27,17 @@ static void __usage(const char *msg, ...);
 int 
 main(int argc, char **argv)
 {
-        int             decID;
-        uint32_t        *list;
-        /* buffer for self-modified decoders */
-        uint32_t        *sbuf;
-        uint32_t        *cmp_addr;
-        uint32_t        *toc_addr;
-        uint64_t        sum_sizes;
-        uint64_t        dints;
-        uint64_t        cmpsz;
-        uint64_t        cmplenmax;
-        uint64_t        tocsz;
-        uint64_t        toclen;
-        uint64_t        toclenmax;
-        uint64_t        ip;
         char            *end;
-        char            ifile[NFILENAME + NEXTNAME];
-        char            ofile[NFILENAME + NEXTNAME];
-        double          dtime;
-        FILE            *dec;
 
         if (argc < 3)
                 __usage(NULL);
 
-        decID = strtol(argv[1], &end, 10);
+        int decID = strtol(argv[1], &end, 10);
         if ((*end != '\0') || (decID < 0) ||
                         (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
 
-        list = new uint32_t[MAXLEN + TAIL_MERGIN];
+        uint32_t *list = new uint32_t[MAXLEN + TAIL_MERGIN];
         if (list == NULL)
                 eoutput("Can't allocate memory");
 
@@ -60,7 +46,7 @@ main(int argc, char **argv)
          * list during decoding, so it must copy data to
          * sbuf[] with memcpy. 
          */
-        sbuf = NULL;
+        uint32_t *sbuf = NULL;
         if (decID == D_VSEREST ||
                         decID == D_VSEHYB) {
                 sbuf = new uint32_t[MAXLEN + TAIL_MERGIN];
@@ -69,25 +55,29 @@ main(int argc, char **argv)
         }
 
         /* Read the file name, and open it */
+        uint64_t        cmpsz;
+        uint64_t        tocsz;
+        char            ifile[NFILENAME + NEXTNAME];
+        char            ofile[NFILENAME + NEXTNAME];
+
         strncpy(ifile, argv[2], NFILENAME);
         ifile[NFILENAME - 1] = '\0';
         
         strcat(ifile, dec_ext[decID]);
-        cmp_addr = int_utils::open_and_mmap_file(ifile, cmpsz);
+        uint32_t *cmp_addr = __open_and_mmap_file(ifile, cmpsz);
 
         strcat(ifile, TOCEXT);
-        toc_addr = int_utils::open_and_mmap_file(ifile, tocsz);
+        uint32_t *toc_addr = __open_and_mmap_file(ifile, tocsz);
 
         /* Initialize each size */
-        cmplenmax = cmpsz >> 2;
-        toclenmax = (tocsz - HEADERSZ *
-                        sizeof(uint32_t)) >> 2;
-        toclen = 0;
+        uint64_t toclen = 0;
+        uint64_t cmplenmax = cmpsz >> 2;
+        uint64_t toclenmax = (tocsz - HEADERSZ * sizeof(uint32_t)) >> 2;
 
         __header_validate(toc_addr, toclen);
 
         /* If possible, setup a output file */
-        dec = NULL;
+        FILE *dec = NULL;
 
         if (argc > 3) {
                 strncpy(ofile, argv[3], NFILENAME);
@@ -106,19 +96,15 @@ main(int argc, char **argv)
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
-        uint32_t        nloop;
-        uint32_t        numHeaders;
+        uint64_t dints = 0;
+        uint64_t sum_sizes = 0;
+        double dtime = 0.0;
 
-        /* Counters initialized */
-        dtime = 0.0;
-        dints = 0;
-        sum_sizes = 0;
-
-        nloop = 0;
-        numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
+        uint32_t nloop = 0;
+        uint32_t numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
 
         /* Store a initial position */
-        ip = toclen;
+        uint64_t ip = toclen;
 
         for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
                 uint32_t        *ptr;
@@ -161,11 +147,11 @@ main(int argc, char **argv)
                         }
 
                         /* Do decoding */
-                        tm = int_utils::get_time();
+                        tm = __get_time();
                         (decoders[decID])(ptr, next_pos - cmp_pos, list, num - 1);
 
                         /* Accumulate each count */
-                        dtime += int_utils::get_time() - tm;
+                        dtime += __get_time() - tm;
                         dints += num - 1;
                         sum_sizes = cmp_pos;
 
@@ -196,8 +182,8 @@ LOOP_END:
         cout << "Size: " << ((sum_sizes * nloop + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
 
         /* Finalization */
-        int_utils::close_file(cmp_addr, cmpsz);
-        int_utils::close_file(toc_addr, tocsz);
+        __close_file(cmp_addr, cmpsz);
+        __close_file(toc_addr, tocsz);
 
         if (dec != NULL)
                 fclose(dec);
@@ -249,3 +235,4 @@ __usage(const char *msg, ...)
 
         exit(1);
 }
+

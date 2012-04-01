@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  Simple16.cpp - A implementation of Simple16.
+ *  Simple16.cpp - A implementation of Simple16
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -17,17 +17,16 @@
 #define SIMPLE16_LOGDESC        4
 #define SIMPLE16_LEN            (1 << SIMPLE16_LOGDESC)
 
+using namespace opc;
+
 #define SIMPLE16_DESC_FUNC1(num1, log1) \
         bool                            \
         Simple16::try##num1##_##log1##bit(uint32_t *n, uint32_t len)    \
-        {                                       \
-                uint32_t        i;              \
-                uint32_t        min;            \
+        {                               \
+                uint32_t min = (len < num1)? len : num1;        \
 \
-                min = (len < num1)? len : num1; \
-\
-                for (i = 0; i < min; i++) {     \
-                        if (int_utils::get_msb(n[i]) > log1 - 1)        \
+                for (uint32_t i = 0; i < min; i++) {            \
+                        if (__get_msb(n[i]) > log1 - 1)         \
                                 return false;   \
                 }               \
 \
@@ -37,26 +36,24 @@
 #define SIMPLE16_DESC_FUNC2(num1, log1, num2, log2)     \
         bool                                    \
         Simple16::try##num1##_##log1##bit_##num2##_##log2##bit(uint32_t *n, uint32_t len)       \
-        {                                       \
-                uint32_t        i;              \
-                uint32_t        base;           \
-                uint32_t        min;            \
+        {                               \
+                uint32_t        base;   \
 \
-                min = (len < num1)? len : num1; \
+                uint32_t min = (len < num1)? len : num1;        \
 \
-                for (i = 0; i < min; i++) {     \
-                        if (int_utils::get_msb(n[i]) > log1 - 1)        \
+                for (uint32_t i = 0; i < min; i++) {            \
+                        if (__get_msb(n[i]) > log1 - 1)         \
                                 return false;   \
-                }               \
+                }       \
 \
-                base = min;     \
-                len -= min;     \
+                base = min;    \
+                len -= min;    \
 \
-                min = (len < num2)? len: num2;                          \
+                min = (len < num2)? len: num2;                  \
 \
-                for (i = base; i < base + min; i++) {                   \
-                        if (int_utils::get_msb(n[i]) > log2 - 1)        \
-                                return false;                           \
+                for (uint32_t i = base; i < base + min; i++) {  \
+                        if (__get_msb(n[i]) > log2 - 1)         \
+                                return false;   \
                 }               \
 \
                 return true;    \
@@ -65,15 +62,13 @@
 #define SIMPLE16_DESC_FUNC3(num1, log1, num2, log2, num3, log3) \
         bool                                    \
         Simple16::try##num1##_##log1##bit_##num2##_##log2##bit_##num3##_##log3##bit(uint32_t *n, uint32_t len)    \
-        {                                       \
-                uint32_t        i;              \
-                uint32_t        base;           \
-                uint32_t        min;            \
+        {                               \
+                uint32_t        base;   \
 \
-                min = (len < num1)? len : num1; \
+                uint32_t min = (len < num1)? len : num1;        \
 \
-                for (i = 0; i < min; i++) {     \
-                        if (int_utils::get_msb(n[i]) > log1 - 1)        \
+                for (uint32_t i = 0; i < min; i++) {            \
+                        if (__get_msb(n[i]) > log1 - 1)         \
                                 return false;   \
                 }               \
 \
@@ -82,8 +77,8 @@
 \
                 min = (len < num2)? len: num2;                          \
 \
-                for (i = base; i < base + min; i++) {                   \
-                        if (int_utils::get_msb(n[i]) > log2 - 1)        \
+                for (uint32_t i = base; i < base + min; i++) {          \
+                        if (__get_msb(n[i]) > log2 - 1)                 \
                                 return false;                           \
                 }               \
 \
@@ -92,8 +87,8 @@
 \
                 min = (len < num3)? len: num3;                          \
 \
-                for (i = base; i < base + min; i++) {                   \
-                        if (int_utils::get_msb(n[i]) > log3 - 1)        \
+                for (uint32_t i = base; i < base + min; i++) {          \
+                        if (__get_msb(n[i]) > log3 - 1)                 \
                                 return false;                           \
                 }               \
 \
@@ -169,228 +164,221 @@ void
 Simple16::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
         uint32_t        base;
         uint32_t        min;
-        BitsWriter      *wt;
-
-        wt = new BitsWriter(out);
+        BitsWriter      wt(out);
 
         while (len > 0) {
                 if (Simple16::try28_1bit(in, len)) {
                         /* Descripter Number: 0 */
-                        wt->bit_writer(0, 4);
+                        wt.bit_writer(0, 4);
 
                         min = (len < 28)? len : 28;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 1);
                 } else if (Simple16::try7_2bit_14_1bit(in, len)) {
                         /* Descripter Number: 1 */
-                        wt->bit_writer(1, 4);
+                        wt.bit_writer(1, 4);
 
                         min = (len < 7)? len : 7;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 2);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 2);
 
                         base = min;
                         min = ((len - base) < 14)? len - base : 14;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 1);
 
                         min += base;
                 } else if (Simple16::try7_1bit_7_2bit_7_1bit(in, len)) {
                         /* Descripter Number: 2 */
-                        wt->bit_writer(2, 4);
+                        wt.bit_writer(2, 4);
 
                         min = (len < 7)? len : 7;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 1);
 
                         base = min;
                         min = (len - base < 7)? len - base : 7;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 2);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 2);
 
                         base += min;
                         min = (len - base < 7)? len - base : 7;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 1);
 
                         min += base;
                 } else if (Simple16::try14_1bit_7_2bit(in, len)) {
                         /* Descripter Number: 3 */
-                        wt->bit_writer(3, 4);
+                        wt.bit_writer(3, 4);
 
                         min = (len < 14)? len : 14;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 1);
 
                         base = min;
                         min = ((len - base) < 7)? len - base : 7;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 2);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 2);
 
                         min += base;
                 } else if (Simple16::try14_2bit(in, len)) {
                         /* Descripter Number: 4 */
-                        wt->bit_writer(4, 4);
+                        wt.bit_writer(4, 4);
 
                         min = (len < 14)? len : 14;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 2);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 2);
                 } else if (Simple16::try1_4bit_8_3bit(in, len)) {
                         /* Descripter Number: 5 */
-                        wt->bit_writer(5, 4);
+                        wt.bit_writer(5, 4);
 
                         min = (len < 1)? len : 1;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 4);
 
                         base = min;
                         min = ((len - base) < 8)? len - base : 8;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 3);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 3);
 
                         min += base;
                 } else if (Simple16::try1_3bit_4_4bit_3_3bit(in, len)) {
                         /* Descripter Number: 6 */
-                        wt->bit_writer(6, 4);
+                        wt.bit_writer(6, 4);
 
                         min = (len < 1)? len : 1;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 3);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 3);
 
                         base = min;
                         min = (len - base < 4)? len - base : 4;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 4);
 
                         base += min;
                         min = (len - base < 3)? len - base : 3;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 3);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 3);
 
                         min += base;
                 } else if (Simple16::try7_4bit(in, len)) {
                         /* Descripter Number: 7 */
-                        wt->bit_writer(7, 4);
+                        wt.bit_writer(7, 4);
 
                         min = (len < 7)? len : 7;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 4);
                 } else if (Simple16::try4_5bit_2_4bit(in, len)) {
                         /* Descripter Number: 8 */
-                        wt->bit_writer(8, 4);
+                        wt.bit_writer(8, 4);
 
                         min = (len < 4)? len : 4;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 5);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 5);
 
                         base = min;
                         min = ((len - base) < 2)? len - base : 2;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 4);
 
                         min += base;
                 } else if (Simple16::try2_4bit_4_5bit(in, len)) {
                         /* Descripter Number: 9 */
-                        wt->bit_writer(9, 4);
+                        wt.bit_writer(9, 4);
 
                         min = (len < 2)? len : 2;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 4);
 
                         base = min;
                         min = ((len - base) < 4)? len - base : 4;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 5);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 5);
 
                         min += base;
                 } else if (Simple16::try3_6bit_2_5bit(in, len)) {
                         /* Descripter Number: 10 */
-                        wt->bit_writer(10, 4);
+                        wt.bit_writer(10, 4);
 
                         min = (len < 3)? len : 3;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 6);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 6);
 
                         base = min;
                         min = ((len - base) < 2)? len - base : 2;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 5);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 5);
 
                         min += base;
                 } else if (Simple16::try2_5bit_3_6bit(in, len)) {
                         /* Descripter Number: 11 */
-                        wt->bit_writer(11, 4);
+                        wt.bit_writer(11, 4);
 
                         min = (len < 2)? len : 2;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 5);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 5);
 
                         base = min;
                         min = ((len - base) < 3)? len - base : 3;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 6);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 6);
 
                         min += base;
                 } else if (Simple16::try4_7bit(in, len)) {
                         /* Descripter Number: 12 */
-                        wt->bit_writer(12, 4);
+                        wt.bit_writer(12, 4);
 
                         min = (len < 4)? len : 4;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 7);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 7);
                 } else if (Simple16::try1_10bit_2_9bit(in, len)) {
                         /* Descripter Number: 13 */
-                        wt->bit_writer(13, 4);
+                        wt.bit_writer(13, 4);
 
                         min = (len < 1)? len : 1;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 10);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 10);
 
                         base = min;
                         min = ((len - base) < 2)? len - base : 2;
-                        for (i = base; i < base + min; i++)
-                                wt->bit_writer(*in++, 9);
+                        for (uint32_t i = base; i < base + min; i++)
+                                wt.bit_writer(*in++, 9);
 
                         min += base;
                 } else if (Simple16::try2_14bit(in, len)) {
                         /* Descripter Number: 14 */
-                        wt->bit_writer(14, 4);
+                        wt.bit_writer(14, 4);
 
                         min = (len < 2)? len : 2;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 14);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 14);
                 } else {
                         if ((*in >> 28) > 0)
                                 eoutput("Input's out of range: %u", *in);
 
                         /* Descripter Number: 15 */
-                        wt->bit_writer(15, 4);
+                        wt.bit_writer(15, 4);
 
                         min = 1;
-                        wt->bit_writer(*in++, 28);
+                        wt.bit_writer(*in++, 28);
                 }
 
                 /* Align to 32-bit */
-                wt->bit_flush();
+                wt.bit_flush();
 
                 len -= min;
         }
 
-        nvalue = wt->written;
-
-        delete wt;
+        nvalue = wt.get_written();
 }
 
 void
 Simple16::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t        *end;
-
-        end = out + nvalue;
+        uint32_t *end = out + nvalue;
 
         while (end > out) {
                 (__simple16_unpack[*in >>

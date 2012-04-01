@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  OPTPForDelta.cpp - A optimized implementation of PForDelta.
+ *  OPTPForDelta.cpp - A optimized implementation of PForDelta
  *      This implementation made by these authors based on a paper below:
  *       - http://dl.acm.org/citation.cfm?id=1526764
  *      And, some potions fo this code are optimized by means of a code given
@@ -16,13 +16,16 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef OPTPFORDELTAV1_HPP
-#define OPTPFORDELTAV1_HPP
+#ifndef __OPTPFORDELTAV1_HPP__
+#define __OPTPFORDELTAV1_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/Simple16.hpp"
 #include "compress/PForDelta.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class OPTPForDelta {
 public:
@@ -34,6 +37,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* OPTPForDelta */
 
-#endif /* OPTPFORDELTAV1_HPP */
+}; /* namespace: opc */
+
+#endif /* __OPTPFORDELTAV1_HPP__ */

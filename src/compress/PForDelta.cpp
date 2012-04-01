@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  PForDelta.cpp - A original implementation of PForDelta.
+ *  PForDelta.cpp - A original implementation of PForDelta
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -64,6 +64,8 @@
                 :"=m" (dest[0]), "=m" (dest[4]), "=m" (dest[8]), "=m" (dest[12]) ,               \
                         "=m" (dest[16]), "=m" (dest[20]), "=m" (dest[24]), "=m" (dest[28])      \
                 ::"memory", "%xmm0")
+
+using namespace opc;
 
 /* A set of unpacking functions */
 static void __p4delta_unpack0(uint32_t *out, uint32_t *in);
@@ -263,7 +265,7 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 nvalue += encodedExceptions_sz;
 
                 /* Write fix-length values */
-                codewords_sz = wt->written;
+                codewords_sz = wt->get_written();
                 memcpy(out, codewords, codewords_sz * sizeof(uint32_t));
                 nvalue += codewords_sz;
 
@@ -285,7 +287,7 @@ PForDelta::encodeArray(uint32_t *in, uint32_t len,
         uint32_t        numBlocks;
         uint32_t        csize;
 
-        numBlocks = int_utils::div_roundup(len, PFORDELTA_BLOCKSZ); 
+        numBlocks = __div_roundup(len, PFORDELTA_BLOCKSZ); 
 
         /* Output the number of blocks */
         *out++ = numBlocks;

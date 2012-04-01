@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decoders.hpp - A header for a variety of decoders.
+ *  decoders.hpp - A header for a variety of decoders
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,10 +12,8 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef DECODERS_HPP
-#define DECODERS_HPP
-
-#include "open_coders.hpp"
+#ifndef __DECODERS_HPP__
+#define __DECODERS_HPP__
 
 /* Header files for a variety of compressions */
 #include "compress/Gamma.hpp"
@@ -56,6 +54,8 @@
 #define D_VSESIMPLEV1   17
 #define D_VSESIMPLEV2   18
 
+using namespace opc;
+
 typedef void (*pt2Dec)(uint32_t *, uint32_t, uint32_t *, uint32_t);
 
 static pt2Dec decoders[NUMDECODERS] = {
@@ -80,27 +80,5 @@ static pt2Dec decoders[NUMDECODERS] = {
         VSEncodingSimpleV2::decodeArray
 };
 
-/* Extensions for these coresspinding indices */
-const char *dec_ext[] = {
-        ".Gamma",
-        ".Gamma",
-        ".Gamma",
-        ".Delta",
-        ".Delta",
-        ".Delta",
-        ".Delta",
-        ".VariableByte",
-        ".Interpolative",
-        ".Simple9",
-        ".Simple16",
-        ".P4D",
-        ".OPT4D",
-        ".VSE",
-        ".VSERT",
-        ".VSERest",
-        ".VSEH",
-        ".VSESimpleV1",
-        ".VSESimpleV2"
-};
+#endif /* __DECODERS_HPP__ */
 
-#endif /* DECODERS_HPP */

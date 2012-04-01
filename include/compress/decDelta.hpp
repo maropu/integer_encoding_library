@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decDelta.hpp - A transformation table for Delta codes.
+ *  decDelta.hpp - A transformation table for Delta codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef DECDELTA_HPP
-#define DECDELTA_HPP
+#ifndef __DECDELTA_HPP__
+#define __DECDELTA_HPP__
 
+#include <stdint.h>
+
+namespace opc {
 extern uint32_t decDelta[1 << 16];
+}; /* namespace: opc */
 
-#endif /* DECDELTA_HPP */
+#endif /* __DECDELTA_HPP__ */

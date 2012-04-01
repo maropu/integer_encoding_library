@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingRest.hpp - A encoder/decoder for optimized VSEncoding.
+ *  VSEncodingRest.hpp - A encoder/decoder for optimized VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,12 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODING_REST_HPP
-#define VSENCODING_REST_HPP
+#ifndef __VSENCODING_REST_HPP__
+#define __VSENCODING_REST_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/VSEncoding.hpp"
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class VSEncodingRest {
 public:
@@ -25,6 +28,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSEncodingRest */
 
-#endif /* VSENCODING_REST_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSENCODING_REST_HPP__ */

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VariableByte.hpp - A encoder/decoder for VariableByte.
+ *  VariableByte.hpp - A encoder/decoder for VariableByte
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,12 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VARIABLEBYTE_HPP
-#define VARIABLEBYTE_HPP
+#ifndef __VARIABLEBYTE_HPP__
+#define __VARIABLEBYTE_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "io/BitsWriter.hpp"
 #include "io/BitsReader.hpp"
+
+namespace opc {
 
 class VariableByte {
 public:
@@ -25,6 +28,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VariableByte */
 
-#endif /* VARIABLEBYTE_HPP */
+}; /* namespace: opc */
+
+#endif /* __VARIABLEBYTE_HPP__ */

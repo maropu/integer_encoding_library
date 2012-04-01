@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncoding.hpp - To scan the optimal partitions in a list.
+ *  VSEncoding.hpp - To scan the optimal partitions in a list
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,10 +12,10 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODING_HPP
-#define VSENCODING_HPP
+#ifndef __VSENCODING_HPP__
+#define __VSENCODING_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
 
 /*
  * If a list is larger that this parameter, then
@@ -24,6 +24,12 @@
  * the decompression is more cache-friendly.
  */
 #define VSENCODING_BLOCKSZ      65536U
+
+namespace opc {
+
+/* FIXME: Need to be re-implemented in a thread-safe way */
+extern uint32_t __vsencoding_aux[
+                        VSENCODING_BLOCKSZ * 2 + 128];
 
 class VSEncoding {
 private:
@@ -39,19 +45,20 @@ private:
         uint32_t        maxBlk;
         
 public:
-        VSEncoding(uint32_t *lens, uint32_t *zlens, uint32_t size, bool cflag);
+        explicit VSEncoding(uint32_t *lens,
+                        uint32_t *zlens, uint32_t size, bool cflag);
 
         /*
          * Compute the optimal sub-lists from lists.
          *      len: The length of the sequence of lists
          *      fixCost: The fix cost in bits that we pay for  each block
          */
-        uint32_t *compute_OptPartition(uint32_t *seq,
-                        uint32_t len, uint32_t fixCost, uint32_t &pSize);
-};
+        void compute_OptPartition( uint32_t *seq,
+                        uint32_t len, uint32_t fixCost,
+                        uint32_t *parts, uint32_t &pSize);
+}; /* VSEncoding */
 
-#ifdef USE_BOOST_SHAREDPTR
-typedef boost::shared_ptr<VSEncoding>   VSEncodingPtr;
-#endif /* USE_BOOST_SHAREDPTR */
+}; /* namespace: opc */
 
-#endif /* VSENCODING_HPP */
+#endif /* __VSENCODING_HPP__ */
+

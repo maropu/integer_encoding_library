@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  OPTPForDelta.cpp - A optimized implementation of PForDelta.
+ *  OPTPForDelta.cpp - A optimized implementation of PForDelta
  *      This implementation made by these authors based on a paper below:
  *       - http://dl.acm.org/citation.cfm?id=1526764
  *      And, some potions fo this code are optimized by means of a code given
@@ -18,6 +18,8 @@
 
 #include "compress/OPTPForDelta.hpp"
 
+using namespace opc;
+
 static uint32_t __optp4delta_possLogs[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
 };
@@ -25,7 +27,6 @@ static uint32_t __optp4delta_possLogs[] = {
 uint32_t
 OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len) 
 {
-        uint32_t        i;
         uint32_t        size;
         uint32_t        curExcept;
         uint32_t        *exceptionsPositions;
@@ -42,20 +43,26 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
         if (b == 32) {
                 return len;
         } else {
-                /* FIXME: To be modified */
                 exceptionsPositions = new uint32_t[len];
+                if (exceptionsPositions == NULL)
+                        eoutput("Can't allocate memory: exceptionsPositions");
+
                 exceptionsValues = new uint32_t[len];
+                if (exceptionsValues == NULL)
+                        eoutput("Can't allocate memory: exceptionsValues");
+
                 exceptions = new uint32_t[2 * len];
+                if (exceptions == NULL)
+                        eoutput("Can't allocate memory: exceptions");
+
                 encodedExceptions = new uint32_t[2 * len + 2];
+                if (encodedExceptions == NULL)
+                        eoutput("Can't allocate memory: encodedExceptions");
 
-                if (exceptionsPositions == NULL || exceptionsValues == NULL ||
-                                exceptions == NULL || encodedExceptions == NULL)
-                        eoutput("Can't allocate memory");
-
-                size = int_utils::div_roundup(len * b, 32);
+                size = __div_roundup(len * b, 32);
                 curExcept = 0;
 
-                for (i = 0; i < len; i++) {
+                for (uint32_t i = 0; i < len; i++) {
                         if (in[i] >= (1 << b)) {
                                 e = in[i] >> b;
                                 exceptionsPositions[curExcept] = i;
@@ -69,7 +76,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                         uint32_t        prev;
                         uint32_t        gap;
 
-                        for (i = curExcept - 1; i > 0; i--) {
+                        for (uint32_t i = curExcept - 1; i > 0; i--) {
                                 cur = exceptionsPositions[i];
                                 prev = exceptionsPositions[i - 1];
                                 gap = cur - prev;
@@ -77,7 +84,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                                 exceptionsPositions[i] = gap;
                         }
 
-                        for (i = 0;  i < curExcept; i++) {
+                        for (uint32_t i = 0;  i < curExcept; i++) {
                                 excPos = (i > 0)? exceptionsPositions[i] - 1 :
                                         exceptionsPositions[i];
                                 excVal = exceptionsValues[i] - 1;
@@ -104,16 +111,15 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
 uint32_t
 OPTPForDelta::findBestB(uint32_t *in, uint32_t len)
 {
-        uint32_t        i;
-        uint32_t        b;
-        uint32_t        bsize;
-        uint32_t        csize;
+        uint32_t b = __optp4delta_possLogs[
+                __array_size(__optp4delta_possLogs) - 1];
 
-        b = __optp4delta_possLogs[__array_size(__optp4delta_possLogs) - 1];
+        uint32_t bsize = len;
 
-        for (i = 0, bsize = len;
-                        i < __array_size(__optp4delta_possLogs) - 1; i++) {
-                csize = OPTPForDelta::tryB(__optp4delta_possLogs[i], in, len); 
+        for (uint32_t i = 0; i < __array_size(
+                                __optp4delta_possLogs) - 1; i++) {
+                uint32_t csize = OPTPForDelta::tryB(
+                                __optp4delta_possLogs[i], in, len); 
 
                 if (csize <= bsize) {
                         b = __optp4delta_possLogs[i];
@@ -128,17 +134,15 @@ void
 OPTPForDelta::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        numBlocks;
         uint32_t        csize;
 
-        numBlocks = int_utils::div_roundup(len, PFORDELTA_BLOCKSZ); 
+        uint32_t numBlocks = __div_roundup(len, PFORDELTA_BLOCKSZ); 
 
         /* Output the number of blocks */
         *out++ = numBlocks;
         nvalue = 1;
 
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 if (i != numBlocks - 1) {
                         PForDelta::encodeBlock(in, PFORDELTA_BLOCKSZ,
                                         out, csize, OPTPForDelta::findBestB); 

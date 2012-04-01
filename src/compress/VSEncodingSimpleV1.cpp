@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingSimpleV1.cpp - A optimized implementation of VSEncoding.
+ *  VSEncodingSimpleV1.cpp - A optimized implementation of VSEncoding
  *      This code of VSEncoding naively removes the buffering
  *      technique which VSEncodingRest uses to harness the padding
  *      areas of partitions.
@@ -24,6 +24,8 @@
 #define VSESIMPLEV1_LENS_LEN    (1 << VSESIMPLEV1_LOGLEN)
 #define VSESIMPLEV1_LOGS_LEN    (1 << VSESIMPLEV1_LOGLOG)
 #define VSESIMPLEV1_LEN         (1 << VSESIMPLEV1_LOGDESC)
+
+using namespace opc;
 
 /* A set of unpacking functions */
 
@@ -738,114 +740,98 @@ static uint32_t __vsesimplev1_codeLogs[] = {
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-/* FIXME: Stupid codes here, so it needs to be replaced */
-#ifdef USE_BOOST_SHAREDPTR
- static VSEncodingPtr __vsesimplev1 =
-                VSEncodingPtr(new VSEncoding(&__vsesimplev1_possLens[0],
-                NULL, VSESIMPLEV1_LENS_LEN, true));
-#else
- static VSEncoding *__vsesimplev1 =
-                new VSEncoding(&__vsesimplev1_possLens[0],
+static VSEncoding __vsesimplev1(
+                &__vsesimplev1_possLens[0],
                 NULL, VSESIMPLEV1_LENS_LEN, true);
-#endif /* USE_BOOST_SHAREDPTR */
 
 void
 VSEncodingSimpleV1::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        j;
-        uint32_t        k;
-        uint32_t        numBlocks;
-        uint32_t        pos;
         uint32_t        maxB;
-        uint32_t        *logs;
-        uint32_t        *part;
-        BitsWriter      *ds_wt;
-        BitsWriter      *cd_wt;
+        uint32_t        numBlocks;
 
-        logs = new uint32_t[len];
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
 
+        uint32_t *logs = new uint32_t[len];
         if (logs == NULL)
-                eoutput("Can't allocate memory");
+                eoutput("Can't allocate memory: logs");
+
+        uint32_t *parts = new uint32_t[len + 1];
+        if (parts== NULL)
+                eoutput("Can't allocate memory: parts");
 
         /* Compute logs of all numbers */
-        for (i = 0; i < len; i++)
-                logs[i] = __vsesimplev1_remapLogs[1 + int_utils::get_msb(in[i])];
+        for (uint32_t i = 0; i < len; i++)
+                logs[i] = __vsesimplev1_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        part = __vsesimplev1->compute_OptPartition(logs, len,
-                        VSESIMPLEV1_LOGLEN + VSESIMPLEV1_LOGLOG, numBlocks);
+        __vsesimplev1.compute_OptPartition(logs, len,
+                        VSESIMPLEV1_LOGLEN + VSESIMPLEV1_LOGLOG,
+                        parts, numBlocks);
 
     	/* Ready to write descripters for compressed integers */ 
-        ds_wt = new BitsWriter(out);
-
-        if (ds_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter ds_wt(out);
 
      	/* Write the initial position of compressed integers */
-        pos = int_utils::div_roundup(numBlocks, 32 / VSESIMPLEV1_LOGDESC);
-        ds_wt->bit_writer(pos, 32);
+        uint32_t pos = __div_roundup(numBlocks, 32 / VSESIMPLEV1_LOGDESC);
+        ds_wt.bit_writer(pos, 32);
 
     	/* Ready to write actual compressed integers */ 
-        cd_wt = new BitsWriter(out + pos + 1);
-
-        if (cd_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter cd_wt(out + pos + 1);
 
         /* Write descripters & integers */
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 /* Compute max B in the block */
-                for (j = part[i], maxB = 0; j < part[i + 1]; j++) {
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
                 }
 
                 /* Compute the code for the block length */
-                for (k = 0; k < VSESIMPLEV1_LENS_LEN; k++) {
-                        if (part[i + 1] - part[i] == __vsesimplev1_possLens[k])
+                uint32_t idx = 0;
+
+                for (; idx < VSESIMPLEV1_LENS_LEN; idx++) {
+                        if (parts[i + 1] - parts[i] == __vsesimplev1_possLens[idx])
                                 break;
                 }
 
                 /* Write integers */
-                for (j = part[i]; j < part[i + 1]; j++) 
-                        cd_wt->bit_writer(in[j], maxB);
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) 
+                        cd_wt.bit_writer(in[j], maxB);
 
                 /* Allign to 32-bit */
-                cd_wt->bit_flush(); 
+                cd_wt.bit_flush(); 
 
                 /* Writes the value of B and K */
-                ds_wt->bit_writer(__vsesimplev1_codeLogs[maxB], VSESIMPLEV1_LOGLOG);
-                ds_wt->bit_writer(k, VSESIMPLEV1_LOGLEN);
+                ds_wt.bit_writer(__vsesimplev1_codeLogs[maxB], VSESIMPLEV1_LOGLOG);
+                ds_wt.bit_writer(idx, VSESIMPLEV1_LOGLEN);
         }
 
         /* Allign to 32-bit */
-        ds_wt->bit_flush(); 
+        ds_wt.bit_flush(); 
 
-        nvalue = ds_wt->written + cd_wt->written;
+        nvalue = ds_wt.get_written() + cd_wt.get_written();
 
+        delete[] parts;
         delete[] logs;
-        delete ds_wt;
-        delete cd_wt;
 }
 
 void
 VSEncodingSimpleV1::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t        d;
-        uint32_t        *bin;
-        uint32_t        *data;
-        uint32_t        *end;
+        uint32_t *bin = in;
 
-        bin = in;
-
-        data = bin + *bin + 1;
-        end = out + nvalue;
+        uint32_t *data = bin + *bin + 1;
+        uint32_t *end = out + nvalue;
         
         do {
                 /* Read B and K */
-                d = *++bin;
+                uint32_t d = *++bin;
 
                 /* Unpacking integers with a first 8-bit */
                 (__vsesimplev1_unpack[d >> VSESIMPLEV1_LOGDESC * 3])(&out, &data);
@@ -1101,11 +1087,8 @@ __vsesimplev1_unpack0_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
 
@@ -1116,11 +1099,8 @@ __vsesimplev1_unpack1_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1132,11 +1112,8 @@ __vsesimplev1_unpack1_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1149,11 +1126,8 @@ __vsesimplev1_unpack1_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1167,11 +1141,8 @@ __vsesimplev1_unpack1_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1186,11 +1157,8 @@ __vsesimplev1_unpack1_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1206,11 +1174,8 @@ __vsesimplev1_unpack1_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1227,11 +1192,8 @@ __vsesimplev1_unpack1_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1249,11 +1211,8 @@ __vsesimplev1_unpack1_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1272,11 +1231,8 @@ __vsesimplev1_unpack1_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1296,11 +1252,8 @@ __vsesimplev1_unpack1_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1321,11 +1274,8 @@ __vsesimplev1_unpack1_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1347,11 +1297,8 @@ __vsesimplev1_unpack1_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1375,11 +1322,8 @@ __vsesimplev1_unpack1_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1405,11 +1349,8 @@ __vsesimplev1_unpack1_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1451,11 +1392,8 @@ __vsesimplev1_unpack1_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack1_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 31;
         pout[1] = (pin[0] >> 30) & 0x01;
@@ -1530,11 +1468,8 @@ __vsesimplev1_unpack1_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
 
@@ -1545,11 +1480,8 @@ __vsesimplev1_unpack2_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1561,11 +1493,8 @@ __vsesimplev1_unpack2_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1578,11 +1507,8 @@ __vsesimplev1_unpack2_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1596,11 +1522,8 @@ __vsesimplev1_unpack2_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1615,11 +1538,8 @@ __vsesimplev1_unpack2_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1635,11 +1555,8 @@ __vsesimplev1_unpack2_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1656,11 +1573,8 @@ __vsesimplev1_unpack2_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1678,11 +1592,8 @@ __vsesimplev1_unpack2_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1701,11 +1612,8 @@ __vsesimplev1_unpack2_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1725,11 +1633,8 @@ __vsesimplev1_unpack2_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1750,11 +1655,8 @@ __vsesimplev1_unpack2_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1776,11 +1678,8 @@ __vsesimplev1_unpack2_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1804,11 +1703,8 @@ __vsesimplev1_unpack2_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1834,11 +1730,8 @@ __vsesimplev1_unpack2_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1880,11 +1773,8 @@ __vsesimplev1_unpack2_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack2_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 30;
         pout[1] = (pin[0] >> 28) & 0x03;
@@ -1959,11 +1849,8 @@ __vsesimplev1_unpack2_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
 
@@ -1974,11 +1861,8 @@ __vsesimplev1_unpack3_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -1990,11 +1874,8 @@ __vsesimplev1_unpack3_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2007,11 +1888,8 @@ __vsesimplev1_unpack3_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2025,11 +1903,8 @@ __vsesimplev1_unpack3_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2044,11 +1919,8 @@ __vsesimplev1_unpack3_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2064,11 +1936,8 @@ __vsesimplev1_unpack3_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2085,11 +1954,8 @@ __vsesimplev1_unpack3_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2107,11 +1973,8 @@ __vsesimplev1_unpack3_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2130,11 +1993,8 @@ __vsesimplev1_unpack3_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2154,11 +2014,8 @@ __vsesimplev1_unpack3_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2180,11 +2037,8 @@ __vsesimplev1_unpack3_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2207,11 +2061,8 @@ __vsesimplev1_unpack3_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2236,11 +2087,8 @@ __vsesimplev1_unpack3_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2267,11 +2115,8 @@ __vsesimplev1_unpack3_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2315,11 +2160,8 @@ __vsesimplev1_unpack3_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack3_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 29;
         pout[1] = (pin[0] >> 26) & 0x07;
@@ -2398,11 +2240,8 @@ __vsesimplev1_unpack3_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
 
@@ -2413,11 +2252,8 @@ __vsesimplev1_unpack4_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2429,11 +2265,8 @@ __vsesimplev1_unpack4_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2446,11 +2279,8 @@ __vsesimplev1_unpack4_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2464,11 +2294,8 @@ __vsesimplev1_unpack4_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2483,11 +2310,8 @@ __vsesimplev1_unpack4_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2503,11 +2327,8 @@ __vsesimplev1_unpack4_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2524,11 +2345,8 @@ __vsesimplev1_unpack4_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2546,11 +2364,8 @@ __vsesimplev1_unpack4_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2569,11 +2384,8 @@ __vsesimplev1_unpack4_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2593,11 +2405,8 @@ __vsesimplev1_unpack4_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2618,11 +2427,8 @@ __vsesimplev1_unpack4_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2644,11 +2450,8 @@ __vsesimplev1_unpack4_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2672,11 +2475,8 @@ __vsesimplev1_unpack4_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2702,11 +2502,8 @@ __vsesimplev1_unpack4_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2748,11 +2545,8 @@ __vsesimplev1_unpack4_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack4_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 28;
         pout[1] = (pin[0] >> 24) & 0x0f;
@@ -2827,11 +2621,8 @@ __vsesimplev1_unpack4_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
 
@@ -2842,11 +2633,8 @@ __vsesimplev1_unpack5_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2858,11 +2646,8 @@ __vsesimplev1_unpack5_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2875,11 +2660,8 @@ __vsesimplev1_unpack5_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2893,11 +2675,8 @@ __vsesimplev1_unpack5_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2912,11 +2691,8 @@ __vsesimplev1_unpack5_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2932,11 +2708,8 @@ __vsesimplev1_unpack5_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2954,11 +2727,8 @@ __vsesimplev1_unpack5_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -2977,11 +2747,8 @@ __vsesimplev1_unpack5_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3001,11 +2768,8 @@ __vsesimplev1_unpack5_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3026,11 +2790,8 @@ __vsesimplev1_unpack5_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3052,11 +2813,8 @@ __vsesimplev1_unpack5_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3079,11 +2837,8 @@ __vsesimplev1_unpack5_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3109,11 +2864,8 @@ __vsesimplev1_unpack5_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3141,11 +2893,8 @@ __vsesimplev1_unpack5_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3191,11 +2940,8 @@ __vsesimplev1_unpack5_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack5_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 27;
         pout[1] = (pin[0] >> 22) & 0x1f;
@@ -3278,11 +3024,8 @@ __vsesimplev1_unpack5_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
 
@@ -3293,11 +3036,8 @@ __vsesimplev1_unpack6_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3309,11 +3049,8 @@ __vsesimplev1_unpack6_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3326,11 +3063,8 @@ __vsesimplev1_unpack6_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3344,11 +3078,8 @@ __vsesimplev1_unpack6_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3363,11 +3094,8 @@ __vsesimplev1_unpack6_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3384,11 +3112,8 @@ __vsesimplev1_unpack6_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3406,11 +3131,8 @@ __vsesimplev1_unpack6_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3429,11 +3151,8 @@ __vsesimplev1_unpack6_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3453,11 +3172,8 @@ __vsesimplev1_unpack6_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3478,11 +3194,8 @@ __vsesimplev1_unpack6_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3505,11 +3218,8 @@ __vsesimplev1_unpack6_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3533,11 +3243,8 @@ __vsesimplev1_unpack6_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3563,11 +3270,8 @@ __vsesimplev1_unpack6_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3595,11 +3299,8 @@ __vsesimplev1_unpack6_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3645,11 +3346,8 @@ __vsesimplev1_unpack6_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack6_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 26;
         pout[1] = (pin[0] >> 20) & 0x3f;
@@ -3732,11 +3430,8 @@ __vsesimplev1_unpack6_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
 
@@ -3747,11 +3442,8 @@ __vsesimplev1_unpack7_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3763,11 +3455,8 @@ __vsesimplev1_unpack7_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3780,11 +3469,8 @@ __vsesimplev1_unpack7_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3798,11 +3484,8 @@ __vsesimplev1_unpack7_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3818,11 +3501,8 @@ __vsesimplev1_unpack7_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3839,11 +3519,8 @@ __vsesimplev1_unpack7_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3861,11 +3538,8 @@ __vsesimplev1_unpack7_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3884,11 +3558,8 @@ __vsesimplev1_unpack7_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3908,11 +3579,8 @@ __vsesimplev1_unpack7_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3934,11 +3602,8 @@ __vsesimplev1_unpack7_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3961,11 +3626,8 @@ __vsesimplev1_unpack7_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -3989,11 +3651,8 @@ __vsesimplev1_unpack7_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -4020,11 +3679,8 @@ __vsesimplev1_unpack7_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -4053,11 +3709,8 @@ __vsesimplev1_unpack7_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -4105,11 +3758,8 @@ __vsesimplev1_unpack7_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack7_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 25;
         pout[1] = (pin[0] >> 18) & 0x7f;
@@ -4196,11 +3846,8 @@ __vsesimplev1_unpack7_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
 
@@ -4211,11 +3858,8 @@ __vsesimplev1_unpack8_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4227,11 +3871,8 @@ __vsesimplev1_unpack8_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4244,11 +3885,8 @@ __vsesimplev1_unpack8_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4262,11 +3900,8 @@ __vsesimplev1_unpack8_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4281,11 +3916,8 @@ __vsesimplev1_unpack8_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4301,11 +3933,8 @@ __vsesimplev1_unpack8_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4322,11 +3951,8 @@ __vsesimplev1_unpack8_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4344,11 +3970,8 @@ __vsesimplev1_unpack8_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4367,11 +3990,8 @@ __vsesimplev1_unpack8_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4391,11 +4011,8 @@ __vsesimplev1_unpack8_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4416,11 +4033,8 @@ __vsesimplev1_unpack8_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4442,11 +4056,8 @@ __vsesimplev1_unpack8_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4470,11 +4081,8 @@ __vsesimplev1_unpack8_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4500,11 +4108,8 @@ __vsesimplev1_unpack8_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4546,11 +4151,8 @@ __vsesimplev1_unpack8_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack8_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 24;
         pout[1] = (pin[0] >> 16) & 0xff;
@@ -4625,11 +4227,8 @@ __vsesimplev1_unpack8_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
 
@@ -4640,11 +4239,8 @@ __vsesimplev1_unpack9_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4656,11 +4252,8 @@ __vsesimplev1_unpack9_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4673,11 +4266,8 @@ __vsesimplev1_unpack9_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4692,11 +4282,8 @@ __vsesimplev1_unpack9_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4712,11 +4299,8 @@ __vsesimplev1_unpack9_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4733,11 +4317,8 @@ __vsesimplev1_unpack9_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
         pout[2] = (pin[0] >> 5) & 0x01ff;
@@ -4754,11 +4335,8 @@ __vsesimplev1_unpack9_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4778,11 +4356,8 @@ __vsesimplev1_unpack9_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4803,11 +4378,8 @@ __vsesimplev1_unpack9_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4829,11 +4401,8 @@ __vsesimplev1_unpack9_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4857,11 +4426,8 @@ __vsesimplev1_unpack9_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4886,11 +4452,8 @@ __vsesimplev1_unpack9_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4917,11 +4480,8 @@ __vsesimplev1_unpack9_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -4951,11 +4511,8 @@ __vsesimplev1_unpack9_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -5005,11 +4562,8 @@ __vsesimplev1_unpack9_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack9_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in; 
+        uint32_t *pout = *out;
+        uint32_t *pin = *in; 
 
         pout[0] = pin[0] >> 23;
         pout[1] = (pin[0] >> 14) & 0x01ff;
@@ -5100,11 +4654,8 @@ __vsesimplev1_unpack9_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
 
@@ -5115,11 +4666,8 @@ __vsesimplev1_unpack10_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5131,11 +4679,8 @@ __vsesimplev1_unpack10_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5148,11 +4693,8 @@ __vsesimplev1_unpack10_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5167,11 +4709,8 @@ __vsesimplev1_unpack10_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5187,11 +4726,8 @@ __vsesimplev1_unpack10_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5208,11 +4744,8 @@ __vsesimplev1_unpack10_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5231,11 +4764,8 @@ __vsesimplev1_unpack10_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5255,11 +4785,8 @@ __vsesimplev1_unpack10_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5280,11 +4807,8 @@ __vsesimplev1_unpack10_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5307,11 +4831,8 @@ __vsesimplev1_unpack10_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5335,11 +4856,8 @@ __vsesimplev1_unpack10_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5364,11 +4882,8 @@ __vsesimplev1_unpack10_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5396,11 +4911,8 @@ __vsesimplev1_unpack10_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5430,11 +4942,8 @@ __vsesimplev1_unpack10_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5484,11 +4993,8 @@ __vsesimplev1_unpack10_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack10_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 22;
         pout[1] = (pin[0] >> 12) & 0x03ff;
@@ -5579,11 +5085,8 @@ __vsesimplev1_unpack10_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
 
@@ -5594,11 +5097,8 @@ __vsesimplev1_unpack11_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5610,11 +5110,8 @@ __vsesimplev1_unpack11_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5628,11 +5125,8 @@ __vsesimplev1_unpack11_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5647,11 +5141,8 @@ __vsesimplev1_unpack11_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5667,11 +5158,8 @@ __vsesimplev1_unpack11_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5689,11 +5177,8 @@ __vsesimplev1_unpack11_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5711,11 +5196,8 @@ __vsesimplev1_unpack11_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5735,11 +5217,8 @@ __vsesimplev1_unpack11_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5761,11 +5240,8 @@ __vsesimplev1_unpack11_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5788,11 +5264,8 @@ __vsesimplev1_unpack11_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5816,11 +5289,8 @@ __vsesimplev1_unpack11_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5846,11 +5316,8 @@ __vsesimplev1_unpack11_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5878,11 +5345,8 @@ __vsesimplev1_unpack11_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5913,11 +5377,8 @@ __vsesimplev1_unpack11_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -5969,11 +5430,8 @@ __vsesimplev1_unpack11_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack11_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 21;
         pout[1] = (pin[0] >> 10) & 0x07ff;
@@ -6068,11 +5526,8 @@ __vsesimplev1_unpack11_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
 
@@ -6083,11 +5538,8 @@ __vsesimplev1_unpack12_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6099,11 +5551,8 @@ __vsesimplev1_unpack12_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6117,11 +5566,8 @@ __vsesimplev1_unpack12_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6136,11 +5582,8 @@ __vsesimplev1_unpack12_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6156,11 +5599,8 @@ __vsesimplev1_unpack12_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6178,11 +5618,8 @@ __vsesimplev1_unpack12_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6201,11 +5638,8 @@ __vsesimplev1_unpack12_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6225,11 +5659,8 @@ __vsesimplev1_unpack12_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6250,11 +5681,8 @@ __vsesimplev1_unpack12_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6276,11 +5704,8 @@ __vsesimplev1_unpack12_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6304,11 +5729,8 @@ __vsesimplev1_unpack12_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6333,11 +5755,8 @@ __vsesimplev1_unpack12_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6365,11 +5784,8 @@ __vsesimplev1_unpack12_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6399,11 +5815,8 @@ __vsesimplev1_unpack12_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6453,11 +5866,8 @@ __vsesimplev1_unpack12_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack12_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 20;
         pout[1] = (pin[0] >> 8) & 0x0fff;
@@ -6548,11 +5958,8 @@ __vsesimplev1_unpack12_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
 
@@ -6563,11 +5970,8 @@ __vsesimplev1_unpack16_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6579,11 +5983,8 @@ __vsesimplev1_unpack16_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6596,11 +5997,8 @@ __vsesimplev1_unpack16_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6614,11 +6012,8 @@ __vsesimplev1_unpack16_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6633,11 +6028,8 @@ __vsesimplev1_unpack16_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6653,11 +6045,8 @@ __vsesimplev1_unpack16_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6674,11 +6063,8 @@ __vsesimplev1_unpack16_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6696,11 +6082,8 @@ __vsesimplev1_unpack16_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6719,11 +6102,8 @@ __vsesimplev1_unpack16_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6743,11 +6123,8 @@ __vsesimplev1_unpack16_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6768,11 +6145,8 @@ __vsesimplev1_unpack16_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6794,11 +6168,8 @@ __vsesimplev1_unpack16_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6822,11 +6193,8 @@ __vsesimplev1_unpack16_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6852,11 +6220,8 @@ __vsesimplev1_unpack16_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6898,11 +6263,8 @@ __vsesimplev1_unpack16_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack16_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 16;
         pout[1] = pin[0] & 0xffff;
@@ -6977,11 +6339,8 @@ __vsesimplev1_unpack16_64(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_1(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
 
@@ -6992,11 +6351,8 @@ __vsesimplev1_unpack20_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_2(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7009,11 +6365,8 @@ __vsesimplev1_unpack20_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_3(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7027,11 +6380,8 @@ __vsesimplev1_unpack20_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_4(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7047,11 +6397,8 @@ __vsesimplev1_unpack20_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_5(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7069,11 +6416,8 @@ __vsesimplev1_unpack20_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_6(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7092,11 +6436,8 @@ __vsesimplev1_unpack20_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_7(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7117,11 +6458,8 @@ __vsesimplev1_unpack20_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_8(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7143,11 +6481,8 @@ __vsesimplev1_unpack20_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_9(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7170,11 +6505,8 @@ __vsesimplev1_unpack20_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_10(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7199,11 +6531,8 @@ __vsesimplev1_unpack20_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_11(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7229,11 +6558,8 @@ __vsesimplev1_unpack20_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_12(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7261,11 +6587,8 @@ __vsesimplev1_unpack20_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_14(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7296,11 +6619,8 @@ __vsesimplev1_unpack20_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_16(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7334,11 +6654,8 @@ __vsesimplev1_unpack20_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_32(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;
@@ -7396,11 +6713,8 @@ __vsesimplev1_unpack20_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack20_64(uint32_t **out, uint32_t **in)
 {
-        uint32_t        *pout;
-        uint32_t        *pin;
-
-        pout = *out;
-        pin = *in;
+        uint32_t *pout = *out;
+        uint32_t *pin = *in;
 
         pout[0] = pin[0] >> 12;
         pout[1] = (pin[0] << 8) & 0x0fffff;

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  PForDelta.hpp - A encoder/decoder for PForDelta.
+ *  PForDelta.hpp - A encoder/decoder for PForDelta
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,18 +12,20 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef PFORDELTA_HPP
-#define PFORDELTA_HPP
+#ifndef __PFORDELTA_HPP__
+#define __PFORDELTA_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/Simple16.hpp"
 #include "io/BitsWriter.hpp"
 
+/* FIXME: There is a bug with 128 of PFORDELTA_BLOCKSZ */
 #define PFORDELTA_NBLOCK        1
 #define PFORDELTA_BLOCKSZ       (32 * PFORDELTA_NBLOCK)
-
-/* FIXME: There is a bug with 128 of PFORDELTA_BLOCKSZ */
 //#define PFORDELTA_BLOCKSZ       (128 * PFORDELTA_NBLOCK)
+
+namespace opc {
 
 class PForDelta {
 public:
@@ -41,6 +43,9 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* PForDelta */
 
-#endif /* PFORDELTA_HPP */
+}; /* namespace: opc */
+
+#endif /* __PFORDELTA_HPP__ */
+

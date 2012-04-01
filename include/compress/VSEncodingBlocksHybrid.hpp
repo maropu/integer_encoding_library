@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodiingBlocksHybrid.hpp - A encoder/decoder for hybrid VSEncoding.
+ *  VSEncodiingBlocksHybrid.hpp - A encoder/decoder for hybrid VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,13 +12,18 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef VSENCODINGBLOCKSHYBRID_HPP
-#define VSENCODINGBLOCKSHYBRID_HPP
+#ifndef __VSENCODINGBLOCKSHYBRID_HPP__
+#define __VSENCODINGBLOCKSHYBRID_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "compress/VSEncoding.hpp"
 #include "compress/VSEncodingBlocks.hpp"
 #include "compress/VSEncodingRest.hpp"
+
+#define VSEHYBRID_THRES         4096
+
+namespace opc {
 
 class VSEncodingBlocksHybrid {
 public:
@@ -26,6 +31,9 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* VSEncodingBlockHybrid */
 
-#endif /* VSENCODINGBLOCKSHYBRID_HPP */
+}; /* namespace: opc */
+
+#endif /* __VSENCODINGBLOCKSHYBRID_HPP__ */
+

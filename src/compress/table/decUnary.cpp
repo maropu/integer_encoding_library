@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decUnary.cpp - A transformation table for Unary codes.
+ *  decUnary.cpp - A transformation table for Unary codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,7 +12,9 @@
  *-----------------------------------------------------------------------------
  */
 
-unsigned short int decUnary[1 << 16] = {
+#include "compress/decUnary.hpp"
+
+unsigned short int opc::decUnary[1 << 16] = {
         16, 15, 14, 14, 13, 13, 13, 13, 12, 12, 12, 
         12, 12, 12, 12, 12, 11, 11, 11, 11, 11, 
         11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 

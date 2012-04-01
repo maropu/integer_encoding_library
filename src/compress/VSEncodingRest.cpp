@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  VSEncodingRest.cpp - A optimized implementation of VSEncoding.
+ *  VSEncodingRest.cpp - A optimized implementation of VSEncoding
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -21,6 +21,8 @@
 #define VSEREST_LENS_LEN        (1 << VSEREST_LOGLEN)
 #define VSEREST_LOGS_LEN        (1 << VSEREST_LOGLOG)
 #define VSEREST_LEN             (1 << VSEREST_LOGDESC)
+
+using namespace opc;
 
 /* A set of unpacking functions */
 
@@ -753,111 +755,99 @@ static void __vserest_fill_pad(uint32_t *base,
                 uint32_t *len, uint32_t maxB, BitsWriter *wt);
 static void __vserest_push_pad(uint32_t nleft, BitsWriter *wt);
 
-/* FIXME: Stupid codes here, so it needs to be replaced */
-#ifdef USE_BOOST_SHAREDPTR
-static VSEncodingPtr __vserest =
-                VSEncodingPtr(new VSEncoding(&__vserest_possLens[0],
-                NULL, VSEREST_LENS_LEN, false));
-#else
-static VSEncoding *__vserest =
-                new VSEncoding(&__vserest_possLens[0],
+static VSEncoding __vserest(
+                &__vserest_possLens[0],
                 NULL, VSEREST_LENS_LEN, false);
-#endif /* USE_BOOST_SHAREDPTR */
 
 void
 VSEncodingRest::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        j;
-        uint32_t        k;
         uint32_t        numBlocks;
-        uint32_t        pos;
         uint32_t        maxB;
-        uint32_t        *logs;
-        uint32_t        *part;
-        BitsWriter      *ds_wt;
-        BitsWriter      *cd_wt;
 
-        logs = new uint32_t[len];
-        if (logs == NULL)
-                eoutput("Can't allocate memory");
+        if (len > MAXLEN)
+                eoutput("Overflowed input length (CHECK: MAXLEN)");
 
         /* Initialize the ring buffer */
         __vserest_init_pad();
 
+        uint32_t *logs = new uint32_t[len];
+        if (logs == NULL)
+                eoutput("Can't allocate memory: logs");
+
+        uint32_t *parts = new uint32_t[len  + 1];
+        if (parts == NULL)
+                eoutput("Can't allocate memory: parts");
+
         /* Compute logs of all numbers */
-        for (i = 0; i < len; i++)
-                logs[i] = __vserest_remapLogs[1 + int_utils::get_msb(in[i])];
+        for (uint32_t i = 0; i < len; i++)
+                logs[i] = __vserest_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        part = __vserest->compute_OptPartition(logs, len,
-                        VSEREST_LOGLEN + VSEREST_LOGLOG, numBlocks);
+        __vserest.compute_OptPartition(logs, len,
+                        VSEREST_LOGLEN + VSEREST_LOGLOG,
+                        parts, numBlocks);
 
     	/* Ready to write descripters for compressed integers */ 
-        ds_wt = new BitsWriter(out);
-        if (ds_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter ds_wt(out);
 
      	/* Write the initial position of compressed integers */
-        pos = int_utils::div_roundup(numBlocks, 32 / VSEREST_LOGDESC);
-        ds_wt->bit_writer(pos, 32);
+        uint32_t pos = __div_roundup(numBlocks, 32 / VSEREST_LOGDESC);
+        ds_wt.bit_writer(pos, 32);
 
     	/* Ready to write actual compressed integers */ 
-        cd_wt = new BitsWriter(out + pos + 1);
-        if (cd_wt == NULL)
-                eoutput("Can't initialize a class");
+        BitsWriter cd_wt(out + pos + 1);
 
         /* Write descripters & integers */
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 /* Compute max B in the block */
-                for (j = part[i], maxB = 0; j < part[i + 1]; j++) {
+                maxB = 0;
+
+                for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         if (maxB < logs[j])
                                 maxB = logs[j];
                 }
 
                 /* Compute the code for the block length */
-                for (k = 0; k < VSEREST_LENS_LEN; k++) {
-                        if (part[i + 1] - part[i] == __vserest_possLens[k])
+                uint32_t idx = 0;
+
+                for (; idx < VSEREST_LENS_LEN; idx++) {
+                        if (parts[i + 1] - parts[i] == __vserest_possLens[idx])
                                 break;
                 }
 
                 /* A code for a buffering technique to exploit padding areas */
-                {
-                        uint32_t        offset;
+                uint32_t offset = parts[i + 1] - parts[i];
 
-                        offset = part[i + 1] - part[i];
+                /* Fill the buffer */
+                __vserest_fill_pad(&in[parts[i]], &offset, maxB, &cd_wt);
 
-                        /* Fill the buffer */
-                        __vserest_fill_pad(&in[part[i]], &offset, maxB, cd_wt);
+                if (parts[i] + offset < parts[i + 1]) {
+                        /* Write integers */
+                        for (uint32_t j = parts[i] + offset; j < parts[i + 1]; j++)
+                                cd_wt.bit_writer(in[j], maxB);
 
-                        if (part[i] + offset < part[i + 1]) {
-                                /* Write integers */
-                                for (j = part[i] + offset; j < part[i + 1]; j++)
-                                        cd_wt->bit_writer(in[j], maxB);
-
-                                /* Remember the position of padding areas */
-                                __vserest_push_pad(
-                                        32 - ((part[i + 1] - part[i]) * maxB) % 32, cd_wt);
-                        }
+                        /* Remember the position of padding areas */
+                        __vserest_push_pad(
+                                32 - ((parts[i + 1] - parts[i]) * maxB) % 32, &cd_wt);
                 }
 
                 /* Align to 32-bit */
-                cd_wt->bit_flush(); 
+                cd_wt.bit_flush(); 
 
                 /* Writes the value of B and K */
-                ds_wt->bit_writer(__vserest_codeLogs[maxB], VSEREST_LOGLOG);
-                ds_wt->bit_writer(k, VSEREST_LOGLEN);
+                ds_wt.bit_writer(__vserest_codeLogs[maxB], VSEREST_LOGLOG);
+                ds_wt.bit_writer(idx, VSEREST_LOGLEN);
         }
 
         /* Align to 32-bit */
-        ds_wt->bit_flush(); 
+        ds_wt.bit_flush(); 
 
-        nvalue = ds_wt->written + cd_wt->written;
+        nvalue = ds_wt.get_written() + cd_wt.get_written();
 
-        delete ds_wt;
-        delete cd_wt;
         delete[] logs;
+        delete[] parts;
 }
 
 void
@@ -929,11 +919,9 @@ void
 __vserest_fill_pad(uint32_t *base, uint32_t *len,
                 uint32_t maxB, BitsWriter *wt)
 {
-        uint32_t        length;
-
         __assert(*len != 0);
 
-        length = *len;
+        uint32_t length = *len;
         *len = 0;
 
         if (CAN_FILL_PADDING()) {
@@ -991,7 +979,7 @@ __vserest_push_pad(uint32_t nleft, BitsWriter *wt)
 
         if (nleft != 32) {
                 __pad_st.nPad += nleft;
-                __pad_st.ent[__pad_st.tail].pos = wt->ret_pos();
+                __pad_st.ent[__pad_st.tail].pos = wt->get_pos();
                 __pad_st.ent[__pad_st.tail].nleft = nleft;
                 __pad_st.ent[__pad_st.tail].shift = 0;
                 __pad_st.tail = (__pad_st.tail + 1) % 32;
@@ -1008,28 +996,20 @@ void
 VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t        d;
-        uint32_t        *bin;
-        uint32_t        *data;
-        uint32_t        *end;
-
         /* To harness the padding areas of each partition */
-        uint32_t        Fill;
-        uint64_t        buffer;
+        uint32_t Fill = 0;
+        uint64_t buffer = 0;
 
-        Fill = 0;
-        buffer = 0;
+        uint32_t *bin = in;
 
-        bin = in;
-
-        end = bin + len;
-        data = bin + *bin + 1;
+        uint32_t *end = bin + len;
+        uint32_t *data = bin + *bin + 1;
 
         __assert(*bin < len);
 
         do {
                 /* Read B and K */
-                d = *++bin;
+                uint32_t d = *++bin;
 
                 /* Unpacking integers with a first 8-bit */
                 (__vserest_unpack[d >> VSEREST_LOGDESC * 3])(&out, &data, Fill, buffer);

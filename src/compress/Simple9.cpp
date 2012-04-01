@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  Simple9.cpp - A implementation of Simple9.
+ *  Simple9.cpp - A implementation of Simple9
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -17,6 +17,8 @@
 #define SIMPLE9_LOGDESC         4
 #define SIMPLE9_LEN             (1 << SIMPLE9_LOGDESC)
 
+using namespace opc;
+
 #define SIMPLE9_DESC_FUNC(num, log)     \
         bool                            \
         Simple9::try##num##_##log##bit(uint32_t *n, uint32_t len)       \
@@ -27,7 +29,7 @@
                 min = (len < num)? len : num;   \
 \
                 for (i = 0; i < min; i++) {     \
-                        if (int_utils::get_msb(n[i]) > log - 1)         \
+                        if (__get_msb(n[i]) > log - 1)  \
                                 return false;   \
                 }               \
 \
@@ -80,89 +82,84 @@ void
 Simple9::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
         uint32_t        min;
-        BitsWriter      *wt;
-
-        wt = new BitsWriter(out);
+        BitsWriter      wt(out);
 
         while (len > 0) {
                 if (Simple9::try28_1bit(in, len)) {
                         /* Descripter Number: 0 */
-                        wt->bit_writer(0, 4);
+                        wt.bit_writer(0, 4);
 
                         min = (len < 28)? len : 28;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 1);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 1);
                 } else if (Simple9::try14_2bit(in, len)) {
                         /* Descripter Number: 1 */
-                        wt->bit_writer(1, 4);
+                        wt.bit_writer(1, 4);
 
                         min = (len < 14)? len : 14;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 2);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 2);
                 } else if (Simple9::try9_3bit(in, len)) {
                         /* Descripter Number: 2 */
-                        wt->bit_writer(2, 4);
+                        wt.bit_writer(2, 4);
 
                         min = (len < 9)? len : 9;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 3);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 3);
                 } else if (Simple9::try7_4bit(in, len)) {
                         /* Descripter Number: 3 */
-                        wt->bit_writer(3, 4);
+                        wt.bit_writer(3, 4);
 
                         min = (len < 7)? len : 7;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 4);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 4);
                 } else if (Simple9::try5_5bit(in, len)) {
                         /* Descripter Number: 4 */
-                        wt->bit_writer(4, 4);
+                        wt.bit_writer(4, 4);
 
                         min = (len < 5)? len : 5;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 5);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 5);
                 } else if (Simple9::try4_7bit(in, len)) {
                         /* Descripter Number: 5 */
-                        wt->bit_writer(5, 4);
+                        wt.bit_writer(5, 4);
 
                         min = (len < 4)? len : 4;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 7);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 7);
                 } else if (Simple9::try3_9bit(in, len)) {
                         /* Descripter Number: 6 */
-                        wt->bit_writer(6, 4);
+                        wt.bit_writer(6, 4);
 
                         min = (len < 3)? len : 3;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 9);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 9);
                 } else if (Simple9::try2_14bit(in, len)) {
                         /* Descripter Number: 7 */
-                        wt->bit_writer(7, 4);
+                        wt.bit_writer(7, 4);
 
                         min = (len < 2)? len : 2;
-                        for (i = 0; i < min; i++)
-                                wt->bit_writer(*in++, 14);
+                        for (uint32_t i = 0; i < min; i++)
+                                wt.bit_writer(*in++, 14);
                 } else {
                         if ((*in >> 28) > 0)
                                 eoutput("Input's out of range: %u", *in);
 
                         /* Descripter Number: 8 */
-                        wt->bit_writer(8, 4);
+                        wt.bit_writer(8, 4);
 
                         min = 1;
-                        wt->bit_writer(*in++, 28);
+                        wt.bit_writer(*in++, 28);
                 }
 
                 /* Align to 32-bit */
-                wt->bit_flush();
+                wt.bit_flush();
 
                 len -= min;
         }
 
-        nvalue = wt->written;
-
-        delete wt;
+        nvalue = wt.get_written();
 }
 
 void

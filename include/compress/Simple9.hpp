@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  Simple9.hpp - A encoder/decoder for Simple9.
+ *  Simple9.hpp - A encoder/decoder for Simple9
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,11 +12,14 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef SIMPLE9_HPP
-#define SIMPLE9_HPP
+#ifndef __SIMPLE9_HPP__
+#define __SIMPLE9_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
+
 #include "io/BitsWriter.hpp"
+
+namespace opc {
 
 class Simple9 {
 private:
@@ -38,6 +41,8 @@ public:
                         uint32_t *out, uint32_t &nvalue);
         static void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue);
-};
+}; /* Simple9 */
 
-#endif /* SIMPLE9_HPP */
+}; /* namespace: opc */
+
+#endif /* __SIMPLE9_HPP__ */

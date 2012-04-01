@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  BitsWriter.hpp - A coder interface to write compressed data.
+ *  BitsWriter.hpp - A coder interface to write compressed data
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,44 +12,51 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef BITSWRITER_HPP
-#define BITSWRITER_HPP
+#ifndef __BITSWRITER_HPP__
+#define __BITSWRITER_HPP__
 
-#include "open_coders.hpp"
+#include "xxx_common.hpp"
 
-using namespace std;
+namespace opc {
 
 class BitsWriter {
-        private:
-                uint64_t        buffer;
-                uint32_t        Fill; 
-                uint32_t        *data;
+private:
+        uint32_t        *data;
+        uint64_t        buffer;
+        uint32_t        Fill; 
+        uint32_t        written;    
 
-        public:
-                uint32_t        written;    
+public:
+        /* Constructor */
+        BitsWriter(uint32_t *out);
 
-                BitsWriter(uint32_t *out);
+        /* Destructor */
+        ~BitsWriter();
 
-                void bit_flush();
-                void bit_writer(uint32_t value, uint32_t bits);
+        void bit_flush();
+        void bit_writer(uint32_t value, uint32_t bits);
 
-                uint32_t *ret_pos();
+        uint32_t *get_pos() const;
+        uint32_t get_written() const;
 
-                /* For Unary codes */
-                void N_Unary(int num);
-                uint32_t N_UnaryArray(uint32_t *in, uint32_t len);
+        /* For Unary codes */
+        void N_Unary(int num);
+        uint32_t N_UnaryArray(uint32_t *in, uint32_t len);
 
-                /* For Delta codes */
-                void N_Gamma(uint32_t val);
-                uint32_t N_GammaArray(uint32_t *in, uint32_t len);
+        /* For Delta codes */
+        void N_Gamma(uint32_t val);
+        uint32_t N_GammaArray(uint32_t *in, uint32_t len);
 
-                /* For Delta codes */
-                uint32_t N_DeltaArray(uint32_t *in, uint32_t len);
+        /* For Delta codes */
+        uint32_t N_DeltaArray(uint32_t *in, uint32_t len);
 
-                /* For Binary Interpolative codes */
-                void writeMinimalBinary(uint32_t x, uint32_t b);
-                void InterpolativeArray(uint32_t *in, uint32_t len,
-                                uint32_t offset, uint32_t lo, uint32_t hi);
-};
+        /* For Binary Interpolative codes */
+        void writeMinimalBinary(uint32_t x, uint32_t b);
+        void InterpolativeArray(uint32_t *in, uint32_t len,
+                        uint32_t offset, uint32_t lo, uint32_t hi);
+}; /* BitsWriter */
 
-#endif /* BITS_WRITER_HPP */
+}; /* namespace: opc */
+
+#endif /* __BITS_WRITER_HPP__ */
+

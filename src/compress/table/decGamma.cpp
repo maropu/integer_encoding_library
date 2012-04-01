@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  decGamma.cpp - A transformation table for Gamma codes.
+ *  decGamma.cpp - A transformation table for Gamma codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,9 +12,9 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <stdint.h>
+#include "compress/decGamma.hpp"
 
-uint32_t decGamma[1 << 16] = {
+uint32_t opc::decGamma[1 << 16] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
