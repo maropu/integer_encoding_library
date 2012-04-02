@@ -30,4 +30,10 @@
  #define FILE_OFFSET_BITS       64
 #endif
 
+/*
+ * NOTE: Some decoders are intended to overrun
+ * these tails of given memory for performance reasons.
+ */
+#define OUTPUTMEM(len)          ((len) + 128)
+
 #endif /* __INTEGER_CODERS_HPP__ */

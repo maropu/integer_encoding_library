@@ -136,15 +136,14 @@ static uint32_t __p4delta_possLogs[] = {
 uint32_t
 PForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len) 
 {
-        uint32_t        i;
-        uint32_t        curExcept;
-
         __assert(b <= 32);
 
         if (b == 32)
                 return 0;
 
-        for (i = 0, curExcept = 0; i < len; i++) {
+        uint32_t curExcept = 0;
+
+        for (uint32_t i = 0; i < len; i++) {
                 if (in[i] >= (1ULL << b))
                         curExcept++;
         }
@@ -155,10 +154,10 @@ PForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
 uint32_t
 PForDelta::findBestB(uint32_t *in, uint32_t len)
 {
-        uint32_t        i;
         uint32_t        nExceptions;
 
-        for (i = 0; i < __array_size(__p4delta_possLogs) - 1; i++) {
+        for (uint32_t i = 0; i <
+                        __array_size(__p4delta_possLogs) - 1; i++) {
                 nExceptions = PForDelta::tryB(__p4delta_possLogs[i], in, len); 
 
                 if (nExceptions <= len * PFORDELTA_RATIO)
@@ -173,49 +172,40 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue,
                 uint32_t (*find)(uint32_t *in, uint32_t len))
 {
-        uint32_t        i;
-        uint32_t        b;
-        uint32_t        e;
-        uint32_t        *codewords;
-        uint32_t        codewords_sz;
-        uint32_t        curExcept;
-        uint32_t        *exceptionsPositions;
-        uint32_t        *exceptionsValues;
-        uint32_t        *exceptions;
-        uint32_t        *encodedExceptions;
-        uint32_t        encodedExceptions_sz;
-        uint32_t        excPos;
-        uint32_t        excVal;
-        BitsWriter      *wt;
-
         if (len > 0) {
-                codewords = new uint32_t[len];
-                exceptionsPositions = new uint32_t[len];
-                exceptionsValues = new uint32_t[len];
-                exceptions = new uint32_t[2 * len];
-                encodedExceptions = new uint32_t[2 * len + 2];
+                uint32_t *codewords = new uint32_t[len];
+                if (codewords == NULL)
+                        eoutput("Can't allocate memory: codewords");
 
-                if (codewords == NULL || exceptionsPositions == NULL ||
-                                exceptionsValues == NULL ||
-                                exceptions == NULL || encodedExceptions == NULL)
-                        eoutput("Can't allocate memory");
+                uint32_t *exceptionsPositions = new uint32_t[len];
+                if (exceptionsPositions == NULL)
+                        eoutput("Can't allocate memory: exceptionsPositions");
 
-                wt = new BitsWriter(codewords);
+                uint32_t *exceptionsValues = new uint32_t[len];
+                if (exceptionsValues == NULL)
+                        eoutput("Can't allocate memory: exceptionsValues");
 
-                if (wt == NULL)
-                        eoutput("Can't initialize a class");
+                uint32_t *exceptions = new uint32_t[2 * len];
+                if (exceptions == NULL)
+                        eoutput("Can't allocate memory: exceptions");
 
-                b = find(in, len); 
+                uint32_t *encodedExceptions = new uint32_t[2 * len + 2];
+                if (encodedExceptions == NULL)
+                        eoutput("Can't allocate memory: encodedExceptions");
 
-                curExcept = 0;
-                encodedExceptions_sz = 0;
+                BitsWriter wt(codewords);
+
+                uint32_t b = find(in, len); 
+
+                uint32_t curExcept = 0;
+                uint32_t encodedExceptions_sz = 0;
 
                 if (b < 32) {
-                        for (i = 0; i < len; i++) {
-                                wt->bit_writer(in[i], b);
+                        for (uint32_t i = 0; i < len; i++) {
+                                wt.bit_writer(in[i], b);
 
                                 if (in[i] >= (1U << b)) {
-                                        e = in[i] >> b;
+                                        uint32_t e = in[i] >> b;
                                         exceptionsPositions[curExcept] = i;
                                         exceptionsValues[curExcept] = e;
                                         curExcept++;
@@ -226,17 +216,17 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                                 uint32_t        cur;
                                 uint32_t        prev;
 
-                                for (i = curExcept - 1; i > 0; i--) {
+                                for (uint32_t i = curExcept - 1; i > 0; i--) {
                                         cur = exceptionsPositions[i];
                                         prev = exceptionsPositions[i - 1];
 
                                         exceptionsPositions[i] = cur - prev;
                                 }
 
-                                for (i = 0; i < curExcept; i++) {
-                                        excPos = (i > 0)? exceptionsPositions[i] - 1 :
+                                for (uint32_t i = 0; i < curExcept; i++) {
+                                        uint32_t excPos = (i > 0)? exceptionsPositions[i] - 1 :
                                                 exceptionsPositions[i];
-                                        excVal = exceptionsValues[i] - 1;
+                                        uint32_t excVal = exceptionsValues[i] - 1;
 
                                         exceptions[i] = excPos;
                                         exceptions[i + curExcept] = excVal;
@@ -246,13 +236,13 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                                                 encodedExceptions, encodedExceptions_sz);
                         }
                 } else {
-                        for (i = 0; i < len; i++)
-                                wt->bit_writer(in[i], 32);
+                        for (uint32_t i = 0; i < len; i++)
+                                wt.bit_writer(in[i], 32);
 
-                        wt->bit_flush();
+                        wt.bit_flush();
                 }
 
-                wt->bit_flush();
+                wt.bit_flush();
 
                 /* Write a header following the format */
                 *out++ = (b << (PFORDELTA_NEXCEPT + PFORDELTA_EXCEPTSZ)) |
@@ -265,7 +255,7 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 nvalue += encodedExceptions_sz;
 
                 /* Write fix-length values */
-                codewords_sz = wt->get_written();
+                uint32_t codewords_sz = wt.get_written();
                 memcpy(out, codewords, codewords_sz * sizeof(uint32_t));
                 nvalue += codewords_sz;
 
@@ -275,7 +265,6 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 delete[] exceptionsValues;
                 delete[] encodedExceptions;
                 delete[] codewords;
-                delete wt;
         }
 }
 
@@ -283,17 +272,15 @@ void
 PForDelta::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        numBlocks;
         uint32_t        csize;
 
-        numBlocks = __div_roundup(len, PFORDELTA_BLOCKSZ); 
+        uint32_t numBlocks = __div_roundup(len, PFORDELTA_BLOCKSZ); 
 
         /* Output the number of blocks */
         *out++ = numBlocks;
         nvalue = 1;
 
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 if (__likely(i != numBlocks - 1)) {
                         PForDelta::encodeBlock(in, PFORDELTA_BLOCKSZ,
                                         out, csize, PForDelta::findBestB); 
@@ -322,18 +309,16 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
         int32_t         lpos;
-        uint32_t        i;
         uint32_t        e;
-        uint32_t        numBlocks;
         uint32_t        b;
         uint32_t        excVal;
         uint32_t        nExceptions;
         uint32_t        encodedExceptionsSize;
-        uint32_t        except[2 * PFORDELTA_BLOCKSZ + TAIL_MERGIN + 1];
+        uint32_t        except[2 * PFORDELTA_BLOCKSZ + 128];
 
-        numBlocks = *in++;
+        uint32_t numBlocks = *in++;
 
-        for (i = 0; i < numBlocks; i++) {
+        for (uint32_t i = 0; i < numBlocks; i++) {
                 b = *in >> (32 - PFORDELTA_B);
 
                 nExceptions = (*in >>
@@ -372,9 +357,8 @@ __p4delta_simple16_decode(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
         uint32_t        hd;
-        uint32_t        nlen;
 
-        nlen = 0;
+        uint32_t nlen = 0;
 
         while (len > nlen) {
                 hd = *in >> 28;
@@ -656,9 +640,7 @@ __p4delta_simple16_decode(uint32_t *in, uint32_t len,
 void
 __p4delta_unpack0(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32) {
                 __p4delta_zero32(out);
         }
@@ -667,9 +649,7 @@ __p4delta_unpack0(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack1(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 1) {
                 out[0] = in[0] >> 31;
                 out[1] = (in[0] >> 30) & 0x01;
@@ -709,9 +689,7 @@ __p4delta_unpack1(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack2(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 2) {
                 out[0] = in[0] >> 30;
                 out[1] = (in[0] >> 28) & 0x03;
@@ -751,9 +729,7 @@ __p4delta_unpack2(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack3(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 3) {
                 out[0] = in[0] >> 29;
                 out[1] = (in[0] >> 26) & 0x07;
@@ -795,9 +771,7 @@ __p4delta_unpack3(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack4(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 4) {
                 out[0] = in[0] >> 28;
                 out[1] = (in[0] >> 24) & 0x0f;
@@ -837,9 +811,7 @@ __p4delta_unpack4(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack5(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 5) {
                 out[0] = in[0] >> 27;
                 out[1] = (in[0] >> 22) & 0x1f;
@@ -883,9 +855,7 @@ __p4delta_unpack5(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack6(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 6) {
                 out[0] = in[0] >> 26;
                 out[1] = (in[0] >> 20) & 0x3f;
@@ -929,9 +899,7 @@ __p4delta_unpack6(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack7(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 7) {
                 out[0] = in[0] >> 25;
                 out[1] = (in[0] >> 18) & 0x7f;
@@ -977,9 +945,7 @@ __p4delta_unpack7(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack8(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 8) {
                 out[0] = in[0] >> 24;
                 out[1] = (in[0] >> 16) & 0xff;
@@ -1019,9 +985,7 @@ __p4delta_unpack8(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack9(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 9) {
                 out[0] = in[0] >> 23;
                 out[1] = (in[0] >> 14) & 0x01ff;
@@ -1069,9 +1033,7 @@ __p4delta_unpack9(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack10(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 10) {
                 out[0] = in[0] >> 22;
                 out[1] = (in[0] >> 12) & 0x03ff;
@@ -1119,9 +1081,7 @@ __p4delta_unpack10(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack11(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 11) {
                 out[0] = in[0] >> 21;
                 out[1] = (in[0] >> 10) & 0x07ff;
@@ -1171,9 +1131,7 @@ __p4delta_unpack11(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack12(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 12) {
                 out[0] = in[0] >> 20;
                 out[1] = (in[0] >> 8) & 0x0fff;
@@ -1221,9 +1179,7 @@ __p4delta_unpack12(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack13(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 13) {
                 out[0] = in[0] >> 19;
                 out[1] = (in[0] >> 6) & 0x1fff;
@@ -1275,9 +1231,7 @@ __p4delta_unpack13(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack16(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 16) {
                 out[0] = in[0] >> 16;
                 out[1] = in[0] & 0xffff;
@@ -1317,9 +1271,7 @@ __p4delta_unpack16(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack20(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ;
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
                         i += 32, out += 32, in += 20) {
                 out[0] = in[0] >> 12;
                 out[1] = (in[0] << 8) & 0x0fffff;
@@ -1375,9 +1327,8 @@ __p4delta_unpack20(uint32_t *out, uint32_t *in)
 void
 __p4delta_unpack32(uint32_t *out, uint32_t *in)
 {
-        uint32_t        i;
-
-        for (i = 0; i < PFORDELTA_BLOCKSZ; i += 16, out += 16, in += 16) {
+        for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
+                        i += 16, out += 16, in += 16) {
                 __p4delta_copy(in, out);
         }
 }

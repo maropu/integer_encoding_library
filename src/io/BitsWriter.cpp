@@ -22,10 +22,7 @@ BitsWriter::BitsWriter()
 
 BitsWriter::BitsWriter(uint32_t *out)
                 : data(out), buffer(0),
-                        Fill(0), written(0) {
-        if (out == NULL)
-                eoutput("Invalid value: out");
-}
+                        Fill(0), written(0) {}
 
 BitsWriter::~BitsWriter() {}
 
@@ -61,6 +58,9 @@ BitsWriter::bit_flush()
 void
 BitsWriter::bit_writer(uint32_t value, uint32_t bits)
 {
+        if (data == NULL)
+                eoutput("Not initialized yet: data");
+
         if (bits == 0)
                 return;
 

@@ -25,62 +25,55 @@ void
 VariableByte::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        i;
-        uint32_t        nwords;
-        BitsWriter      *wt;
+        BitsWriter wt(out);
 
-        wt = new BitsWriter(out);
-
-        uint32_t t;
-
-        for (i = 0; i < len; i++) {
-                nwords = __get_msb(in[i]) / 7;
+        for (uint32_t i = 0; i < len; i++) {
+                uint32_t nwords = __get_msb(in[i]) / 7;
 
                 switch(nwords) {
                 case 0:
-                        wt->bit_writer(1, 1);
-                        t = VARIABLEBYTE_EXT7BITS(in[i], 0);
-                        wt->bit_writer(t, 7);
+                        wt.bit_writer(1, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
                         break;
 
                 case 1:
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
-                        wt->bit_writer(1, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
+                        wt.bit_writer(1, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
                         break;
 
                 case 2:
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
-                        wt->bit_writer(1, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
+                        wt.bit_writer(1, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
                         break;
 
                 case 3:
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
-                        wt->bit_writer(1, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 3), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
+                        wt.bit_writer(1, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 3), 7);
                         break;
 
                 case 4:
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
-                        wt->bit_writer(0, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 3), 7);
-                        wt->bit_writer(1, 1);
-                        wt->bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 4), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 0), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 1), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 2), 7);
+                        wt.bit_writer(0, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 3), 7);
+                        wt.bit_writer(1, 1);
+                        wt.bit_writer(VARIABLEBYTE_EXT7BITS(in[i], 4), 7);
                         break;
 
                 default:
@@ -89,38 +82,30 @@ VariableByte::encodeArray(uint32_t *in, uint32_t len,
                 }
         }
 
-        wt->bit_flush();
-        nvalue = wt->get_written();
+        wt.bit_flush();
 
-        delete wt;
+        nvalue = wt.get_written();
 }
 
 void
 VariableByte::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t        i;
-        uint32_t        j;
-        uint32_t        d;
-        BitsReader      *rd;
+        BitsReader rd(in);
 
-        rd = new BitsReader(in);
-
-        for (i = 0; i < nvalue; i++) {
-                d = rd->bit_reader(8);
+        for (uint32_t i = 0; i < nvalue; i++) {
+                uint32_t d = rd.bit_reader(8);
 
                 *out = d & VARIABLEBYTE_DATA;
 
-                for (j = 1; (d & VARIABLEBYTE_DESC) == 0; j++) {
+                for (uint32_t j = 1; (d & VARIABLEBYTE_DESC) == 0; j++) {
                         __assert(j <= 5);
 
-                        d = rd->bit_reader(8);
+                        d = rd.bit_reader(8);
                         *out |= (d & VARIABLEBYTE_DATA) << (7 * j);
                 }
 
                 out++;
         }
-
-        delete rd;
 }
 

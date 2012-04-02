@@ -37,9 +37,9 @@ main(int argc, char **argv)
                         (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
 
-        uint32_t *list = new uint32_t[MAXLEN + TAIL_MERGIN];
+        uint32_t *list = new uint32_t[OUTPUTMEM(MAXLEN)];
         if (list == NULL)
-                eoutput("Can't allocate memory");
+                eoutput("Can't allocate memory: list");
 
         /*
          * FIXME: VSEncodingRest self-modifies a compressed
@@ -49,9 +49,9 @@ main(int argc, char **argv)
         uint32_t *sbuf = NULL;
         if (decID == D_VSEREST ||
                         decID == D_VSEHYB) {
-                sbuf = new uint32_t[MAXLEN + TAIL_MERGIN];
+                sbuf = new uint32_t[OUTPUTMEM(MAXLEN)];
                 if (sbuf == NULL)
-                        eoutput("Can't allocate memory");
+                        eoutput("Can't allocate memory: sbuf");
         }
 
         /* Read the file name, and open it */
@@ -189,6 +189,11 @@ LOOP_END:
                 fclose(dec);
 
         delete[] list;
+
+        if (decID == D_VSEREST ||
+                        decID == D_VSEHYB) {
+                delete[] sbuf;
+        }
 
         return EXIT_SUCCESS;
 }

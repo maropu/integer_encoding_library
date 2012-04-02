@@ -37,7 +37,7 @@ BitsReader::~BitsReader() {}
 uint32_t
 BitsReader::bit_reader(uint32_t bits)
 {
-        __assert(bits <= 32);
+        __assert(bits <= 32 && data != NULL);
 
         if (bits == 0)
                 return 0;

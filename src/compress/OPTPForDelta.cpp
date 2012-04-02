@@ -18,6 +18,7 @@
 
 #include "compress/OPTPForDelta.hpp"
 
+using namespace std;
 using namespace opc;
 
 static uint32_t __optp4delta_possLogs[] = {
@@ -28,43 +29,24 @@ uint32_t
 OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len) 
 {
         uint32_t        size;
-        uint32_t        curExcept;
-        uint32_t        *exceptionsPositions;
-        uint32_t        *exceptionsValues;
-        uint32_t        *exceptions;
-        uint32_t        *encodedExceptions;
-        uint32_t        encodedExceptions_sz;
-        uint32_t        excPos;
-        uint32_t        excVal;
-        uint32_t        e;
 
         __assert(b <= 32);
 
         if (b == 32) {
                 return len;
         } else {
-                exceptionsPositions = new uint32_t[len];
-                if (exceptionsPositions == NULL)
-                        eoutput("Can't allocate memory: exceptionsPositions");
+                vector<uint32_t>        exceptionsValues;
+                vector<uint32_t>        exceptionsPositions;
 
-                exceptionsValues = new uint32_t[len];
-                if (exceptionsValues == NULL)
-                        eoutput("Can't allocate memory: exceptionsValues");
-
-                exceptions = new uint32_t[2 * len];
-                if (exceptions == NULL)
-                        eoutput("Can't allocate memory: exceptions");
-
-                encodedExceptions = new uint32_t[2 * len + 2];
-                if (encodedExceptions == NULL)
-                        eoutput("Can't allocate memory: encodedExceptions");
+                __init_vector(exceptionsValues, len);
+                __init_vector(exceptionsPositions, len);
 
                 size = __div_roundup(len * b, 32);
-                curExcept = 0;
+                uint32_t curExcept = 0;
 
                 for (uint32_t i = 0; i < len; i++) {
                         if (in[i] >= (1 << b)) {
-                                e = in[i] >> b;
+                                uint32_t e = in[i] >> b;
                                 exceptionsPositions[curExcept] = i;
                                 exceptionsValues[curExcept] = e;
                                 curExcept++;
@@ -84,26 +66,37 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                                 exceptionsPositions[i] = gap;
                         }
 
+                        /* FIXME: NEED to rewrite here in a exception-safe way */
+                        uint32_t *exceptions = new uint32_t[2 * len];
+                        if (exceptions == NULL)
+                                eoutput("Can't allocate memory: exceptions");
+
                         for (uint32_t i = 0;  i < curExcept; i++) {
-                                excPos = (i > 0)? exceptionsPositions[i] - 1 :
+                                uint32_t excPos = (i > 0)?
+                                        exceptionsPositions[i] - 1 :
                                         exceptionsPositions[i];
-                                excVal = exceptionsValues[i] - 1;
+                                uint32_t excVal = exceptionsValues[i] - 1;
 
                                 exceptions[i] = excPos;
                                 exceptions[i + curExcept] = excVal;
                         }
 
+                        /* Write down values in the exception area */
+                        uint32_t        encodedExceptions_sz;
+
+                        /* FIXME: NEED to rewrite here in a exception-safe way */
+                        uint32_t *encodedExceptions = new uint32_t[2 * len + 2];
+                        if (encodedExceptions == NULL)
+                                eoutput("Can't allocate memory: encodedExceptions");
+
                         Simple16::encodeArray(exceptions, 2 * curExcept,
                                         encodedExceptions, encodedExceptions_sz);
                         size += encodedExceptions_sz;
+
+                        delete[] exceptions;
+                        delete[] encodedExceptions;
                 }
         }
-
-        /* Finalization */
-        delete[] exceptions;
-        delete[] exceptionsPositions;
-        delete[] exceptionsValues;
-        delete[] encodedExceptions;
 
         return size;
 }

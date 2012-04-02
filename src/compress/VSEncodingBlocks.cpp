@@ -304,7 +304,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
          */
         uint32_t *end = out + len;
 
-        do {
+        while  (end > out) {
                 /* Permuting integers with a first 8-bit */
                 B = (*addr) >> (VSEBLOCKS_LOGDESC * 3 + VSEBLOCKS_LOGLEN);
                 K = (((*addr) >> (VSEBLOCKS_LOGDESC * 3)) & (VSEBLOCKS_LENS_LEN - 1));
@@ -324,6 +324,10 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                         out += __vseblocks_posszLens[K];
                 }
 
+                /* Check if it ends, or not */
+                if (end <= out)
+                        break;
+
                 /* Permuting integers with a second 8-bit */
                 B = ((*addr) >> (VSEBLOCKS_LOGDESC * 2 + VSEBLOCKS_LOGLEN)) & (VSEBLOCKS_LOGS_LEN - 1);
                 K = (((*addr) >> (VSEBLOCKS_LOGDESC * 2)) & (VSEBLOCKS_LENS_LEN - 1));
@@ -336,6 +340,10 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                         __vseblocks_zero32(out);
                         out += __vseblocks_posszLens[K];
                 }
+
+                /* Check if it ends, or not */
+                if (end <= out)
+                        break;
 
                 /* Permuting integers with a third 8-bit */
                 B = ((*addr) >> (VSEBLOCKS_LOGDESC  + VSEBLOCKS_LOGLEN)) & (VSEBLOCKS_LOGS_LEN - 1);
@@ -350,6 +358,10 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                         out += __vseblocks_posszLens[K];
                 }
 
+                /* Check if it ends, or not */
+                if (end <= out)
+                        break;
+
                 /* Permuting integers with a fourth 8-bit */
                 B = ((*addr) >> VSEBLOCKS_LOGLEN) & (VSEBLOCKS_LOGS_LEN - 1);
                 K = (*addr++) & (VSEBLOCKS_LENS_LEN - 1);
@@ -362,7 +374,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                         __vseblocks_zero32(out);
                         out += __vseblocks_posszLens[K];
                 }
-        } while (end > out);
+        }
 }
 
 void
@@ -394,7 +406,7 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
         uint32_t        sum;
 
         __validate(in, (len << 2));
-        __validate(out, ((nvalue + TAIL_MERGIN) << 2));
+        __validate(out, ((nvalue + 128) << 2));
 
         for (res = nvalue; res > VSENCODING_BLOCKSZ;
                         out += VSENCODING_BLOCKSZ, in += sum,

@@ -41,10 +41,7 @@
 #include "misc/err_utils.hpp"
 
 /* Configurable parameters */
-#define MAXLEN          100000000
-
-/* System Parameters (MUST NOT be changed) */
-#define TAIL_MERGIN     128
+#define MAXLEN          200000000
 
 /* For debugs */
 #if defined(DEBUG) && defined(__linux__)
