@@ -98,7 +98,7 @@ main(int argc, char **argv)
         if (list1 == NULL)
                 eoutput("Can't allocate memory");
 
-        uint32_t *list2 = new uint32_t[N];
+        uint32_t *list2 = new uint32_t[OUTPUTMEM(N)];
         if (list2 == NULL)
                 eoutput("Can't allocate memory");
 

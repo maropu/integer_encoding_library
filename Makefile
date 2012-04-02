@@ -14,7 +14,7 @@ OBJS		= $(subst .cpp,.o,$(SRCS))
 SNAME		= libcode
 SLINK		= $(SNAME).so
 MAJOR		= 0
-MINOR		= 1
+MINOR		= 2
 MICRO		= 0
 SHAREDLIB	= $(SLINK).$(MAJOR).$(MINOR).$(MICRO)
 

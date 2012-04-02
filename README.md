@@ -37,7 +37,7 @@ encoded partitions in the unused spaces of each aligned partition.
 VSEncodingBlocksHybrid uses VSEncodingRest for short lists and
 VSEncodingBLocks for the long ones.
 
-* VSEncodingSimple v1/v2
+* VSEncodingSimple V1/V2
 
 VSEncodingRest suffers from some amounts of branch penalties inside
 processors that the space-saving technique causes. VSEncodingSimple
@@ -46,9 +46,13 @@ unused spaces in each aligned partition with Dynamic Programming.
 VSEncodingSimple v1 and v2 allocate 4-bit and 8-bit to represent
 the length of partitions, respectively.
 
+
+NOTE: This library aims at a research tool for performance
+benchmarks, not a qualified product. So, some improvements to remove
+risks such memory leaks are pended for the time being.
+
 Prequisites
 -----------
-Boost C++ Libraries
 
 License
 -----------
@@ -57,6 +61,10 @@ Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
 
 History
 -----------
+
+2012-04-03 version 0.2.0:
+
+* Support to compile it as a shared library.
 
 2011-11-13 version 0.1.0:
 

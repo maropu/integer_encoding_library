@@ -1,19 +1,6 @@
 TODO items
 -----------
 
-* To fix bugs in VSEncodingRest
-
-There are some bugs there ... :(
-
-* An Improvement of Decoding Speed
-
-To improve the decoding speed of VSEncodingBlocks due to its slowing
-down as compared to the original code.
-
-* Regarding to P4D and P4DOPT
-
-These should be changed to address the problem of encoding with B=0.
-
 * To Merge VSEncodingNaive with VSEncodingBlocks
 
 These codes are very similiar, so these should be merged while keeping
@@ -23,7 +10,7 @@ their current performances.
 
 Vectorization with SSE2 and AVX2 could improves their performance.
 
-* Memory Management
+* Memory Management and Exception Safety
 
 To make codes about managing memory simple and efficient. There are
 some stupid codes about memory allocation in VSEncoding or something.
