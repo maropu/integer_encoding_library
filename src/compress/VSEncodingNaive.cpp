@@ -57,27 +57,23 @@ void
 VSEncodingNaive::encodeArray(uint32_t *in,
                 uint32_t len, uint32_t *out, uint32_t &nvalue)
 {
-        uint32_t        numBlocks;
-
         if (len > MAXLEN)
                 eoutput("Overflowed input length (CHECK: MAXLEN)");
 
-        uint32_t *logs = new uint32_t[len];
-        if (logs == NULL)
-                eoutput("Can't allocate memory: logs");
-
-        uint32_t *parts = new uint32_t[len + 1];
-        if (parts == NULL)
-                eoutput("Can't allocate memory: parts");
-
         /* Compute logs of all numbers */
+        vector<uint32_t>        logs;
+
+        __init_vector(logs, len);
         for (uint32_t i = 0; i < len; i++)
                 logs[i] = __vsenaive_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        __vsenaive.compute_OptPartition(logs, len,
-                        VSENAIVE_LOGLEN + VSENAIVE_LOGLOG,
-                        parts, numBlocks);
+        vector<uint32_t>        parts;
+
+        __vsenaive.compute_OptPartition(logs,
+                        VSENAIVE_LOGLEN + VSENAIVE_LOGLOG, parts);
+
+        uint32_t numBlocks = parts.size() - 1;
 
     	/* Ready to write */ 
         uint32_t        maxB;
@@ -101,13 +97,9 @@ VSEncodingNaive::encodeArray(uint32_t *in,
                         wt.bit_writer(in[j], maxB);
         }
 
-        /* Align to 32-bit */
         wt.bit_flush(); 
 
         nvalue = wt.get_written();
-
-        delete[] parts;
-        delete[] logs;
 }
 
 void

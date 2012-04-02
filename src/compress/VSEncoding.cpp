@@ -14,6 +14,7 @@
 
 #include "compress/VSEncoding.hpp"
 
+using namespace std;
 using namespace opc;
 
 /* FIXME: Need to be re-implemented in a thread-safe way */
@@ -21,10 +22,10 @@ uint32_t opc::__vsencoding_aux[
                 VSENCODING_BLOCKSZ * 2 + 128];
 
 VSEncoding::VSEncoding(uint32_t *lens,
-                uint32_t *zlens, uint32_t size, bool cflag)
-                        : aligned(cflag), possLens(lens),
-                                posszLens(zlens), poss_sz(size),
-                                maxBlk(lens[size - 1])
+                uint32_t *zlens, uint32_t size, bool is_aligned)
+                        : is_aligned(is_aligned), poss_sz(size),
+                                maxBlk(lens[size - 1]),
+                                possLens(lens), posszLens(zlens)
 {
         /* Set the max length of sequences */
         if (posszLens != NULL &&
@@ -33,32 +34,18 @@ VSEncoding::VSEncoding(uint32_t *lens,
 }
 
 void
-VSEncoding::compute_OptPartition(
-                uint32_t *seq, uint32_t len, uint32_t fixCost,
-                uint32_t *parts, uint32_t &pSize)
+VSEncoding::compute_OptPartition(vector<uint32_t>& seq,
+                uint32_t fixCost, vector<uint32_t>& parts)
 {
-        if (seq == NULL)
-                eoutput("Invalid input: seq");
-
-        if (parts == NULL)
-                eoutput("Invalid input: parts");
+        vector<int>             SSSP;
+        vector<uint32_t>        costs;
 
         /*
          * costs[i] will contain the
          * cost of encoding up to i-th position.
          */
-        uint32_t *costs = new uint32_t[len + 1];
-        if (costs == NULL)
-                eoutput("Can't allocate memory: costs");
-
-        int *SSSP = new int[len + 1];
-        if (SSSP == NULL)
-                eoutput("Can't allocate memory: SSSP");
-
-        for (uint32_t i = 0; i <= len; i++) {
-                SSSP[i] = -1;
-                costs[i] = 0;
-        }
+        __init_vector(SSSP, seq.size() + 1, -1);
+        __init_vector(costs, seq.size() + 1);
 
         /*
          * This loop computes the cost of the optimal partition. 
@@ -73,7 +60,7 @@ VSEncoding::compute_OptPartition(
                 uint32_t        maxB;
                 uint64_t        curCost;
 
-                for (uint32_t i = 1; i <= len; i++) {
+                for (uint32_t i = 1; i <= seq.size(); i++) {
                         mleft = (i > maxBlk)? i - maxBlk : 0;
 
                         for (maxB = 0, l = 0, g = 0, j = i - 1; j >= mleft; j--) {
@@ -118,7 +105,7 @@ VSEncoding::compute_OptPartition(
                                 }
 
                                 /* Caluculate costs */
-                                if (aligned)
+                                if (is_aligned)
                                         curCost = costs[j] + __div_roundup((i - j) * maxB, 32) + fixCost;
                                 else
                                         curCost = costs[j] + (i - j) * maxB + fixCost;
@@ -135,29 +122,26 @@ VSEncoding::compute_OptPartition(
         }
 
         /* Compute number of nodes in the path */
-        uint32_t next = len;
+        uint32_t psize = 0;
+        uint32_t next = seq.size();
 
-        pSize = 0;
         while (next != 0) {
                 next = SSSP[next];
-                pSize++;
+                psize++;
         }
 
         /*
          * Obtain the optimal partition starting
          * from the last block.
          */
-        uint32_t idx = pSize;
-        next = len;
+        __init_vector(parts, psize + 1);
+
+        uint32_t idx = psize;
+        next = seq.size();
 
         while (next != 0) {
                 parts[idx--] = next;
                 next = SSSP[next];
         }
-
-        parts[0] = 0;
-
-        delete[] SSSP;
-        delete[] costs;
 }
 

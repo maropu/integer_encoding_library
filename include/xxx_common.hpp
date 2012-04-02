@@ -18,7 +18,10 @@
 #include <cstdio>
 #include <string>
 #include <cstring>
+#include <vector>
+#include <memory>
 #include <iomanip>
+
 #include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -68,6 +71,19 @@
          })
 
 #define __array_size(x)         (sizeof(x) / sizeof(x[0]))
+
+template <class T>
+inline void
+__init_vector(std::vector<T>& seq, uint64_t len, int iv = 0)
+{
+        seq.clear();
+        seq.reserve(len);
+
+        for (uint64_t i = 0; i < len; i++)
+                seq.push_back(static_cast<T>(iv));
+
+        __assert(seq.size() == len);
+}
 
 inline int
 __get_msb(uint32_t v)

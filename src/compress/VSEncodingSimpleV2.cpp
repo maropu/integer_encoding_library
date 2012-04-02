@@ -23,6 +23,7 @@
 #define VSESIMPLEV2_LENS_LEN    (1 << VSESIMPLEV2_LOGLEN)
 #define VSESIMPLEV2_LOGS_LEN    (1 << VSESIMPLEV2_LOGLOG)
 
+using namespace std;
 using namespace opc;
 
 /* A set of unpacking functions */
@@ -113,27 +114,24 @@ VSEncodingSimpleV2::encodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t &nvalue)
 {
         uint32_t        maxB;
-        uint32_t        numBlocks;
 
         if (len > MAXLEN)
                 eoutput("Overflowed input length (CHECK: MAXLEN)");
 
-        uint32_t *logs = new uint32_t[len];
-        if (logs == NULL)
-                eoutput("Can't allocate memory: logs");
-
-        uint32_t *parts = new uint32_t[len  + 1];
-        if (parts == NULL)
-                eoutput("Can't allocate memory: parts");
-
         /* Compute logs of all numbers */
+        vector<uint32_t>        logs;
+
+        __init_vector(logs, len);
         for (uint32_t i = 0; i < len; i++)
                 logs[i] = __vsesimplev2_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        __vsesimplev2.compute_OptPartition(logs, len,
-                        VSESIMPLEV2_LOGLEN + VSESIMPLEV2_LOGLOG,
-                        parts, numBlocks);
+        vector<uint32_t>        parts;
+
+        __vsesimplev2.compute_OptPartition(logs,
+                        VSESIMPLEV2_LOGLEN + VSESIMPLEV2_LOGLOG, parts);
+
+        uint32_t numBlocks = parts.size() - 1;
 
     	/* Ready to write descripters for compressed integers */ 
         BitsWriter ds1_wt(out);
@@ -184,16 +182,12 @@ VSEncodingSimpleV2::encodeArray(uint32_t *in, uint32_t len,
                  ds2_wt.bit_writer(parts[i + 1] - parts[i] - 1, VSESIMPLEV2_LOGLEN);
         }
 
-        /* Allign to 32-bit */
         ds1_wt.bit_flush(); 
         ds2_wt.bit_flush(); 
 
         nvalue = ds1_wt.get_written()
                         + ds2_wt.get_written()
                         + cd_wt.get_written();
-
-        delete[] logs;
-        delete[] parts;
 }
 
 void

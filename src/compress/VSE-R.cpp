@@ -16,6 +16,7 @@
 
 #define VSER_LOGS_LEN   32
 
+using namespace std;
 using namespace opc;
 
 /* A set of unpacking functions */
@@ -83,11 +84,14 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
         if (len > MAXLEN)
                 eoutput("Overflowed input length (CHECK: MAXLEN)");
 
+        /*
+         * Compute logs of all numbers
+         * FIXME: NEED to rewrite here in a exception-safe way
+         */
         uint32_t *logs = new uint32_t[len];
         if (logs == NULL)
                 eoutput("Can't allocate memory: logs");
 
-        /* Compute logs of all numbers */
         for (uint32_t i = 0; i < len; i++) {
                 if (in[i] != 0)
                         logs[i] = __get_msb(in[i] + 1);
@@ -135,12 +139,12 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
 
         /* Ready to write each integer */
         uint32_t        *p = out;
-        BitsWriter      *wt[VSER_LOGS_LEN + 1];
+        BitsWriter      wt[VSER_LOGS_LEN + 1];
 
         csize = 0;
         for (uint32_t i = 1; i <= maxL; i++) {
                 if (hist[i] != 0) {
-                        wt[i] = new BitsWriter(p);
+                        wt[i].initalize(p);
                         csize += __div_roundup(i * hist[i], 32);
                         p += __div_roundup(i * hist[i], 32);
                 }
@@ -151,15 +155,11 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
         /* Write the number in blocks depending on their logs */
         for (uint32_t i = 0; i < len; i++) {
                 if (logs[i] != 0)
-                        wt[logs[i]]->bit_writer(in[i] + 1, logs[i]);
+                        wt[logs[i]].bit_writer(in[i] + 1, logs[i]);
         }
 
-        for (uint32_t i = 1; i <= maxL; i++) {
-                if (hist[i] != 0) {
-                        wt[i]->bit_flush();
-                        delete wt[i];
-                }
-        }
+        for (uint32_t i = 1; i <= maxL; i++)
+                wt[i].bit_flush();
 
         delete[] logs;
 }
@@ -168,6 +168,7 @@ void
 VSE_R::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
+        /* FIXME: NEED to rewrite here in a exception-safe way */
         uint32_t *outs = new uint32_t[nvalue + 128];
         if (outs == NULL)
                 eoutput("Can't allocate memory: outs");

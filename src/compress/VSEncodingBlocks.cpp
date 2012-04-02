@@ -21,6 +21,7 @@
 #define VSEBLOCKS_LENS_LEN      (1 << VSEBLOCKS_LOGLEN)
 #define VSEBLOCKS_LOGS_LEN      (1 << VSEBLOCKS_LOGLOG)
 
+using namespace std;
 using namespace opc;
 
 #define __vseblocks_copy16(src, dest)   \
@@ -137,36 +138,31 @@ VSEncodingBlocks::encodeVS(uint32_t len,
                 uint32_t *in, uint32_t &size, uint32_t *out)
 {
         uint32_t        maxB;
-        uint32_t        numBlocks;
 
         if (len > MAXLEN)
                 eoutput("Overflowed input length (CHECK: MAXLEN)");
 
-        uint32_t *logs = new uint32_t[len];
-        if (logs == NULL)
-                eoutput("Can't allocate memory: logs");
-
-        uint32_t *parts = new uint32_t[len + 1];
-        if (parts == NULL)
-                eoutput("Can't allocate memory: parts");
-
         /* Compute logs of all numbers */
+        vector<uint32_t>        logs;
+
+        __init_vector(logs, len);
         for (uint32_t i = 0; i < len; i++)
                 logs[i] = __vseblocks_remapLogs[1 + __get_msb(in[i])];
 
         /* Compute optimal partition */
-        __vseblocks.compute_OptPartition(logs, len,
-                        VSEBLOCKS_LOGLEN + VSEBLOCKS_LOGLOG,
-                        parts, numBlocks);
+        vector<uint32_t>        parts;
+
+        __vseblocks.compute_OptPartition(
+                        logs, VSEBLOCKS_LOGLEN + VSEBLOCKS_LOGLOG, parts);
+
+        uint32_t numBlocks = parts.size() - 1;
 
         /* countBlocksLogs[i] says how many blocks uses i bits */
-        uint32_t        blockCur[VSEBLOCKS_LOGS_LEN];
         uint32_t        countBlocksLogs[VSEBLOCKS_LOGS_LEN];
 
-        for (uint32_t i = 0; i < VSEBLOCKS_LOGS_LEN; i++) {
+        for (uint32_t i = 0; i <
+                        VSEBLOCKS_LOGS_LEN; i++)
                 countBlocksLogs[i] = 0;
-                blockCur[i] = 0;
-        }
 
     	/* Count number of occs of each log */
         for (uint32_t i = 0; i < numBlocks; i++) {
@@ -178,7 +174,8 @@ VSEncodingBlocks::encodeVS(uint32_t len,
                                 maxB = logs[j];
                 }
 
-                countBlocksLogs[__vseblocks_codeLogs[maxB]] += parts[i + 1] - parts[i];
+                countBlocksLogs[__vseblocks_codeLogs[maxB]]
+                        += parts[i + 1] - parts[i];
         }
 
         uint32_t ntotal = 0;
@@ -200,19 +197,11 @@ VSEncodingBlocks::encodeVS(uint32_t len,
         }
 
         /* Prepare arrays to store groups of elements */
-        uint32_t        *blocks[VSEBLOCKS_LOGS_LEN];
-
-        blocks[0] = 0;
+        vector<uint32_t>        blocks[VSEBLOCKS_LOGS_LEN];
 
         for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
-                if (countBlocksLogs[i] > 0) {
-                        blocks[i] = new uint32_t[countBlocksLogs[i]];
-
-                        if (blocks[i] == NULL)
-                                eoutput("Can't allocate memory: blocks[]");
-                } else {
-                        blocks[i] = NULL;
-                }
+                if (countBlocksLogs[i] > 0)
+                        blocks[i].reserve(countBlocksLogs[i]);
         }
 
     	/* Permute the elements based on their values of B */
@@ -230,9 +219,8 @@ VSEncodingBlocks::encodeVS(uint32_t len,
 
                 for (uint32_t j = parts[i]; j < parts[i + 1]; j++) {
                         /* Save current element in its bucket */
-                        blocks[__vseblocks_codeLogs[maxB]][
-                                blockCur[__vseblocks_codeLogs[maxB]]] = in[j];
-                        blockCur[__vseblocks_codeLogs[maxB]]++;
+                        blocks[__vseblocks_codeLogs[
+                                maxB]].push_back(in[j]);
                 }
         }
 
@@ -280,17 +268,9 @@ VSEncodingBlocks::encodeVS(uint32_t len,
                 wt.bit_writer(idx, VSEBLOCKS_LOGLEN);
         }
 
-        /* Align to 32-bit */
         wt.bit_flush(); 
 
         size = wt.get_written();
-
-        /* Finalization */
-        for (uint32_t i = 0; i < VSEBLOCKS_LOGS_LEN; i++)
-                delete[] blocks[i]; 
-
-        delete[] parts;
-        delete[] logs;
 }
 
 void

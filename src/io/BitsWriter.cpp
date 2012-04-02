@@ -16,19 +16,28 @@
 
 using namespace opc;
 
+BitsWriter::BitsWriter()
+                : data(NULL), buffer(0),
+                        Fill(0), written(0) {}
+
 BitsWriter::BitsWriter(uint32_t *out)
-                : data(out), buffer(0), Fill(0), written(0)
-{
+                : data(out), buffer(0),
+                        Fill(0), written(0) {
         if (out == NULL)
-                throw "Invalid value: out";
+                eoutput("Invalid value: out");
 }
 
 BitsWriter::~BitsWriter() {}
 
 void
+BitsWriter::initalize(uint32_t *out) {
+        data = out;
+}
+
+void
 BitsWriter::bit_flush()
 {
-        if (Fill == 0)
+        if (Fill == 0 || data == NULL)
                 return;
 
         if (Fill > 32) {

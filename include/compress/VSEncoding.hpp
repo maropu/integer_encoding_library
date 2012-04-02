@@ -25,6 +25,8 @@
  */
 #define VSENCODING_BLOCKSZ      65536U
 
+using namespace std;
+
 namespace opc {
 
 /* FIXME: Need to be re-implemented in a thread-safe way */
@@ -38,24 +40,23 @@ private:
          * lenghts of blocks if they are formed by zeros(posszLens)
          * or larger numbers(possLens).
          */
-        bool            aligned;
-        uint32_t        *possLens;
-        uint32_t        *posszLens;
+        bool            is_aligned;
+
         uint32_t        poss_sz;
         uint32_t        maxBlk;
+        uint32_t        *possLens;
+        uint32_t        *posszLens;
         
 public:
         explicit VSEncoding(uint32_t *lens,
-                        uint32_t *zlens, uint32_t size, bool cflag);
+                        uint32_t *zlens, uint32_t size, bool is_aligned);
 
         /*
          * Compute the optimal sub-lists from lists.
-         *      len: The length of the sequence of lists
          *      fixCost: The fix cost in bits that we pay for  each block
          */
-        void compute_OptPartition( uint32_t *seq,
-                        uint32_t len, uint32_t fixCost,
-                        uint32_t *parts, uint32_t &pSize);
+        void compute_OptPartition(vector<uint32_t>& seq,
+                        uint32_t fixCost, vector<uint32_t>& parts);
 }; /* VSEncoding */
 
 }; /* namespace: opc */

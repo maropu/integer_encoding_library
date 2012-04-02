@@ -16,6 +16,7 @@
 
 #include "compress/VSEncodingBlocksHybrid.hpp"
 
+using namespace std;
 using namespace opc;
 
 void

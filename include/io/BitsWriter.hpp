@@ -28,10 +28,13 @@ private:
 
 public:
         /* Constructor */
+        BitsWriter();
         BitsWriter(uint32_t *out);
 
         /* Destructor */
         ~BitsWriter();
+
+        void initalize(uint32_t *out);
 
         void bit_flush();
         void bit_writer(uint32_t value, uint32_t bits);

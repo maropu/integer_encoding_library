@@ -33,11 +33,20 @@ namespace opc_misc {
 #define FILE_OUTPUT             0
 #define CONSOLE_OUTPUT          1
 
-#define eoutput(fmt, ...)               \
+#ifndef NDEBUG
+ #define eoutput(fmt, ...)              \
         do {                            \
                 opc_misc::flush_log();  \
                 opc_misc::err_print(__func__, __LINE__, fmt, ##__VA_ARGS__);    \
         } while (0)
+#else
+ #define eoutput(fmt, ...)              \
+        do {                            \
+                char    buf[512];       \
+                sprintf(buf, fmt, ##__VA_ARGS__);       \
+                throw(buf);             \
+        } while (0)
+#endif /* NDEBUG */
 
 /* Shortcuts for debug-prints */
 #ifndef NDEBUG
