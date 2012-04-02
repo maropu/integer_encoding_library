@@ -33,9 +33,6 @@ $(SLINK):	$(SHAREDLIB)
 $(SHAREDLIB):	$(OBJS)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -shared -o $@
 
-.cpp.o:
-		$(CC) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $< -o $@
-
 .PHONY:bench
 bench:		$(ENCODERS) $(DECODERS)
 
@@ -44,6 +41,9 @@ $(ENCODERS):	$(OBJS) $(OBJS_ENC)
 
 $(DECODERS):	$(OBJS) $(OBJS_DEC)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_DEC) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
+
+.cpp.o:
+		$(CC) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -c $< -o $@
 
 .PHONY:test
 test:
