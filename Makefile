@@ -1,6 +1,6 @@
 CC		= g++
 RM		= rm
-#CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		+= -DNDEBUG -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 WFLAGS		= -Wall -Winline
 LDFLAGS		= -L/usr/local/lib
@@ -11,12 +11,17 @@ SRCS		= $(shell find $(SUBDIRS) -type f -name '*.cpp')
 OBJS		= $(subst .cpp,.o,$(SRCS))
 
 # For shared lib
-SNAME		= libcode
-SLINK		= $(SNAME).so
+NAME		= libcode
+SNAME		= $(NAME).so
 MAJOR		= 0
 MINOR		= 2
-MICRO		= 0
-SHAREDLIB	= $(SLINK).$(MAJOR).$(MINOR).$(MICRO)
+RELEASE		= 0
+SHAREDLIB	= $(SNAME).$(MAJOR).$(MINOR).$(RELEASE)
+SLINK1		= $(SNAME).$(MAJOR).$(MINOR)
+SLINK2		= $(SNAME).$(MAJOR)
+SLINK3		= $(SNAME)
+SFLAGS		= -fPIC -shared
+#SFLAGS		= -Wl, -soname=$(SLINK).$(MAJOR) -fPIC -shared
 
 # For bench
 OBJS_ENC	= src/encoders.o
@@ -25,13 +30,15 @@ ENCODERS	= encoders
 DECODERS	= decoders
 
 .PHONY:all
-all:		$(SLINK)
+all:		$(SNAME)
 
-$(SLINK):	$(SHAREDLIB)
-		ln -sf $< $@
+$(SNAME):	$(SHAREDLIB)
+		ln -sf $(SHAREDLIB) $(SLINK1)
+		ln -sf $(SLINK1) $(SLINK2)
+		ln -sf $(SLINK2) $(SLINK3)
 
 $(SHAREDLIB):	$(OBJS)
-		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -shared -o $@
+		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) $(SFLAGS) -o $@
 
 .PHONY:bench
 bench:		$(ENCODERS) $(DECODERS)
@@ -52,6 +59,6 @@ test:
 .PHONY:clean
 clean:
 		$(RM) -f *.log *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
-			$(ENCODERS) $(DECODERS) $(SLINK) $(SHAREDLIB)
+			$(ENCODERS) $(DECODERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
 		$(MAKE) -C test clean
 
