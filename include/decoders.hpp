@@ -56,7 +56,8 @@
 
 using namespace opc;
 
-typedef void (*pt2Dec)(uint32_t *, uint32_t, uint32_t *, uint32_t);
+typedef void (*pt2Dec)(uint32_t *, uint32_t,
+                uint32_t *, uint32_t) __attribute__((unused));
 
 static pt2Dec decoders[NUMDECODERS] = {
         Gamma::decodeArray,

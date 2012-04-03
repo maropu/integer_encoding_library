@@ -51,7 +51,8 @@
 
 using namespace opc;
 
-typedef void (*pt2Enc)(uint32_t *, uint32_t, uint32_t *, uint32_t &);
+typedef void (*pt2Enc)(uint32_t *, uint32_t,
+                uint32_t *, uint32_t &) __attribute__((unused));
 
 pt2Enc encoders[NUMENCODERS] = {
         Gamma::encodeArray,
@@ -68,7 +69,7 @@ pt2Enc encoders[NUMENCODERS] = {
         VSEncodingBlocksHybrid::encodeArray,
         VSEncodingSimpleV1::encodeArray,
         VSEncodingSimpleV2::encodeArray
-};	
+};
 
 #endif /* __ENCODERS_HPP__  */
 
