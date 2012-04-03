@@ -64,9 +64,9 @@ static int      __init_progress;
                 if (!__init_progress++)         \
                         __progress_start_time = __get_time();   \
 \
-                if (c != 0 && it % (n / PROG_PER_COUNT) == 0) { \
-                        pg = (double)c / n;                     \
-                        left = ((1.0 - pg) / pg) *              \
+                if ((c) != 0 && (it) % ((n) / PROG_PER_COUNT) == 0) {   \
+                        pg = (double)(c) / (n);         \
+                        left = ((1.0 - pg) / pg) *      \
                                 (__get_time() - __progress_start_time); \
 \
                         fprintf(stderr,                         \
@@ -158,6 +158,7 @@ main(int argc, char **argv)
         /* Try to resume path first */
         uint32_t it = 0;
         uint64_t len = 0;
+        uint64_t rlen = 0;
         uint64_t lenmax = 0;
         uint64_t cmp_pos = 0;
 
@@ -176,7 +177,11 @@ main(int argc, char **argv)
                         it = GET_RESUME_NUM(hbuf);
                         cmp_pos = GET_RESUME_POS(hbuf);
 
-                        len = GET_RESUME_LEN(hbuf);
+                        /*
+                         * A resumed posision is stored in rlen
+                         * for __show_progress().
+                         */
+                        rlen = (len = GET_RESUME_LEN(hbuf));
                         lenmax = GET_RESUME_LENMAX(hbuf);
 
                         __assert(len <= lenmax);
@@ -221,7 +226,7 @@ RESUME:
 
                 while (len < lenmax) {
                         if (show_progress)
-                                __show_progress("Encoded", it++, len, lenmax);
+                                __show_progress("Encoded", it++, len, lenmax - rlen);
 
                         /* Read the numer of integers in a list */
                         num = __next_read32(addr, len);
