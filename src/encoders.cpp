@@ -92,6 +92,8 @@ static void __usage(const char *msg, ...);
 int 
 main(int argc, char **argv)
 {
+        char            *end;
+
         if (argc < 3)
                 __usage(NULL);
 
@@ -110,15 +112,22 @@ main(int argc, char **argv)
 
         bool show_progress = false;
         bool try_resume = false;
+        double file_ratio = 1.0;
 
-        while ((ret = getopt(argc, argv, "rp")) != -1) {
+        while ((ret = getopt(argc, argv, "rip:")) != -1) {
                 switch (ret) {
                 case 'r':
                         try_resume = true;
                         break;
 
-                case 'p':
+                case 'i':
                         show_progress = true;
+                        break;
+
+                case 'p':
+                        file_ratio = strtod(optarg, &end);
+                        if (file_ratio < 0.0 || 1.0 < file_ratio)
+                                __usage("-p needs to be between 0.0 and 1.0", argv[1]);
                         break;
 
                 case '?':
@@ -128,8 +137,6 @@ main(int argc, char **argv)
         }
 
         /* Read EncoderID */
-        char            *end;
-
         int encID = strtol(argv[optind++], &end, 10);
         if ((*end != '\0') || (encID < 0) ||
                         (encID >= NUMENCODERS) ||(errno == ERANGE))
@@ -198,6 +205,12 @@ main(int argc, char **argv)
                         fseek(cmp, pos1, SEEK_SET);
                         fseek(toc, pos2, SEEK_SET);
 
+                        /*
+                         * Reset file_ratio so that it follows
+                         * the previous lenmax.
+                         */
+                        file_ratio = 1.0;
+
                         goto RESUME;
                 }
 NORESUME:
@@ -215,7 +228,10 @@ RESUME:
         uint64_t        fsz;
 
         uint32_t *addr = __open_and_mmap_file(ifile, fsz);
+
+        /* Decide which part of the input is compressed */
         lenmax = fsz >> 2;
+        lenmax *= file_ratio;
 
         {
                 uint32_t        prev_doc;
@@ -291,19 +307,22 @@ void
 __usage(const char *msg, ...)
 {
         if (msg != NULL) {
+                cout << "Error: ";
+
                 va_list vargs;
 
                 va_start(vargs, msg);
                 vfprintf(stdout, msg, vargs);
                 va_end(vargs);
 
-                cout << endl;
+                cout << endl << endl;
         }
 
         cout << "Usage: encoders [Options] <EncoderID> <infilename>" << endl;
         cout << "Options" << endl;
-        cout << "     -p: Show a progress indicator" << endl;
+        cout << "     -i: Show a progress indicator" << endl;
         cout << "     -r: Try to resume if a broken encoded file exists" << endl;
+        cout << "     -p [0.0-1.0]: File ratio to compress (default:1.0)" << endl;
 
         cout << endl << "EncoderID\tEncoderName" << endl;
         cout << "---" << endl;
