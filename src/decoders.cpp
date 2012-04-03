@@ -37,9 +37,10 @@ main(int argc, char **argv)
                         (decID >= NUMDECODERS) || (errno == ERANGE))
                 __usage("DecoderID '%s' invalid", argv[1]);
 
-        uint32_t *list = new uint32_t[OUTPUTMEM(MAXLEN)];
-        if (list == NULL)
-                eoutput("Can't allocate memory: list");
+        shared_ptr<uint32_t> __list(
+                new uint32_t[OUTPUTMEM(MAXLEN)], default_delete<uint32_t[]>());
+
+        uint32_t *list = __list.get();
 
         /*
          * FIXME: VSEncodingRest self-modifies a compressed
@@ -47,11 +48,17 @@ main(int argc, char **argv)
          * sbuf[] with memcpy. 
          */
         uint32_t *sbuf = NULL;
+
+        shared_ptr<uint32_t> __sbuf(
+                static_cast<uint32_t *>(0), default_delete<uint32_t[]>());
+
         if (decID == D_VSEREST ||
                         decID == D_VSEHYB) {
-                sbuf = new uint32_t[OUTPUTMEM(MAXLEN)];
-                if (sbuf == NULL)
-                        eoutput("Can't allocate memory: sbuf");
+                shared_ptr<uint32_t> __temp(
+                        new uint32_t[OUTPUTMEM(MAXLEN)],
+                        default_delete<uint32_t[]>());
+
+                sbuf = (__sbuf = __temp).get();
         }
 
         /* Read the file name, and open it */

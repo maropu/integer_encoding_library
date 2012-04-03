@@ -65,6 +65,7 @@
                         "=m" (dest[16]), "=m" (dest[20]), "=m" (dest[24]), "=m" (dest[28])      \
                 ::"memory", "%xmm0")
 
+using namespace std;
 using namespace opc;
 
 /* A set of unpacking functions */
@@ -173,25 +174,30 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 uint32_t (*find)(uint32_t *in, uint32_t len))
 {
         if (len > 0) {
-                uint32_t *codewords = new uint32_t[len];
-                if (codewords == NULL)
-                        eoutput("Can't allocate memory: codewords");
+                shared_ptr<uint32_t> __codewords(
+                        new uint32_t[len], default_delete<uint32_t[]>());
 
-                uint32_t *exceptionsPositions = new uint32_t[len];
-                if (exceptionsPositions == NULL)
-                        eoutput("Can't allocate memory: exceptionsPositions");
+                uint32_t *codewords = __codewords.get();
 
-                uint32_t *exceptionsValues = new uint32_t[len];
-                if (exceptionsValues == NULL)
-                        eoutput("Can't allocate memory: exceptionsValues");
+                shared_ptr<uint32_t> __exceptionsPositions(
+                        new uint32_t[len], default_delete<uint32_t[]>());
 
-                uint32_t *exceptions = new uint32_t[2 * len];
-                if (exceptions == NULL)
-                        eoutput("Can't allocate memory: exceptions");
+                uint32_t *exceptionsPositions = __exceptionsPositions.get();
 
-                uint32_t *encodedExceptions = new uint32_t[2 * len + 2];
-                if (encodedExceptions == NULL)
-                        eoutput("Can't allocate memory: encodedExceptions");
+                shared_ptr<uint32_t> __exceptionsValues(
+                        new uint32_t[len], default_delete<uint32_t[]>());
+
+                uint32_t *exceptionsValues = __exceptionsValues.get();
+
+                shared_ptr<uint32_t> __exceptions(
+                        new uint32_t[2 * len], default_delete<uint32_t[]>());
+
+                uint32_t *exceptions = __exceptions.get();
+
+                shared_ptr<uint32_t> __encodedExceptions(
+                        new uint32_t[2 * len + 2], default_delete<uint32_t[]>());
+
+                uint32_t *encodedExceptions = __encodedExceptions.get();
 
                 BitsWriter wt(codewords);
 
@@ -258,13 +264,6 @@ PForDelta::encodeBlock(uint32_t *in, uint32_t len,
                 uint32_t codewords_sz = wt.get_written();
                 memcpy(out, codewords, codewords_sz * sizeof(uint32_t));
                 nvalue += codewords_sz;
-
-                /* Finalization */
-                delete[] exceptions;
-                delete[] exceptionsPositions;
-                delete[] exceptionsValues;
-                delete[] encodedExceptions;
-                delete[] codewords;
         }
 }
 

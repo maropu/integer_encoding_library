@@ -51,10 +51,10 @@ using namespace opc;
                 fsync(fileno(out));     \
         } while (0)
 
-#define PROG_PER_COUNT  1000000
-
 static double   __progress_start_time;
 static int      __init_progress;
+
+#define PROG_PER_COUNT  1000000
 
 #define __show_progress(str, it, c, n)  \
         ({                      \
@@ -65,8 +65,8 @@ static int      __init_progress;
                         __progress_start_time = __get_time();   \
 \
                 if ((c) != 0 && (it) % ((n) / PROG_PER_COUNT) == 0) {   \
-                        pg = (double)(c) / (n);         \
-                        left = ((1.0 - pg) / pg) *      \
+                        pg = static_cast<double>(c) / (n);              \
+                        left = ((1.0 - pg) / pg) *                      \
                                 (__get_time() - __progress_start_time); \
 \
                         fprintf(stderr,                         \
@@ -77,6 +77,7 @@ static int      __init_progress;
          })
 
 #define CHECKPOINT_INTVL        1000000       
+
 #define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
         ({      \
                 if (it % CHECKPOINT_INTVL == 0) {       \
@@ -94,13 +95,15 @@ main(int argc, char **argv)
         if (argc < 3)
                 __usage(NULL);
 
-        uint32_t *list = new uint32_t[MAXLEN];
-        if (list == NULL)
-                eoutput("Can't allocate memory: list");
+        shared_ptr<uint32_t> __list(
+                new uint32_t[MAXLEN], default_delete<uint32_t[]>());
 
-        uint32_t *cmp_array = new uint32_t[MAXLEN];
-        if (cmp_array == NULL)
-                eoutput("Can't allocate memory: cmp_array");
+        uint32_t *list = __list.get();
+
+        shared_ptr<uint32_t> __cmp_array(
+                new uint32_t[MAXLEN], default_delete<uint32_t[]>());
+
+        uint32_t *cmp_array = __cmp_array.get();
 
         /* Process input options */
         int     ret;
@@ -169,9 +172,6 @@ main(int argc, char **argv)
 
                 if (fread(hbuf, sizeof(uint32_t),
                                 HEADERSZ, toc) == HEADERSZ) {
-                        uint64_t        pos1;
-                        uint64_t        pos2;
-
                         __header_validate(hbuf, tlen);
 
                         it = GET_RESUME_NUM(hbuf);
@@ -186,10 +186,9 @@ main(int argc, char **argv)
 
                         __assert(len <= lenmax);
 
-                        pos1 = cmp_pos * sizeof(uint32_t);
-                        pos2 = (HEADERSZ +
-                                it * EACH_HEADER_TOC_SZ) *
-                                sizeof(uint32_t);
+                        uint64_t pos1 = cmp_pos * sizeof(uint32_t);
+                        uint64_t pos2 = (HEADERSZ +
+                                it * EACH_HEADER_TOC_SZ) * sizeof(uint32_t);
 
                         if (__get_file_size(cmp) < pos1 ||
                                         __get_file_size(toc) < pos2)
@@ -282,9 +281,6 @@ LOOP_END:
 
         fclose(cmp);
         fclose(toc);
-
-        delete[] list;
-        delete[] cmp_array;
 
         return EXIT_SUCCESS;
 }

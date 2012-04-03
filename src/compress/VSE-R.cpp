@@ -84,13 +84,11 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
         if (len > MAXLEN)
                 eoutput("Overflowed input length (CHECK: MAXLEN)");
 
-        /*
-         * Compute logs of all numbers
-         * FIXME: NEED to rewrite here in a exception-safe way
-         */
-        uint32_t *logs = new uint32_t[len];
-        if (logs == NULL)
-                eoutput("Can't allocate memory: logs");
+        /* Compute logs of all numbers */
+        shared_ptr<uint32_t> __logs(
+                new uint32_t[len], default_delete<uint32_t[]>());
+
+        uint32_t *logs = __logs.get();
 
         for (uint32_t i = 0; i < len; i++) {
                 if (in[i] != 0)
@@ -160,18 +158,18 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
 
         for (uint32_t i = 1; i <= maxL; i++)
                 wt[i].bit_flush();
-
-        delete[] logs;
 }
 
 void
 VSE_R::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        /* FIXME: NEED to rewrite here in a exception-safe way */
-        uint32_t *outs = new uint32_t[nvalue + 128];
-        if (outs == NULL)
-                eoutput("Can't allocate memory: outs");
+        /* Allocate work-space */
+        shared_ptr<uint32_t> __outs(
+                new uint32_t[nvalue + 128],
+                default_delete<uint32_t[]>());
+
+        uint32_t *outs = __outs.get();
 
         VSEncodingNaive::decodeArray(in + 1, nvalue, out, nvalue);
         in += *in + 1;
@@ -201,8 +199,6 @@ VSE_R::decodeArray(uint32_t *in, uint32_t len,
 
         for (uint32_t i = 0; i < nvalue; i++)
                 out[i] = (out[i] == 0)? 0 : *(pblk[out[i]])++ - 1;
-
-        delete[] outs;
 }
 
 /* --- Intra functions below --- */

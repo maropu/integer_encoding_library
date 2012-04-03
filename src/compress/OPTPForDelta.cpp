@@ -66,10 +66,10 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                                 exceptionsPositions[i] = gap;
                         }
 
-                        /* FIXME: NEED to rewrite here in a exception-safe way */
-                        uint32_t *exceptions = new uint32_t[2 * len];
-                        if (exceptions == NULL)
-                                eoutput("Can't allocate memory: exceptions");
+                        shared_ptr<uint32_t> __exceptions(
+                                new uint32_t[len], default_delete<uint32_t[]>());
+
+                        uint32_t *exceptions = __exceptions.get();
 
                         for (uint32_t i = 0;  i < curExcept; i++) {
                                 uint32_t excPos = (i > 0)?
@@ -84,17 +84,14 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                         /* Write down values in the exception area */
                         uint32_t        encodedExceptions_sz;
 
-                        /* FIXME: NEED to rewrite here in a exception-safe way */
-                        uint32_t *encodedExceptions = new uint32_t[2 * len + 2];
-                        if (encodedExceptions == NULL)
-                                eoutput("Can't allocate memory: encodedExceptions");
+                        shared_ptr<uint32_t> __encodedExceptions(
+                                new uint32_t[len], default_delete<uint32_t[]>());
+
+                        uint32_t *encodedExceptions = __encodedExceptions.get();
 
                         Simple16::encodeArray(exceptions, 2 * curExcept,
                                         encodedExceptions, encodedExceptions_sz);
                         size += encodedExceptions_sz;
-
-                        delete[] exceptions;
-                        delete[] encodedExceptions;
                 }
         }
 
