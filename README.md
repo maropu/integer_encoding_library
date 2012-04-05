@@ -21,7 +21,7 @@ are stored as constant values. When splitting, it calculates
 optimal partitions with Dynamic Programming. More details can be
 found in http://portal.acm.org/citation.cfm?id=1871592
 
-* VSEncodingRest [in progress, see branch 'VSEncodingRestSpike']
+* VSEncodingRest
 
 This alternative of VSEncoding employs different memory layout
 from the original implementation. VSEncodingBlocks and VSE-R unpack
@@ -32,7 +32,7 @@ bottleneck, VSEncodingRest writes each partition by one word aligned
 without the re-permuting. Moreover, it fits a part of subsequent
 encoded partitions in the unused spaces of each aligned partition.
 
-* VSEncodingBlocksHybrid [in progress, see branch 'VSEncodingRestSpike']
+* VSEncodingBlocksHybrid
 
 VSEncodingBlocksHybrid uses VSEncodingRest for short lists and
 VSEncodingBLocks for the long ones.

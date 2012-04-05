@@ -242,8 +242,8 @@ __usage(const char *msg, ...)
         cout << "\t14\tVSE-R" << endl;
         cout << "\t15\tVSEncodingRest" << endl;
         cout << "\t16\tVSEncodingBlocksHybrid" << endl;
-        cout << "\t17\tVSEncodingSimple v1" << endl;
-        cout << "\t18\tVSEncodingSimple v2" << endl << endl;
+        cout << "\t17\tVSEncodingSimple V1" << endl;
+        cout << "\t18\tVSEncodingSimple V2" << endl << endl;
 
         exit(1);
 }
