@@ -1,28 +1,5 @@
 TODO items
 -----------
 
-* To Merge VSEncodingNaive with VSEncodingBlocks
-
-These codes are very similiar, so these should be merged while keeping
-their current performances.
-
-* Vectorize the series of VSEncodingXXX
-
-Vectorization with SSE2 and AVX2 could improves their performance.
-
-* Memory Management and Exception Safety
-
-To make codes about managing memory simple and efficient. There are
-some stupid codes about memory allocation in VSEncoding or something.
-
-* Newest Encoder/Decoder Implimentation
-
-A newest coder was proposed in CIKM'11, which is titled 'SIMD-based
-Decoding of Posting Lists'. We would like the coder to be appended
-into this library.
-
-* FIXME Items to be Modified
-
-There are many FIXME items in the sources of this library. These items
-should be modified in the future.
+* See https://github.com/maropu/open_coders/issues
 
