@@ -4869,7 +4869,7 @@ __vsesimplev1_unpack10_12(uint32_t **out, uint32_t **in)
         pout[10] = (pin[3] >> 18) & 0x03ff;
         pout[11] = (pin[3] >> 8) & 0x03ff;
 
-        *in = pin + 3;
+        *in = pin + 4;
         *out = pout + 12;
 }
 

@@ -67,7 +67,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                         }
 
                         shared_ptr<uint32_t> __exceptions(
-                                new uint32_t[len], default_delete<uint32_t[]>());
+                                new uint32_t[2 * len], default_delete<uint32_t[]>());
 
                         uint32_t *exceptions = __exceptions.get();
 
@@ -85,7 +85,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                         uint32_t        encodedExceptions_sz;
 
                         shared_ptr<uint32_t> __encodedExceptions(
-                                new uint32_t[len], default_delete<uint32_t[]>());
+                                new uint32_t[2 * len], default_delete<uint32_t[]>());
 
                         uint32_t *encodedExceptions = __encodedExceptions.get();
 

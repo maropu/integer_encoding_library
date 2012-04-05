@@ -17,14 +17,9 @@
 #include "open_coders.hpp"
 #include "misc/benchmarks.hpp"
 
+#define BUFSIZE         1024
+
 using namespace std;
-
-#define NCTYPENAME      64
-
-#define MAX_N           1000000000
-#define MIN_N           10
-#define MAX_RAVG        1000000
-#define MIN_RAVG        2
 
 #define __array_size(x) (sizeof(x) / sizeof(x[0]))
 
@@ -60,19 +55,19 @@ static __coders_list __clist[] = {
         {"vsesimple-v2", E_VSESIMPLEV2, D_VSESIMPLEV2}
 };
 
-static int32_t _init_rand;
-
 int
 main(int argc, char **argv)
 {
-        char            buf[NCTYPENAME];
-        char            *end;
-
-        if (argc < 4)
+        if (argc < 3)
                 __usage(NULL);
 
-        strncpy(buf, argv[1], NCTYPENAME);
-        buf[NCTYPENAME - 1] = '\0';
+        /* Recive input options */
+        uint64_t        tsz;
+        uint64_t        tlen;
+        char            buf[BUFSIZE];
+
+        strncpy(buf, argv[1], BUFSIZE);
+        buf[BUFSIZE - 1] = '\0';
 
         int nlist = -1;
         for (uint32_t i = 0; i < __array_size(__clist); i++) {
@@ -83,59 +78,54 @@ main(int argc, char **argv)
         if (nlist == -1)
                 __usage("Invalid coder-type: %s\n", buf);
 
-        uint32_t N = strtol(argv[2], &end, 10);
+        strncpy(buf, argv[2], BUFSIZE);
+        buf[BUFSIZE - 1] = '\0';
 
-        if (N >= MAX_N || N <= MIN_N)
-                __usage("Invalid N: %d\n", N);
+        uint32_t *tdata = __open_and_mmap_file(buf, tsz);
 
-        uint32_t L = strtol(argv[3], &end, 10);
+        tlen = (tsz >> 2) - 1;
 
-        if (L >= MAX_RAVG || L <= MIN_RAVG)
-                __usage("Invalid Lambda: %d\n", L);
+        /* Allocate resources */
+        shared_ptr<uint32_t> __list1(
+                new uint32_t[tlen], default_delete<uint32_t[]>());
 
-        /* Generate test data sets */
-        uint32_t *list1 = new uint32_t[N];
-        if (list1 == NULL)
-                eoutput("Can't allocate memory");
+        uint32_t *list1 = __list1.get();
 
-        uint32_t *list2 = new uint32_t[OUTPUTMEM(N)];
-        if (list2 == NULL)
-                eoutput("Can't allocate memory");
+        shared_ptr<uint32_t> __list2(
+                new uint32_t[OUTPUTMEM(tlen)], default_delete<uint32_t[]>());
 
-        uint32_t *cmp_array = new uint32_t[N];
-        if (cmp_array == NULL)
-                eoutput("Can't allocate memory");
+        uint32_t *list2 = __list2.get();
 
+        shared_ptr<uint32_t> __compressed(
+                new uint32_t[tlen], default_delete<uint32_t[]>());
 
-        if (__clist[nlist].encID != E_BINARYIPL) {
-                for (uint32_t i = 0; i < N; i++)
-                        list1[i] = __get_random(L);
-        } else {
-                uint32_t        r;
+        uint32_t *compressed = __compressed.get();
 
-                list1[0] = 0;
-                for (uint32_t i = 1; i < N; i++) {
-                        r = __get_random(L) + 1;
+        /* Re-format input data for some coders */
+        for (uint32_t i = 0; i < tlen; i++) {
+                if (tdata[i + 1] < tdata[i])
+                        __usage("List ordering exception: list MUST be increasing");
 
-                        if (UINT32_MAX - list1[i - 1] < r)
-                                eoutput("Overflow Exception");
-
-                        list1[i] = list1[i - 1] + r;
-                }
+                if (__clist[nlist].encID != E_BINARYIPL)
+                        list1[i] = tdata[i + 1] - tdata[i] - 1;
+                else
+                        list1[i] = tdata[i + 1];
         }
 
-        /* Do encoding */
-        uint32_t        cmp_size;
+        __close_file(tdata, tsz);
 
-        (encoders[__clist[nlist].encID])(list1, N, cmp_array, cmp_size);
+        /* Do encoding */
+        uint32_t        csize;
+
+        (encoders[__clist[nlist].encID])(list1, tlen, compressed, csize);
 
         /* Start benchmarking */
         double st = __get_time();
-        (decoders[__clist[nlist].decID])(cmp_array, cmp_size, list2, N);
+        (decoders[__clist[nlist].decID])(compressed, csize, list2, tlen);
         double et = __get_time();
 
         /* Validation check */
-        for (uint32_t i = 0; i < N; i++) {
+        for (uint32_t i = 0; i < tlen; i++) {
                 if (list1[i] != list2[i])
                         cerr << "Decoding Exception(" << i << "): "
                                 << list1[i] << " != " << list2[i] << endl;
@@ -143,32 +133,19 @@ main(int argc, char **argv)
 
         /* Show results */
         cout << "Performance: " << setprecision(5)
-                << ((N + 0.0) / ((et - st) * 1000000)) << " mis" << endl; 
+                << ((tlen + 0.0) / ((et - st) * 1000000)) << " mis" << endl; 
         cout << "Ratio: " << setprecision(3)
-                << ((cmp_size + 0.0) / N) * 100.0 << " %" << endl;
-
-        delete[] list1;
-        delete[] list2;
-        delete[] cmp_array;
+                << ((csize + 0.0) / tlen) * 100.0 << " %" << endl;
 
         return EXIT_SUCCESS;
 }
 
 /*--- Intra functions below ---*/
 
-uint32_t
-__get_random(int d)
-{
-        if  (!_init_rand++)
-                srand(time(NULL));
-
-        return (uint32_t)(d * ((double)rand() / UINT_MAX));
-}
-
 void
 __usage(const char *msg, ...)
 {
-        cout << "Usage: encoders <coder-types> <N> <Maximum>" << endl;
+        cout << "Usage: decbench <coder-types> <test-data>" << endl;
 
         if (msg != NULL) {
                 va_list vargs;

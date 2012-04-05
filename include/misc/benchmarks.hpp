@@ -74,10 +74,6 @@
 #define GET_RESUME_LEN(addr)    __do_read64(addr, RESUME_INFO_BASE + 2)
 #define GET_RESUME_LENMAX(addr) __do_read64(addr, RESUME_INFO_BASE + 4)
 
-/*
- * FIXME: Need to support for more than 4GiB files
- * on 32-bit platforms.
- */
 #define SET_RESUME_INFO(num, pos, len, lenmax, fp)      \
         ({                              \
                 fpos_t  old;            \
