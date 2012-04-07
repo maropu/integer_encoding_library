@@ -6,7 +6,7 @@ How to use
 
 You type a following line for encoding:
 
-./IntEncoder EncoderID Input
+./encoders EncoderID Input
 
 A pre-defined value needs to be input in 'EncoderID', and an input
 file in 'Input' needs to follow a pre-defined format. These details
@@ -14,7 +14,7 @@ can be found in following sections.
 
 For decoding, you say a following line:
 
-./IntDecoder DecoderID Input [Output]
+./decoders DecoderID Input [Output]
 
 You need to input a corresponding value in 'DecoderID' to 'EncoderID',
 and a same name with 'Input' for encoding. For writing decoded 
