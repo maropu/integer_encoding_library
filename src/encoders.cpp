@@ -20,6 +20,7 @@
 using namespace std;
 using namespace opc;
 
+/* A macro for header stuffs */
 #define __header_written(out)   \
         do {                    \
                 uint32_t        magic;  \
@@ -51,10 +52,45 @@ using namespace opc;
                 fsync(fileno(out));     \
         } while (0)
 
+/* Macros for resume stuffs */
+#define RESUME_INFO_BASE        3
+#define CHECKPOINT_INTVL        1000000       
+
+#define __get_resume_num(addr)          __do_read32(addr, RESUME_INFO_BASE)
+#define __get_resume_pos(addr)          __do_read32(addr, RESUME_INFO_BASE + 1)
+#define __get_resume_len(addr)          __do_read64(addr, RESUME_INFO_BASE + 2)
+#define __get_resume_lenmax(addr)       __do_read64(addr, RESUME_INFO_BASE + 4)
+
+#define __set_resume_info(num, pos, len, lenmax, fp)    \
+        ({                              \
+                fpos_t  old;            \
+\
+                fgetpos(fp, &old);      \
+\
+                fseek(fp, RESUME_INFO_BASE *                    \
+                        sizeof(uint32_t), SEEK_SET);            \
+                fwrite(&num, sizeof(uint32_t), 1, fp);          \
+                fwrite(&pos, sizeof(uint32_t), 1, fp);          \
+                fwrite(&len, sizeof(uint64_t), 1, fp);          \
+                fwrite(&lenmax, sizeof(uint64_t), 1, fp);       \
+\
+                fsetpos(fp, &old);      \
+         })
+
+#define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
+        ({      \
+                if (it % CHECKPOINT_INTVL == 0) {       \
+                        __set_resume_info(it, cmp_pos, len, lenmax, toc);       \
+                        fsync(fileno(cmp));     \
+                        fsync(fileno(toc));     \
+                }       \
+         })
+
+/* A macro for a progress indicator */
+#define PROG_PER_COUNT  1000000
+
 static double   __progress_start_time;
 static int      __init_progress;
-
-#define PROG_PER_COUNT  1000000
 
 #define __show_progress(str, it, c, n)  \
         ({                      \
@@ -73,17 +109,6 @@ static int      __init_progress;
                                 "%s: %.3lf done, %.1lfs left    \
                                                         \r",    \
                                 str, pg, left);                 \
-                }       \
-         })
-
-#define CHECKPOINT_INTVL        1000000       
-
-#define __periodical_checkpoint(it, toc, cmp_pos, cmp, len, lenmax)     \
-        ({      \
-                if (it % CHECKPOINT_INTVL == 0) {       \
-                        SET_RESUME_INFO(it, cmp_pos, len, lenmax, toc); \
-                        fsync(fileno(cmp));     \
-                        fsync(fileno(toc));     \
                 }       \
          })
 
@@ -181,15 +206,15 @@ main(int argc, char **argv)
                                 HEADERSZ, toc) == HEADERSZ) {
                         __header_validate(hbuf, tlen);
 
-                        it = GET_RESUME_NUM(hbuf);
-                        cmp_pos = GET_RESUME_POS(hbuf);
+                        it = __get_resume_num(hbuf);
+                        cmp_pos = __get_resume_pos(hbuf);
 
                         /*
                          * A resumed posision is stored in rlen
                          * for __show_progress().
                          */
-                        rlen = (len = GET_RESUME_LEN(hbuf));
-                        lenmax = GET_RESUME_LENMAX(hbuf);
+                        rlen = (len = __get_resume_len(hbuf));
+                        lenmax = __get_resume_lenmax(hbuf);
 
                         __assert(len <= lenmax);
 

@@ -20,8 +20,6 @@
 using namespace std;
 using namespace opc;
 
-#define NLOOP   1
-
 static void __usage(const char *msg, ...);
 
 int 
@@ -103,90 +101,78 @@ main(int argc, char **argv)
          * FIXME: I think loops with mmap() is faster than that with
          * xxxread() on most linux platforms. True?
          */
+        uint32_t numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
+
         uint64_t dints = 0;
         uint64_t sum_sizes = 0;
         double dtime = 0.0;
 
-        uint32_t nloop = 0;
-        uint32_t numHeaders = toclenmax / EACH_HEADER_TOC_SZ;
-
-        /* Store a initial position */
-        uint64_t ip = toclen;
-
-        for (uint32_t i = 0; i < NLOOP; i++, toclen = ip) {
-                uint32_t        *ptr;
-                uint32_t        num;
-                uint32_t        prev_doc;
-                uint64_t        cmp_pos;
+        /* Start decoding */
+        for (uint32_t j = 0; j < numHeaders; j++) {
                 uint64_t        next_pos;
-                double          tm;
 
-                nloop++;
+                /* Read the header of each list */
+                uint32_t num = __next_read32(toc_addr, toclen);
 
-                for (uint32_t j = 0; j < numHeaders; j++) {
-                        /* Read the header of each list */
-                        num = __next_read32(toc_addr, toclen);
+                __assert(num < MAXLEN);
 
-                        __assert(num < MAXLEN);
+                uint32_t prev_doc = __next_read32(toc_addr, toclen);
+                uint32_t cmp_pos = __next_read64(toc_addr, toclen);
 
-                        prev_doc = __next_read32(toc_addr, toclen);
-                        cmp_pos = __next_read64(toc_addr, toclen);
+                if (__likely(j != numHeaders - 1))
+                        next_pos = __next_pos64(toc_addr, toclen);
+                else
+                        next_pos = cmplenmax;
 
-                        if (__likely(j != numHeaders - 1))
-                                next_pos = __next_pos64(toc_addr, toclen);
-                        else
-                                next_pos = cmplenmax;
+                __assert(cmp_pos <= next_pos);
+                __assert(next_pos - cmp_pos <= UINT32_MAX);
 
-                        __assert(cmp_pos <= next_pos);
-                        __assert(next_pos - cmp_pos <= UINT32_MAX);
+                /* FIXME: Need to remove a code below in the future */
+                if (__unlikely(cmp_pos >= next_pos))
+                        goto DECODING_END;
 
-                        /* FIXME: Need to remove a code below in the future */
-                        if (__unlikely(cmp_pos >= next_pos))
-                                goto LOOP_END;
+                uint32_t *ptr = cmp_addr + cmp_pos;
 
-                        ptr = cmp_addr + cmp_pos;
+                if (decID == D_VSEREST ||
+                                decID == D_VSEHYB) {
+                        memcpy(sbuf, ptr, sizeof(uint32_t) *
+                                        (next_pos - cmp_pos));
+                        ptr = sbuf;
+                }
 
-                        if (decID == D_VSEREST ||
-                                        decID == D_VSEHYB) {
-                                memcpy(sbuf, ptr, sizeof(uint32_t) *
-                                                (next_pos - cmp_pos));
-                                ptr = sbuf;
-                        }
+                /* Do decoding */
+                double tm = __get_time();
+                (decoders[decID])(ptr, next_pos - cmp_pos, list, num - 1);
+                dtime += __get_time() - tm;
 
-                        /* Do decoding */
-                        tm = __get_time();
-                        (decoders[decID])(ptr, next_pos - cmp_pos, list, num - 1);
+                /* Accumulate each count */
+                dints += num - 1;
+                sum_sizes = cmp_pos;
 
-                        /* Accumulate each count */
-                        dtime += __get_time() - tm;
-                        dints += num - 1;
-                        sum_sizes = cmp_pos;
+                /* Write on the output file */
+                if (dec != NULL) {
+                        if (decID != D_BINARYIPL) {
+                                fwrite(&num, 1, sizeof(uint32_t), dec);
+                                fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
 
-                        /* Write on the output file */
-                        if (dec != NULL) {
-                                if (decID != D_BINARYIPL) {
-                                        fwrite(&num, 1, sizeof(uint32_t), dec);
+                                for (uint32_t j = 0; j < num - 1; j++) {
+                                        prev_doc += list[j] + 1;
                                         fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
-
-                                        for (uint32_t j = 0; j < num - 1; j++) {
-                                                prev_doc += list[j] + 1;
-                                                fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
-                                        }
-                                } else {
-                                        fwrite(&num, 1, sizeof(uint32_t), dec);
-                                        fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
-                                        fwrite(&list, num - 1, sizeof(uint32_t), dec);
                                 }
+                        } else {
+                                fwrite(&num, 1, sizeof(uint32_t), dec);
+                                fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
+                                fwrite(&list, num - 1, sizeof(uint32_t), dec);
                         }
                 }
         }
-LOOP_END:
+DECODING_END:
 
         cout << "Decoded ints: " << dints << endl;
         cout << "Time: " << dtime << " Secs" << endl;
         cout << "Performance: " << (dints + 0.0) / (dtime * 1000000) << " mis" << endl; 
-        cout << "Size: " << (sum_sizes * nloop / 1024) * 4 << " KiB" << endl;
-        cout << "Size: " << ((sum_sizes * nloop + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
+        cout << "Size: " << (sum_sizes / 1024) * 4 << " KiB" << endl;
+        cout << "Size: " << ((sum_sizes + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
 
         /* Finalization */
         __close_file(cmp_addr, cmpsz);
@@ -194,13 +180,6 @@ LOOP_END:
 
         if (dec != NULL)
                 fclose(dec);
-
-        delete[] list;
-
-        if (decID == D_VSEREST ||
-                        decID == D_VSEHYB) {
-                delete[] sbuf;
-        }
 
         return EXIT_SUCCESS;
 }

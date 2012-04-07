@@ -44,12 +44,12 @@
 #define MAXLEN          200000000
 
 /* For debugs */
-#if defined(DEBUG) && defined(__linux__)
+#if !defined(NDEBUG) && defined(__linux__)
  #define MALLOC_CHECK   2
 #endif
 
 /* Keywords for compiler optimization */
-#ifdef __NOCOMPILER_OPT__
+#ifndef __NOCOMPILER_OPT__
  #define __no_aliases__         __restrict__
  #define __likely(x)            __builtin_expect(!!(x), 1)
  #define __unlikely(x)          __builtin_expect(!!(x), 0)
@@ -63,7 +63,7 @@
 #define __log2_uint32(v)        \
         ({                      \
                 uint32_t d;     \
-         __asm__("bsr %1, %0;" :"=r"(d) :"r"(v));       \
+                __asm__("bsr %1, %0;" :"=r"(d) :"r"(v));        \
                 d;      \
          })
 

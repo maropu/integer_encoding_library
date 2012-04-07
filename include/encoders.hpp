@@ -52,8 +52,9 @@
 using namespace opc;
 
 typedef void (*pt2Enc)(uint32_t *, uint32_t,
-                uint32_t *, uint32_t &) __attribute__((unused));
+                uint32_t *, uint32_t &);
 
+__attribute__((unused))
 pt2Enc encoders[NUMENCODERS] = {
         Gamma::encodeArray,
         Delta::encodeArray,
