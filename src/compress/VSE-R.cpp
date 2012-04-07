@@ -160,16 +160,30 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
                 wt[i].bit_flush();
 }
 
+/* FIXME: Need to be re-implemented in a thread-safe way */
+static uint32_t __init_wkmem;
+static uint32_t *__vsencoding_wkmem;
+
+static uint32_t *
+__vsencoding_get_wkmem(void)
+{
+        if (!__init_wkmem++) {
+                /* Allocate work-space */
+                shared_ptr<uint32_t> __temp(
+                        new uint32_t[MAXLEN + 128],
+                        default_delete<uint32_t[]>());
+
+                __vsencoding_wkmem = __temp.get();
+        }
+
+        return __vsencoding_wkmem;
+}
+
 void
 VSE_R::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        /* Allocate work-space */
-        shared_ptr<uint32_t> __outs(
-                new uint32_t[nvalue + 128],
-                default_delete<uint32_t[]>());
-
-        uint32_t *outs = __outs.get();
+        uint32_t *outs = __vsencoding_get_wkmem();
 
         VSEncodingNaive::decodeArray(in + 1, nvalue, out, nvalue);
         in += *in + 1;
