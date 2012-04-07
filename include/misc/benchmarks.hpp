@@ -147,25 +147,23 @@ const char *dec_ext[] = {
 };
 
 /* Utility inline functions below */
-inline double
+inline static double
 __get_time(void)
 {
-        double  utime;
-        double  stime;
         struct rusage   usage;
 
         getrusage (RUSAGE_SELF, &usage);
 
-        utime = (double)usage.ru_utime.tv_sec +
+        double utime = (double)usage.ru_utime.tv_sec +
                 (double)usage.ru_utime.tv_usec / 1000000.0;
 
-        stime = (double)usage.ru_stime.tv_sec +
+        double stime = (double)usage.ru_stime.tv_sec +
                 (double)usage.ru_stime.tv_usec / 1000000.0;
 
         return (utime + stime);
 }
 
-inline uint64_t
+inline static uint64_t
 __get_file_size(FILE *fp)
 {
         fpos_t  old;
@@ -181,20 +179,23 @@ __get_file_size(FILE *fp)
         return static_cast<uint64_t>(size.__pos);
 }
 
-inline uint32_t *
+/* Some deleter functions */
+static void __deleter_close(int *fd) {close(*fd);}
+static void __deleter_fclose(FILE *fd) {fclose(fd);}
+
+inline static uint32_t *
 __open_and_mmap_file(
                 char *filen, uint64_t &len) {
-        int             file;
-        int             ret;
-        uint32_t        *addr;
         struct stat     sb;
 
-        file = open(filen, O_RDONLY);
+        int file = open(filen, O_RDONLY);
         if (file == -1)
-                eoutput("oepn(): Can't open the file");
+                eoutput("Can't open a input file");
+
+        shared_ptr<int> __file(&file, __deleter_close);
 
         /* Do mmap() for file */
-        ret = fstat(file, &sb);
+        int ret = fstat(file, &sb);
         if (ret == -1 || sb.st_size == 0)
                 eoutput("fstat(): Unknown the file size");
 
@@ -207,20 +208,12 @@ __open_and_mmap_file(
 
         __fadvise_sequential(file, len);
 
-        addr = (uint32_t *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, file, 0);
-
+        uint32_t *addr = (uint32_t *)mmap(
+                        NULL, len, PROT_READ, MAP_PRIVATE, file, 0);
         if (addr == MAP_FAILED)
                 eoutput("mmap(): Can't map the file to memory");
 
-        close(file);
-
         return addr;
-}
-
-inline void
-__close_file(uint32_t *adr, uint64_t len)
-{
-        munmap(adr, len);
 }
 
 #endif  /* __BENCHMARKS__ */

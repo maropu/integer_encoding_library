@@ -83,16 +83,16 @@ main(int argc, char **argv)
 
         /* If possible, setup a output file */
         FILE *dec = NULL;
+        shared_ptr<FILE> __dec(static_cast<FILE *>(0), __deleter_fclose);
 
         if (argc > 3) {
                 strncpy(ofile, argv[3], NFILENAME);
                 ofile[NFILENAME - 1] = '\0';
-
                 strcat(ofile, DECEXT);
-                dec = fopen(ofile, "w");
 
-                if (dec == NULL)
-                        eoutput("foepn(): Can't create a output file");
+                shared_ptr<FILE> __temp(
+                        fopen(ofile, "w"), __deleter_fclose);
+                dec = (__dec = __temp, __dec).get();
 
                 setvbuf(dec, NULL, _IOFBF, BUFSIZ);
         }
@@ -173,13 +173,6 @@ DECODING_END:
         cout << "Performance: " << (dints + 0.0) / (dtime * 1000000) << " mis" << endl; 
         cout << "Size: " << (sum_sizes / 1024) * 4 << " KiB" << endl;
         cout << "Size: " << ((sum_sizes + 0.0) / (dints + 0.0)) * 32 << " bpi" << endl;
-
-        /* Finalization */
-        __close_file(cmp_addr, cmpsz);
-        __close_file(toc_addr, tocsz);
-
-        if (dec != NULL)
-                fclose(dec);
 
         return EXIT_SUCCESS;
 }

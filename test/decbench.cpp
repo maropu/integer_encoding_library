@@ -112,8 +112,6 @@ main(int argc, char **argv)
                         list1[i] = tdata[i + 1];
         }
 
-        __close_file(tdata, tsz);
-
         /* Do encoding */
         uint32_t        csize;
 

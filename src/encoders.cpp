@@ -177,17 +177,18 @@ main(int argc, char **argv)
         strncpy(ofile, ifile, NFILENAME);
         strcat(ofile, enc_ext[encID]);
 
-        FILE *cmp = fopen(ofile, (try_resume == 0)? "w" : "r+");
-        if (cmp == NULL)
-                eoutput("foepn(): Can't open output files");
+        shared_ptr<FILE> __cmp(
+                fopen(ofile, (try_resume == 0)? "w" : "r+"),
+                __deleter_fclose);
+        FILE *cmp = __cmp.get();
+        setvbuf(cmp, NULL, _IOFBF, BUFSIZ);
 
         strcat(ofile, TOCEXT);
-        FILE *toc = fopen(ofile, (try_resume == 0)? "w" : "r+");
 
-        if (toc == NULL)
-                eoutput("foepn(): Can't open output files");
-
-        setvbuf(cmp, NULL, _IOFBF, BUFSIZ);
+        shared_ptr<FILE> __toc(
+                fopen(ofile, (try_resume == 0)? "w" : "r+"),
+                __deleter_fclose);
+        FILE *toc = __toc.get();
         setvbuf(toc, NULL, _IOFBF, BUFSIZ);
 
         /* Try to resume path first */
@@ -316,12 +317,6 @@ RESUME:
                 }
         }
 LOOP_END:
-
-        /* Finalization */
-        __close_file(addr, fsz);
-
-        fclose(cmp);
-        fclose(toc);
 
         return EXIT_SUCCESS;
 }
