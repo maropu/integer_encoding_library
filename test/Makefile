@@ -1,8 +1,8 @@
 CC		= g++
 RM		= rm
 CP		= cp
-#CFLAGS		= -DDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-CFLAGS		= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		= -DDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 WFLAGS		= -Wall -Winline
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I../include

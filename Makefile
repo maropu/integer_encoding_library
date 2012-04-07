@@ -1,7 +1,7 @@
 CC		= g++
 RM		= rm
-#CFLAGS		+= -DNDEBUG -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-CFLAGS		+= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= -DNDEBUG -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		+= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 WFLAGS		= -Wall -Winline
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I./include
