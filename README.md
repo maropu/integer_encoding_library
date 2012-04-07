@@ -47,8 +47,9 @@ VSEncodingSimple v1 and v2 allocate 4-bit and 8-bit to represent
 the length of partitions, respectively.
 
 
-See a web site below to know more about this library.
-http://integerencoding.isti.cnr.it/
+See http://integerencoding.isti.cnr.it/ to know more about
+this library.
+
 
 NOTE: This library aims at a research tool for performance
 benchmarks, not a qualified product. So, some improvements to remove
