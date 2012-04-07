@@ -54,40 +54,40 @@ using namespace opc;
                 ::"memory", "%xmm0")
 
 /* A set of unpacking functions */
-static void __vseblocks_unpack1(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack2(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack3(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack4(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack5(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack6(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack7(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack8(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack9(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack10(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack11(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack12(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack16(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack20(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
-static void __vseblocks_unpack32(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack1(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack2(
+                uint32_t *out,uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack3(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack4(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack5(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack6(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack7(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack8(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack9(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack10(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack11(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack12(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack16(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack20(
+                uint32_t *out, uint32_t *in, uint32_t bs);
+static void __vseblocks_unpack32(
+                uint32_t *out, uint32_t *in, uint32_t bs);
 
 /* A interface of unpacking functions above */
-typedef void (*__vseblocks_unpacker)(uint32_t *__no_aliases__ out,
-                uint32_t *in, uint32_t bs);
+typedef void (*__vseblocks_unpacker)(
+                uint32_t *out, uint32_t *in, uint32_t bs);
 
 static __vseblocks_unpacker       __vseblocks_unpack[] = {
         NULL, __vseblocks_unpack1,
@@ -421,7 +421,8 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
 /* --- Intra functions below --- */
 
 void
-__vseblocks_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack1(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 1) {
                 out[0] = in[0] >> 31;
@@ -460,7 +461,7 @@ __vseblocks_unpack1(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack2(uint32_t *__no_aliases__ out, uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 2) {
                 out[0] = in[0] >> 30;
@@ -499,7 +500,8 @@ __vseblocks_unpack2(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack3(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 3) {
                 out[0] = in[0] >> 29;
@@ -540,7 +542,8 @@ __vseblocks_unpack3(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack4(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 4) {
                 out[0] = in[0] >> 28;
@@ -579,7 +582,8 @@ __vseblocks_unpack4(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack5(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 5) {
                 out[0] = in[0] >> 27;
@@ -622,7 +626,8 @@ __vseblocks_unpack5(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack6(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 6) {
                 out[0] = in[0] >> 26;
@@ -665,7 +670,8 @@ __vseblocks_unpack6(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack7(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 7) {
                 out[0] = in[0] >> 25;
@@ -709,7 +715,8 @@ __vseblocks_unpack7(uint32_t *out, uint32_t *in, uint32_t bs)
         }
 }
 
-void __vseblocks_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
+void __vseblocks_unpack8(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 8) {
                 out[0] = in[0] >> 24;
@@ -748,7 +755,8 @@ void __vseblocks_unpack8(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack9(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 9) {
                 out[0] = in[0] >> 23;
@@ -795,7 +803,8 @@ __vseblocks_unpack9(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack10(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 10) {
                 out[0] = in[0] >> 22;
@@ -842,7 +851,8 @@ __vseblocks_unpack10(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack11(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 11) {
                 out[0] = in[0] >> 21;
@@ -891,7 +901,8 @@ __vseblocks_unpack11(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack12(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 12) {
                 out[0] = in[0] >> 20;
@@ -938,7 +949,8 @@ __vseblocks_unpack12(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack16(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 16) {
                 out[0] = in[0] >> 16;
@@ -977,7 +989,8 @@ __vseblocks_unpack16(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack20(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs; i += 32, out += 32, in += 20) {
                 out[0] = in[0] >> 12;
@@ -1032,7 +1045,8 @@ __vseblocks_unpack20(uint32_t *out, uint32_t *in, uint32_t bs)
 }
 
 void
-__vseblocks_unpack32(uint32_t *out, uint32_t *in, uint32_t bs)
+__vseblocks_unpack32(uint32_t *__no_aliases__ out,
+                uint32_t *__no_aliases__ in, uint32_t bs)
 {
         for (uint32_t i = 0; i < bs;
                         i += 16, out += 16, in += 16) {
