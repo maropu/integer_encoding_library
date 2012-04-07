@@ -162,7 +162,9 @@ VSE_R::encodeArray(uint32_t *in, uint32_t len,
 
 /* FIXME: Need to be re-implemented in a thread-safe way */
 static uint32_t __init_wkmem;
-static uint32_t *__vsencoding_wkmem;
+static shared_ptr<uint32_t> __vsencoding_wkmem(
+                static_cast<uint32_t *>(0),
+                default_delete<uint32_t[]>());
 
 static uint32_t *
 __vsencoding_get_wkmem(void)
@@ -173,10 +175,10 @@ __vsencoding_get_wkmem(void)
                         new uint32_t[MAXLEN + 128],
                         default_delete<uint32_t[]>());
 
-                __vsencoding_wkmem = __temp.get();
+                __vsencoding_wkmem = __temp;
         }
 
-        return __vsencoding_wkmem;
+        return __vsencoding_wkmem.get();
 }
 
 void
