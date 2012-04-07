@@ -110,7 +110,7 @@ VSEncodingNaive::decodeArray(uint32_t *in,
 
         uint32_t *end = out + nvalue;
 
-        do {
+        while (end > out) {
                 uint32_t B = __vsenaive_possLogs[rd.bit_reader(VSENAIVE_LOGLOG)];
                 uint32_t K = __vsenaive_possLens[rd.bit_reader(VSENAIVE_LOGLEN)];
 
@@ -118,6 +118,6 @@ VSEncodingNaive::decodeArray(uint32_t *in,
                         out[i] = (B != 0)? rd.bit_reader(B) : 0;
 
                 out += K;
-        } while (end > out);
+        }
 }
 

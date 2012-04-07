@@ -994,16 +994,14 @@ VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
         uint32_t Fill = 0;
         uint64_t buffer = 0;
 
-        uint32_t *bin = in;
+        uint32_t *end = in + len;
+        uint32_t *data = in + *in + 1;
 
-        uint32_t *end = bin + len;
-        uint32_t *data = bin + *bin + 1;
+        __assert(*in < len);
 
-        __assert(*bin < len);
-
-        do {
+        while (1) {
                 /* Read B and K */
-                uint32_t d = *++bin;
+                uint32_t d = *++in;
 
                 /* Unpacking integers with a first 8-bit */
                 (__vserest_unpack[d >> VSEREST_LOGDESC * 3])(&out, &data, Fill, buffer);
@@ -1038,7 +1036,7 @@ VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
                         __vserest_bufunfill(data, Fill, buffer);
                 else
                         break;
-        } while (1);
+        }
 }
 
 /* --- Intra functions below --- */

@@ -818,14 +818,12 @@ void
 VSEncodingSimpleV1::decodeArray(uint32_t *in, uint32_t len,
                 uint32_t *out, uint32_t nvalue)
 {
-        uint32_t *bin = in;
-
-        uint32_t *data = bin + *bin + 1;
+        uint32_t *data = in + *in + 1;
         uint32_t *end = out + nvalue;
         
-        do {
+        while (end > out) {
                 /* Read B and K */
-                uint32_t d = *++bin;
+                uint32_t d = *++in;
 
                 /* Unpacking integers with a first 8-bit */
                 (__vsesimplev1_unpack[d >> VSESIMPLEV1_LOGDESC * 3])(&out, &data);
@@ -840,7 +838,7 @@ VSEncodingSimpleV1::decodeArray(uint32_t *in, uint32_t len,
 
                 /* Unpacking integers with a fourth 8-bit */
                 (__vsesimplev1_unpack[d & (VSESIMPLEV1_LEN - 1)])(&out, &data);
-        } while (end > out);
+        }
 }
 
 /* --- Intra functions below --- */
