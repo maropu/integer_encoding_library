@@ -45,7 +45,7 @@ OPTPForDelta::tryB(uint32_t b, uint32_t *in, uint32_t len)
                 uint32_t curExcept = 0;
 
                 for (uint32_t i = 0; i < len; i++) {
-                        if (in[i] >= (1 << b)) {
+                        if (in[i] >= (1UL << b)) {
                                 uint32_t e = in[i] >> b;
                                 exceptionsPositions[curExcept] = i;
                                 exceptionsValues[curExcept] = e;
