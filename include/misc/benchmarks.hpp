@@ -30,7 +30,7 @@
 #define NEXTNAME        32
 
 /* A macro for header accesses */
-#define HEADERSZ                9
+#define HEADERSZ                10
 #define EACH_HEADER_TOC_SZ      4
 
 /* Macros for reading 32/64bit data on memory */
@@ -169,10 +169,11 @@ __get_file_size(FILE *fp)
         fpos_t  old;
 
         fgetpos(fp, &old);
-        off_t sz = fseek(fp, 0, SEEK_END);
+        fseek(fp, 0, SEEK_END);
+        uint64_t sz = static_cast<uint64_t>(ftell(fp));
         fsetpos(fp, &old);
 
-        return static_cast<uint64_t>(sz);
+        return sz;
 }
 
 /* Some deleter functions */

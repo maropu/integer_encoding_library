@@ -27,7 +27,7 @@ using namespace opc;
                 uint32_t        vmajor; \
                 uint32_t        vminor; \
                 uint32_t        rs_num; \
-                uint32_t        rs_pos; \
+                uint64_t        rs_pos; \
                 uint64_t        rs_len; \
                 uint64_t        rs_lenmax;      \
 \
@@ -45,7 +45,7 @@ using namespace opc;
                 fwrite(&vminor, sizeof(uint32_t), 1, out);      \
 \
                 fwrite(&rs_num, sizeof(uint32_t), 1, out);      \
-                fwrite(&rs_pos, sizeof(uint32_t), 1, out);      \
+                fwrite(&rs_pos, sizeof(uint64_t), 1, out);      \
                 fwrite(&rs_len, sizeof(uint64_t), 1, out);      \
                 fwrite(&rs_lenmax, sizeof(uint64_t), 1, out);   \
 \
@@ -54,12 +54,12 @@ using namespace opc;
 
 /* Macros for resume stuffs */
 #define RESUME_INFO_BASE        3
-#define CHECKPOINT_INTVL        1000000       
+#define CHECKPOINT_INTVL        10000
 
 #define __get_resume_num(addr)          __do_read32(addr, RESUME_INFO_BASE)
-#define __get_resume_pos(addr)          __do_read32(addr, RESUME_INFO_BASE + 1)
-#define __get_resume_len(addr)          __do_read64(addr, RESUME_INFO_BASE + 2)
-#define __get_resume_lenmax(addr)       __do_read64(addr, RESUME_INFO_BASE + 4)
+#define __get_resume_pos(addr)          __do_read64(addr, RESUME_INFO_BASE + 1)
+#define __get_resume_len(addr)          __do_read64(addr, RESUME_INFO_BASE + 3)
+#define __get_resume_lenmax(addr)       __do_read64(addr, RESUME_INFO_BASE + 5)
 
 #define __set_resume_info(num, pos, len, lenmax, fp)    \
         ({                              \
@@ -70,7 +70,7 @@ using namespace opc;
                 fseek(fp, RESUME_INFO_BASE *                    \
                         sizeof(uint32_t), SEEK_SET);            \
                 fwrite(&num, sizeof(uint32_t), 1, fp);          \
-                fwrite(&pos, sizeof(uint32_t), 1, fp);          \
+                fwrite(&pos, sizeof(uint64_t), 1, fp);          \
                 fwrite(&len, sizeof(uint64_t), 1, fp);          \
                 fwrite(&lenmax, sizeof(uint64_t), 1, fp);       \
 \
@@ -86,31 +86,8 @@ using namespace opc;
                 }       \
          })
 
-/* A macro for a progress indicator */
-#define PROG_PER_COUNT  1000000
-
-static double   __progress_start_time;
-static int      __init_progress;
-
-#define __show_progress(str, it, c, n)  \
-        ({                      \
-                double  pg;     \
-                double  left;   \
-\
-                if (!__init_progress++)         \
-                        __progress_start_time = __get_time();   \
-\
-                if ((c) != 0 && (it) % ((n) / PROG_PER_COUNT) == 0) {   \
-                        pg = static_cast<double>(c) / (n);              \
-                        left = ((1.0 - pg) / pg) *                      \
-                                (__get_time() - __progress_start_time); \
-\
-                        fprintf(stderr,                         \
-                                "%s: %.3lf done, %.1lfs left    \
-                                                        \r",    \
-                                str, pg, left);                 \
-                }       \
-         })
+static void __show_progress(const char *msg,
+                uint64_t cpos, uint64_t rpos, uint64_t epos);
 
 static void __usage(const char *msg, ...);
 
@@ -137,7 +114,6 @@ main(int argc, char **argv)
 
         bool show_progress = false;
         bool try_resume = false;
-        double file_ratio = 1.0;
 
         while ((ret = getopt(argc, argv, "rip:")) != -1) {
                 switch (ret) {
@@ -147,12 +123,6 @@ main(int argc, char **argv)
 
                 case 'i':
                         show_progress = true;
-                        break;
-
-                case 'p':
-                        file_ratio = strtod(optarg, &end);
-                        if (file_ratio < 0.0 || 1.0 < file_ratio)
-                                __usage("-p needs to be between 0.0 and 1.0", argv[1]);
                         break;
 
                 case '?':
@@ -210,6 +180,9 @@ main(int argc, char **argv)
                         it = __get_resume_num(hbuf);
                         cmp_pos = __get_resume_pos(hbuf);
 
+                        if (it == 0)
+                                goto NORESUME;
+
                         /*
                          * A resumed posision is stored in rlen
                          * for __show_progress().
@@ -217,7 +190,7 @@ main(int argc, char **argv)
                         rlen = (len = __get_resume_len(hbuf));
                         lenmax = __get_resume_lenmax(hbuf);
 
-                        __assert(len <= lenmax);
+                        __assert(len < lenmax);
 
                         uint64_t pos1 = cmp_pos * sizeof(uint32_t);
                         uint64_t pos2 = (HEADERSZ +
@@ -231,15 +204,10 @@ main(int argc, char **argv)
                         fseek(cmp, pos1, SEEK_SET);
                         fseek(toc, pos2, SEEK_SET);
 
-                        /*
-                         * Reset file_ratio so that it follows
-                         * the previous lenmax.
-                         */
-                        file_ratio = 1.0;
-
                         goto RESUME;
                 }
 NORESUME:
+                len = 0, rlen = 0;
                 fseek(toc, 0, SEEK_SET);
         }
 
@@ -257,7 +225,6 @@ RESUME:
 
         /* Decide which part of the input is compressed */
         lenmax = fsz >> 2;
-        lenmax *= file_ratio;
 
         {
                 uint32_t        prev_doc;
@@ -267,7 +234,7 @@ RESUME:
 
                 while (len < lenmax) {
                         if (show_progress)
-                                __show_progress("Encoded", it++, len, lenmax - rlen);
+                                __show_progress("Encoded", len, rlen, lenmax);
 
                         /* Read the numer of integers in a list */
                         num = __next_read32(addr, len);
@@ -306,14 +273,14 @@ RESUME:
 
                                 fwrite(cmp_array, sizeof(uint32_t), cmp_size, cmp);
                                 cmp_pos += cmp_size;
+
+                                __periodical_checkpoint(
+                                                ++it, toc, cmp_pos, cmp, len, lenmax);
                         } else {
                                 /* Read skipped data */
                                 for (uint32_t j = 0; j < num - 1; j++)
                                         cur_doc = __next_read32(addr, len);
                         }
-
-                        __periodical_checkpoint(
-                                        it, toc, cmp_pos, cmp, len, lenmax);
                 }
         }
 LOOP_END:
@@ -322,6 +289,30 @@ LOOP_END:
 }
 
 /*--- Intra functions below ---*/
+
+#define PROG_PER_COUNT  1000000
+
+static uint64_t        __progress_count;
+static double          __progress_start_time;
+
+void
+__show_progress(const char *msg,
+                uint64_t cpos, uint64_t rpos, uint64_t epos)
+{
+        if (__progress_count == 0)
+                __progress_start_time = __get_time();
+
+        if (cpos != 0 && (__progress_count++ %
+                                ((epos <= PROG_PER_COUNT)? 1 :
+                                         epos / PROG_PER_COUNT)) == 0) {
+                double pg = static_cast<double>(cpos - rpos) / (epos - rpos);
+                double left = ((1.0 - pg) / pg) *
+                        (__get_time() - __progress_start_time);
+
+                fprintf(stderr, "%s: %.3lf done, %.1lfs left    \
+                                \r", msg, static_cast<double>(cpos) / epos, left);
+        }
+}
 
 void
 __usage(const char *msg, ...)
