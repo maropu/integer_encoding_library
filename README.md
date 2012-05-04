@@ -57,6 +57,7 @@ risks such memory leaks are pended for the time being.
 
 Prequisites
 -----------
+* gcc >= 4.3.6 (For -std=gnu++0x)
 
 License
 -----------
