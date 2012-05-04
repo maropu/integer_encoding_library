@@ -1,7 +1,8 @@
 CC		= g++
-RM		= rm
-CFLAGS		+= -DNDEBUG -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-#CFLAGS		+= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CCVERSION	:= $(strip $(shell $(CC) --version))
+CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		+= -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 WFLAGS		= -Wall -Winline
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I./include
@@ -58,7 +59,7 @@ test:
 
 .PHONY:clean
 clean:
-		$(RM) -f *.log *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
+		rm -f *.log *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
 			$(ENCODERS) $(DECODERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
 		$(MAKE) -C test clean
 
