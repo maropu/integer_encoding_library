@@ -24,7 +24,6 @@ using namespace std;
 #define __array_size(x) (sizeof(x) / sizeof(x[0]))
 
 static void __usage(const char *msg, ...);
-static uint32_t __get_random(int d);
 
 struct __coders_list {
         const char      *name;

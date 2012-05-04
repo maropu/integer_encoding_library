@@ -167,16 +167,12 @@ inline static uint64_t
 __get_file_size(FILE *fp)
 {
         fpos_t  old;
-        fpos_t  size;
 
         fgetpos(fp, &old);
-
-        fseek(fp, 0, SEEK_END);
-        fgetpos(fp, &size);
-
+        off_t sz = fseek(fp, 0, SEEK_END);
         fsetpos(fp, &old);
 
-        return static_cast<uint64_t>(size.__pos);
+        return static_cast<uint64_t>(sz);
 }
 
 /* Some deleter functions */

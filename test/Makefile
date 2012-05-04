@@ -1,9 +1,8 @@
 CC		= g++
-RM		= rm
-CP		= cp
-CFLAGS		= -DDEBUG -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-#CFLAGS		= -std=gnu++0x -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-WFLAGS		= -Wall -Winline
+CCVERSION	:= $(strip $(shell $(CC) --version))
+CFLAGS		= -DDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.% 4.7.%,$(CCVERSION)), -std=gnu++0x,)
+WFLAGS		= -Wall -Wno-unused-but-set-variable -Wno-unused-function
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I../include
 LIBS		= 
@@ -18,11 +17,11 @@ test:		$(DECBENCH)
 
 $(DECBENCH):	$(OBJS) $(OBJS_BENCH)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_BENCH) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
-		$(CP) $(SCRIPT) ..
+		cp $(SCRIPT) ..
 
 .cpp.o:
 		$(CC) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $< -o $@
 
 clean:
-		$(RM) -f *.log ../*.output ../$(SCRIPT) $(OBJS) $(OBJS_BENCH) $(DECBENCH)
+		rm -f *.log ../*.output ../$(SCRIPT) $(OBJS) $(OBJS_BENCH) $(DECBENCH)
 
