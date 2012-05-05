@@ -177,8 +177,18 @@ __get_file_size(FILE *fp)
 }
 
 /* Some deleter functions */
-static void __deleter_close(int *fd) {close(*fd);}
-static void __deleter_fclose(FILE *fd) {fclose(fd);}
+static void __deleter_close(int *fd) {
+        /* FIXME: The statement below is necessary? */
+        if (fd == NULL)
+                return;
+        close(*fd);
+}
+static void __deleter_fclose(FILE *fd) {
+        /* FIXME: The statement below is necessary? */
+        if (fd == NULL)
+                return;
+        fclose(fd);
+}
 
 inline static uint32_t *
 __open_and_mmap_file(

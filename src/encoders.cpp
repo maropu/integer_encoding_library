@@ -162,11 +162,11 @@ main(int argc, char **argv)
         setvbuf(toc, NULL, _IOFBF, BUFSIZ);
 
         /* Try to resume path first */
-        uint32_t it = 0;
         uint64_t len = 0;
         uint64_t rlen = 0;
         uint64_t lenmax = 0;
         uint64_t cmp_pos = 0;
+        uint64_t toc_pos = 0;
 
         if (try_resume) {
                 uint32_t        hbuf[HEADERSZ];
@@ -177,10 +177,10 @@ main(int argc, char **argv)
                                 HEADERSZ, toc) == HEADERSZ) {
                         __header_validate(hbuf, tlen);
 
-                        it = __get_resume_num(hbuf);
+                        toc_pos = __get_resume_num(hbuf);
                         cmp_pos = __get_resume_pos(hbuf);
 
-                        if (it == 0)
+                        if (toc_pos == 0)
                                 goto NORESUME;
 
                         /*
@@ -194,7 +194,7 @@ main(int argc, char **argv)
 
                         uint64_t pos1 = cmp_pos * sizeof(uint32_t);
                         uint64_t pos2 = (HEADERSZ +
-                                it * EACH_HEADER_TOC_SZ) * sizeof(uint32_t);
+                                toc_pos * EACH_HEADER_TOC_SZ) * sizeof(uint32_t);
 
                         if (__get_file_size(cmp) < pos1 ||
                                         __get_file_size(toc) < pos2)
@@ -254,6 +254,9 @@ RESUME:
                                 fwrite(&prev_doc, 1, sizeof(uint32_t), toc);
                                 fwrite(&cmp_pos, 1, sizeof(uint64_t), toc);
 
+                                /* Update a position of toc */
+                                toc_pos++;
+
                                 for (uint32_t j = 0; j < num - 1; j++) {
                                         cur_doc = __next_read32(addr, len);
 
@@ -272,10 +275,13 @@ RESUME:
                                 (encoders[encID])(list, num - 1, cmp_array, cmp_size);
 
                                 fwrite(cmp_array, sizeof(uint32_t), cmp_size, cmp);
+
+                                /* Update a position of cmp */
                                 cmp_pos += cmp_size;
 
-                                __periodical_checkpoint(
-                                                ++it, toc, cmp_pos, cmp, len, lenmax);
+                                /* Sync-write encoded data periodically */
+                                __periodical_checkpoint(toc_pos, toc,
+                                                cmp_pos, cmp, len, lenmax);
                         } else {
                                 /* Read skipped data */
                                 for (uint32_t j = 0; j < num - 1; j++)
