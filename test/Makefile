@@ -2,7 +2,8 @@ CC		= g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
 CFLAGS		= -DDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.% 4.7.%,$(CCVERSION)), -std=gnu++0x,)
-WFLAGS		= -Wall -Wno-unused-but-set-variable -Wno-unused-function
+WFLAGS		= -Wall -Wno-unused-function
+WFLAGS		+= $(if $(filter 4.6.% 4.7.%,$(CCVERSION)), -Wno-unused-but-set-variable,)
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I../include
 LIBS		= 

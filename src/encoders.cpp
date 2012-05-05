@@ -54,7 +54,7 @@ using namespace opc;
 
 /* Macros for resume stuffs */
 #define RESUME_INFO_BASE        3
-#define CHECKPOINT_INTVL        10000
+#define CHECKPOINT_INTVL        300000
 
 #define __get_resume_num(addr)          __do_read32(addr, RESUME_INFO_BASE)
 #define __get_resume_pos(addr)          __do_read64(addr, RESUME_INFO_BASE + 1)
