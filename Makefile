@@ -1,7 +1,9 @@
-CC		= g++
+#CC		= g++
+CC		= /opt/gcc-4.7.0/bin/g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
 CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
-CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.% 4.7.%,$(CCVERSION)), -std=gnu++0x,)
+CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
+CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 WFLAGS		= -Wall
 WFLAGS		+= $(if $(filter 4.6.% 4.7.%,$(CCVERSION)), -Wno-unused-but-set-variable,)
 LDFLAGS		= -L/usr/local/lib
