@@ -1,4 +1,5 @@
 CC		= g++
+#CC		= ccache g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
 CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
