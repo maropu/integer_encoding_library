@@ -1,7 +1,7 @@
 CC		= g++
 #CC		= ccache g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
-CFLAGS		+= -DNDEBUG -O0 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 WFLAGS		= -Wall
@@ -61,7 +61,8 @@ test:
 
 .PHONY:clean
 clean:
-		rm -f *.log *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
+		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
 			$(ENCODERS) $(DECODERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
 		$(MAKE) -C test clean
+		$(MAKE) -C src clean
 

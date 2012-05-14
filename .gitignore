@@ -1,5 +1,6 @@
 *.[oda]
 *.so
+coverage
 *swp
 GPATH
 GRTAGS
