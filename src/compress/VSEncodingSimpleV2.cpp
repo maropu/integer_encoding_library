@@ -268,11 +268,7 @@ __vsesimplev2_unpack0(uint32_t **out, uint32_t **in, uint32_t len)
 
         for (uint32_t i = 0; i < __div_roundup(len, 4);
                         i++, pout += 4) {
-                __asm__ __volatile__(
-                        "pxor   %%xmm0, %%xmm0\n\t"
-                        "movdqu %%xmm0, %0\n\t"
-                        :"=m" (pout[0])
-                        ::"memory", "%xmm0");
+                __simd_zero4(*out);
         }
 
         *out += len;
@@ -784,12 +780,7 @@ __vsesimplev2_unpack32(uint32_t **out, uint32_t **in, uint32_t len)
 
         for (uint32_t i = 0; i < __div_roundup(len, 4);
                         i++, pout += 4, pin += 4) {
-               __asm__ __volatile__(
-                        "movdqu %1, %%xmm0\n\t"
-                        "movdqu %%xmm0, %0\n\t"
-                        :"=m" (pout[0])
-                        :"m" (pin[0])
-                        :"memory", "%xmm0");
+                __simd_copy4(*in, *out);
         }
 
         *in += len;

@@ -36,35 +36,6 @@
 #define PFORDELTA_NEXCEPT       10
 #define PFORDELTA_EXCEPTSZ      16
 
-#define __p4delta_copy(src, dest)       \
-        __asm__ __volatile__(           \
-                "movdqu %4, %%xmm0\n\t"         \
-                "movdqu %5, %%xmm1\n\t"         \
-                "movdqu %6, %%xmm2\n\t"         \
-                "movdqu %7, %%xmm3\n\t"         \
-                "movdqu %%xmm0, %0\n\t"         \
-                "movdqu %%xmm1, %1\n\t"         \
-                "movdqu %%xmm2, %2\n\t"         \
-                "movdqu %%xmm3, %3\n\t"         \
-                :"=m" (dest[0]), "=m" (dest[4]), "=m" (dest[8]), "=m" (dest[12])        \
-                :"m" (src[0]), "m" (src[4]), "m" (src[8]), "m" (src[12])                \
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3")
-	
-#define __p4delta_zero32(dest)          \
-        __asm__ __volatile__(           \
-                "pxor   %%xmm0, %%xmm0\n\t"     \
-                "movdqu %%xmm0, %0\n\t"         \
-                "movdqu %%xmm0, %1\n\t"         \
-                "movdqu %%xmm0, %2\n\t"         \
-                "movdqu %%xmm0, %3\n\t"         \
-                "movdqu %%xmm0, %4\n\t"         \
-                "movdqu %%xmm0, %5\n\t"         \
-                "movdqu %%xmm0, %6\n\t"         \
-                "movdqu %%xmm0, %7\n\t"         \
-                :"=m" (dest[0]), "=m" (dest[4]), "=m" (dest[8]), "=m" (dest[12]) ,               \
-                        "=m" (dest[16]), "=m" (dest[20]), "=m" (dest[24]), "=m" (dest[28])      \
-                ::"memory", "%xmm0")
-
 using namespace std;
 using namespace opc;
 
@@ -641,8 +612,8 @@ void
 __p4delta_unpack0(uint32_t *out, uint32_t *in)
 {
         for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
-                        i += 32, out += 32) {
-                __p4delta_zero32(out);
+                        i += 16, out += 16) {
+                __simd_zero16(out);
         }
 }
 
@@ -1328,8 +1299,8 @@ void
 __p4delta_unpack32(uint32_t *out, uint32_t *in)
 {
         for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
-                        i += 16, out += 16, in += 16) {
-                __p4delta_copy(in, out);
+                        i += 8, out += 8, in += 8) {
+                __simd_copy8(in, out);
         }
 }
 

@@ -63,11 +63,65 @@
 #define __log2_uint32(v)        \
         ({                      \
                 uint32_t d;     \
+                __assert(v != 0);       \
                 __asm__("bsr %1, %0;" :"=r"(d) :"r"(v));        \
                 d;      \
          })
 
 #define __array_size(x)         (sizeof(x) / sizeof(x[0]))
+
+inline void
+__simd_copy4(uint32_t *src, uint32_t *dest) {
+        __asm__ __volatile__(
+                "movdqu %1, %%xmm0\n\t"
+                "movdqu %%xmm0, %0\n\t"
+                :"=m" (dest[0]) :"m" (src[0])
+                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
+}
+
+inline void
+__simd_copy8(uint32_t *src, uint32_t *dest) {
+        __asm__ __volatile__(
+                "movdqu %2, %%xmm0\n\t"
+                "movdqu %3, %%xmm1\n\t"
+                "movdqu %%xmm0, %0\n\t"
+                "movdqu %%xmm1, %1\n\t"
+                :"=m" (dest[0]), "=m" (dest[4])
+                :"m" (src[0]), "m" (src[4])
+                :"memory", "%xmm0", "%xmm1");
+}
+
+inline void
+__simd_zero4(uint32_t *dest) {
+        __asm__ __volatile__(
+                "pxor   %%xmm0, %%xmm0\n\t"
+                "movdqu %%xmm0, %0\n\t"
+                :"=m" (dest[0])
+                ::"memory", "%xmm0");
+}
+
+inline void
+__simd_zero8(uint32_t *dest) {
+        __asm__ __volatile__(
+                "pxor   %%xmm0, %%xmm0\n\t"
+                "movdqu %%xmm0, %0\n\t"
+                "movdqu %%xmm0, %1\n\t"
+                :"=m" (dest[0]), "=m" (dest[4])
+                ::"memory", "%xmm0");
+}
+
+inline void
+__simd_zero16(uint32_t *dest) {
+        __asm__ __volatile__(
+                "pxor   %%xmm0, %%xmm0\n\t"
+                "movdqu %%xmm0, %0\n\t"
+                "movdqu %%xmm0, %1\n\t"
+                "movdqu %%xmm0, %2\n\t"
+                "movdqu %%xmm0, %3\n\t"
+                :"=m" (dest[0]), "=m" (dest[4]),
+                        "=m" (dest[8]), "=m" (dest[12])
+                ::"memory", "%xmm0");
+}
 
 template <class T>
 inline void

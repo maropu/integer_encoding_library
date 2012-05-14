@@ -854,224 +854,121 @@ __vsesimplev1_unpack0_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack0_2(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                ::"memory", "%xmm0");
-
+        __simd_zero4(*out);
         *out += 2;
 }
 
 void
 __vsesimplev1_unpack0_3(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                ::"memory", "%xmm0");
-
+        __simd_zero4(*out);
         *out += 3;
 }
 
 void
 __vsesimplev1_unpack0_4(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                ::"memory", "%xmm0");
-
+        __simd_zero4(*out);
         *out += 4;
 }
 
 void
 __vsesimplev1_unpack0_5(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
         *out += 5;
 }
 
 void
 __vsesimplev1_unpack0_6(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
         *out += 6;
 }
 
 void
 __vsesimplev1_unpack0_7(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
         *out += 7;
 }
 
 void
 __vsesimplev1_unpack0_8(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
         *out += 8;
 }
 
 void
 __vsesimplev1_unpack0_9(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero4(*out + 8);
         *out += 9;
 }
 
 void
 __vsesimplev1_unpack0_10(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero4(*out + 8);
         *out += 10;
 }
 
 void
 __vsesimplev1_unpack0_11(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero4(*out + 8);
         *out += 11;
 }
 
 void
 __vsesimplev1_unpack0_12(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero4(*out + 8);
         *out += 12;
 }
 
 void
 __vsesimplev1_unpack0_14(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                "movdqu %%xmm0, %3\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero8(*out + 8);
         *out += 14;
 }
 
 void
 __vsesimplev1_unpack0_16(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                "movdqu %%xmm0, %3\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero8(*out + 8);
         *out += 16;
 }
 
 void
 __vsesimplev1_unpack0_32(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                "movdqu %%xmm0, %3\n\t"
-                "movdqu %%xmm0, %4\n\t"
-                "movdqu %%xmm0, %5\n\t"
-                "movdqu %%xmm0, %6\n\t"
-                "movdqu %%xmm0, %7\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12]),
-                        "=m" ((*out)[16]), "=m" ((*out)[20]), "=m" ((*out)[24]), "=m" ((*out)[28])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero8(*out + 8);
+        __simd_zero8(*out + 16);
+        __simd_zero8(*out + 24);
         *out += 32;
 }
 
 void
 __vsesimplev1_unpack0_64(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "pxor   %%xmm0, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm0, %1\n\t"
-                "movdqu %%xmm0, %2\n\t"
-                "movdqu %%xmm0, %3\n\t"
-                "movdqu %%xmm0, %4\n\t"
-                "movdqu %%xmm0, %5\n\t"
-                "movdqu %%xmm0, %6\n\t"
-                "movdqu %%xmm0, %7\n\t"
-                "movdqu %%xmm0, %8\n\t"
-                "movdqu %%xmm0, %9\n\t"
-                "movdqu %%xmm0, %10\n\t"
-                "movdqu %%xmm0, %11\n\t"
-                "movdqu %%xmm0, %12\n\t"
-                "movdqu %%xmm0, %13\n\t"
-                "movdqu %%xmm0, %14\n\t"
-                "movdqu %%xmm0, %15\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12]) ,
-                        "=m" ((*out)[16]), "=m" ((*out)[20]), "=m" ((*out)[24]), "=m" ((*out)[28]),
-                        "=m" ((*out)[32]), "=m" ((*out)[36]), "=m" ((*out)[40]), "=m" ((*out)[44]),
-                        "=m" ((*out)[48]), "=m" ((*out)[52]), "=m" ((*out)[56]), "=m" ((*out)[60])
-                ::"memory", "%xmm0");
-
+        __simd_zero8(*out);
+        __simd_zero8(*out + 8);
+        __simd_zero8(*out + 16);
+        __simd_zero8(*out + 24);
+        __simd_zero8(*out + 32);
+        __simd_zero8(*out + 40);
+        __simd_zero8(*out + 48);
+        __simd_zero8(*out + 56);
         *out += 64;
 }
 
@@ -6822,12 +6719,7 @@ __vsesimplev1_unpack32_1(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_2(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %1, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                :"m" ((*in)[0])
-                :"memory", "%xmm0");
+        __simd_copy4(*in, *out);
 
         *in += 2;
         *out += 2;
@@ -6836,12 +6728,7 @@ __vsesimplev1_unpack32_2(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_3(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %1, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                :"m" ((*in)[0])
-                :"memory", "%xmm0");
+        __simd_copy4(*in, *out);
 
         *in += 3;
         *out += 3;
@@ -6850,12 +6737,7 @@ __vsesimplev1_unpack32_3(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_4(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %1, %%xmm0\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                :"=m" ((*out)[0])
-                :"m" ((*in)[0])
-                :"memory", "%xmm0");
+        __simd_copy4(*in, *out);
 
         *in += 4;
         *out += 4;
@@ -6864,14 +6746,7 @@ __vsesimplev1_unpack32_4(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_5(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %2, %%xmm0\n\t"
-                "movdqu %3, %%xmm1\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                :"m" ((*in)[0]), "m" ((*in)[4])
-                :"memory", "%xmm0", "%xmm1");
+        __simd_copy8(*in, *out);
 
         *in += 5;
         *out += 5;
@@ -6880,14 +6755,7 @@ __vsesimplev1_unpack32_5(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_6(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %2, %%xmm0\n\t"
-                "movdqu %3, %%xmm1\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                :"m" ((*in)[0]), "m" ((*in)[4])
-                :"memory", "%xmm0", "%xmm1");
+        __simd_copy8(*in, *out);
 
         *in += 6;
         *out += 6;
@@ -6896,14 +6764,7 @@ __vsesimplev1_unpack32_6(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_7(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %2, %%xmm0\n\t"
-                "movdqu %3, %%xmm1\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                :"m" ((*in)[0]), "m" ((*in)[4])
-                :"memory", "%xmm0", "%xmm1");
+        __simd_copy8(*in, *out);
 
         *in += 7;
         *out += 7;
@@ -6912,14 +6773,7 @@ __vsesimplev1_unpack32_7(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_8(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %2, %%xmm0\n\t"
-                "movdqu %3, %%xmm1\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4])
-                :"m" ((*in)[0]), "m" ((*in)[4])
-                :"memory", "%xmm0", "%xmm1");
+        __simd_copy8(*in, *out);
 
         *in += 8;
         *out += 8;
@@ -6928,16 +6782,8 @@ __vsesimplev1_unpack32_8(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_9(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %3, %%xmm0\n\t"
-                "movdqu %4, %%xmm1\n\t"
-                "movdqu %5, %%xmm2\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8])
-                :"memory", "%xmm0", "%xmm1", "%xmm2");
+        __simd_copy8(*in, *out);
+        __simd_copy4(*in + 8, *out + 8);
 
         *in += 9;
         *out += 9;
@@ -6946,16 +6792,8 @@ __vsesimplev1_unpack32_9(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_10(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %3, %%xmm0\n\t"
-                "movdqu %4, %%xmm1\n\t"
-                "movdqu %5, %%xmm2\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8])
-                :"memory", "%xmm0", "%xmm1", "%xmm2");
+        __simd_copy8(*in, *out);
+        __simd_copy4(*in + 8, *out + 8);
 
         *in += 10;
         *out += 10;
@@ -6965,16 +6803,8 @@ __vsesimplev1_unpack32_10(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_11(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %3, %%xmm0\n\t"
-                "movdqu %4, %%xmm1\n\t"
-                "movdqu %5, %%xmm2\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8])
-                :"memory", "%xmm0", "%xmm1", "%xmm2");
+        __simd_copy8(*in, *out);
+        __simd_copy4(*in + 8, *out + 8);
 
         *in += 11;
         *out += 11;
@@ -6984,16 +6814,8 @@ __vsesimplev1_unpack32_11(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_12(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %3, %%xmm0\n\t"
-                "movdqu %4, %%xmm1\n\t"
-                "movdqu %5, %%xmm2\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8])
-                :"memory", "%xmm0", "%xmm1", "%xmm2");
+        __simd_copy8(*in, *out);
+        __simd_copy4(*in + 8, *out + 8);
 
         *in += 12;
         *out += 12;
@@ -7002,18 +6824,8 @@ __vsesimplev1_unpack32_12(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_14(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %4, %%xmm0\n\t"
-                "movdqu %5, %%xmm1\n\t"
-                "movdqu %6, %%xmm2\n\t"
-                "movdqu %7, %%xmm3\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                "movdqu %%xmm3, %3\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8]), "m" ((*in)[12])
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
+        __simd_copy8(*in, *out);
+        __simd_copy8(*in + 8, *out + 8);
 
         *in += 14;
         *out += 14;
@@ -7022,18 +6834,8 @@ __vsesimplev1_unpack32_14(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_16(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %4, %%xmm0\n\t"
-                "movdqu %5, %%xmm1\n\t"
-                "movdqu %6, %%xmm2\n\t"
-                "movdqu %7, %%xmm3\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                "movdqu %%xmm3, %3\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8]), "m" ((*in)[12])
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
+        __simd_copy8(*in, *out);
+        __simd_copy8(*in + 8, *out + 8);
 
         *in += 16;
         *out += 16;
@@ -7042,28 +6844,10 @@ __vsesimplev1_unpack32_16(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_32(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %8, %%xmm0\n\t"
-                "movdqu %9, %%xmm1\n\t"
-                "movdqu %10, %%xmm2\n\t"
-                "movdqu %11, %%xmm3\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                "movdqu %%xmm3, %3\n\t"
-                "movdqu %12, %%xmm0\n\t"
-                "movdqu %13, %%xmm1\n\t"
-                "movdqu %14, %%xmm2\n\t"
-                "movdqu %15, %%xmm3\n\t"
-                "movdqu %%xmm0, %4\n\t"
-                "movdqu %%xmm1, %5\n\t"
-                "movdqu %%xmm2, %6\n\t"
-                "movdqu %%xmm3, %7\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12]),
-                        "=m" ((*out)[16]), "=m" ((*out)[20]), "=m" ((*out)[24]), "=m" ((*out)[28])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8]), "m" ((*in)[12]),
-                        "m" ((*in)[16]), "m" ((*in)[20]), "m" ((*in)[24]), "m" ((*in)[28])
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
+        __simd_copy8(*in, *out);
+        __simd_copy8(*in + 8, *out + 8);
+        __simd_copy8(*in + 16, *out + 16);
+        __simd_copy8(*in + 24, *out + 24);
 
         *in += 32;
         *out += 32;
@@ -7072,51 +6856,14 @@ __vsesimplev1_unpack32_32(uint32_t **out, uint32_t **in)
 void
 __vsesimplev1_unpack32_64(uint32_t **out, uint32_t **in)
 {
-        __asm__ __volatile__(
-                "movdqu %8, %%xmm0\n\t"
-                "movdqu %9, %%xmm1\n\t"
-                "movdqu %10, %%xmm2\n\t"
-                "movdqu %11, %%xmm3\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                "movdqu %%xmm3, %3\n\t"
-                "movdqu %12, %%xmm0\n\t"
-                "movdqu %13, %%xmm1\n\t"
-                "movdqu %14, %%xmm2\n\t"
-                "movdqu %15, %%xmm3\n\t"
-                "movdqu %%xmm0, %4\n\t"
-                "movdqu %%xmm1, %5\n\t"
-                "movdqu %%xmm2, %6\n\t"
-                "movdqu %%xmm3, %7\n\t"
-                :"=m" ((*out)[0]), "=m" ((*out)[4]), "=m" ((*out)[8]), "=m" ((*out)[12]),
-                        "=m" ((*out)[16]), "=m" ((*out)[20]), "=m" ((*out)[24]), "=m" ((*out)[28])
-                :"m" ((*in)[0]), "m" ((*in)[4]), "m" ((*in)[8]), "m" ((*in)[12]),
-                        "m" ((*in)[16]), "m" ((*in)[20]), "m" ((*in)[24]), "m" ((*in)[28])
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
-
-        __asm__ __volatile__(
-                "movdqu %8, %%xmm0\n\t"
-                "movdqu %9, %%xmm1\n\t"
-                "movdqu %10, %%xmm2\n\t"
-                "movdqu %11, %%xmm3\n\t"
-                "movdqu %%xmm0, %0\n\t"
-                "movdqu %%xmm1, %1\n\t"
-                "movdqu %%xmm2, %2\n\t"
-                "movdqu %%xmm3, %3\n\t"
-                "movdqu %12, %%xmm0\n\t"
-                "movdqu %13, %%xmm1\n\t"
-                "movdqu %14, %%xmm2\n\t"
-                "movdqu %15, %%xmm3\n\t"
-                "movdqu %%xmm0, %4\n\t"
-                "movdqu %%xmm1, %5\n\t"
-                "movdqu %%xmm2, %6\n\t"
-                "movdqu %%xmm3, %7\n\t"
-                :"=m" ((*out)[32]), "=m" ((*out)[36]), "=m" ((*out)[40]), "=m" ((*out)[44]),
-                        "=m" ((*out)[48]), "=m" ((*out)[52]), "=m" ((*out)[56]), "=m" ((*out)[60])
-                :"m" ((*in)[32]), "m" ((*in)[36]), "m" ((*in)[40]), "m" ((*in)[44]),
-                        "m" ((*in)[48]), "m" ((*in)[52]), "m" ((*in)[56]), "m" ((*in)[60])
-                :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
+        __simd_copy8(*in, *out);
+        __simd_copy8(*in + 8, *out + 8);
+        __simd_copy8(*in + 16, *out + 16);
+        __simd_copy8(*in + 24, *out + 24);
+        __simd_copy8(*in + 32, *out + 32);
+        __simd_copy8(*in + 40, *out + 40);
+        __simd_copy8(*in + 48, *out + 46);
+        __simd_copy8(*in + 56, *out + 56);
 
         *in += 64;
         *out += 64;
