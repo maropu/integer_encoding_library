@@ -22,7 +22,7 @@
 #       vsesimple-v2: VSEncodingSimpleV1, VSEncodingSimpleV2
 I="n-gamma n-delta varbyte simple9 simple16 p4delta optp4delta vseblocks vse-r vserest vsehybrid vsesimple-v1 vsesimple-v2"
 
-if [ ! -x ./test/decbench ]; then
+if [ ! -x ./decbench ]; then
         echo 'Exception: decbench not existed'
         exit 1
 fi
@@ -37,7 +37,7 @@ echo '=========================='
 
 # Run tests, output table
 for impl in $I; do
-        ./test/decbench $impl ./test/.test.dat > temp.output || exit 1
+        ./decbench $impl ./test/.test.dat > temp.output || exit 1
         sed -n 's/^Performance: \(.*\) mis$/\1/p' < temp.output | xargs echo -n
         echo -en '\t\t'
         sed -n 's/^Ratio: \(.*\) %$/\1/p' < temp.output | xargs echo -n

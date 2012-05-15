@@ -32,6 +32,11 @@ OBJS_DEC	= src/decoders.o
 ENCODERS	= encoders
 DECODERS	= decoders
 
+# For check
+SCRIPT_CHK	= test/test_run.sh
+OBJS_CHK	= test/decbench.o
+CHECKERS	= decbench
+
 .PHONY:all
 all:		$(SNAME)
 
@@ -53,16 +58,20 @@ $(DECODERS):	$(OBJS) $(OBJS_DEC)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_DEC) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
 
 .cpp.o:
-		$(CC) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -c $< -o $@
+		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -c $< -o $@
 
-.PHONY:test
-test:
-		$(MAKE) -C test test
+.PHONY:check
+check:		$(CHECKERS)
+		cp $(SCRIPT_CHK) .
+
+$(CHECKERS):	$(OBJS) $(OBJS_CHK)
+		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_CHK) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
 
 .PHONY:clean
 clean:
-		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
-			$(ENCODERS) $(DECODERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
+		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a \
+			$(notdir $(SCRIPT_CHK)) $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
+			$(ENCODERS) $(DECODERS) $(CHECKERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
 		$(MAKE) -C test clean
 		$(MAKE) -C src clean
 
