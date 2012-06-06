@@ -14,7 +14,7 @@ SRCS		= $(shell find $(SUBDIRS) -type f -name '*.cpp')
 OBJS		= $(subst .cpp,.o,$(SRCS))
 OBJS_BENCH	= decbench.o
 DECBENCH	= decbench
-SCRIPT		= run_decbench.sh
+SCRIPT		= test_run.sh
 
 test:		$(DECBENCH)
 

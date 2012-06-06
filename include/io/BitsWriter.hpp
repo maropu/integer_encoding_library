@@ -17,7 +17,8 @@
 
 #include "xxx_common.hpp"
 
-namespace opc {
+namespace integer_coding {
+namespace utility {
 
 class BitsWriter {
 private:
@@ -29,10 +30,10 @@ private:
 public:
         /* Constructor */
         BitsWriter();
-        BitsWriter(uint32_t *out);
+        explicit BitsWriter(uint32_t *out);
 
         /* Destructor */
-        ~BitsWriter();
+        ~BitsWriter() throw();
 
         void initalize(uint32_t *out);
 
@@ -59,7 +60,7 @@ public:
                         uint32_t offset, uint32_t lo, uint32_t hi);
 }; /* BitsWriter */
 
-}; /* namespace: opc */
+}; /* namespace: utility */
+}; /* namespace: integer_coding */
 
 #endif /* __BITS_WRITER_HPP__ */
-

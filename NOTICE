@@ -6,43 +6,26 @@ How to use
 
 You type a following line for encoding:
 
-./encoders EncoderID Input
+./encoders coderID infile
 
-A pre-defined value needs to be input in 'EncoderID', and an input
-file in 'Input' needs to follow a pre-defined format. These details
-can be found in following sections.
+A pre-defined value needs to be input in 'coderID', and
+an input file in 'infilename' needs to follow a pre-defined
+format. These details can be found in following sections.
 
 For decoding, you say a following line:
 
-./decoders DecoderID Input [Output]
+./decoders coderID infile [outfile]
 
-You need to input a corresponding value in 'DecoderID' to 'EncoderID',
-and a same name with 'Input' for encoding. For writing decoded 
-integers to a file, you can type an output file name in 'Output'.
+You need to input a corresponding value in 'coderID', and a same
+name with 'infile' for encoding. For writing decoded integers to
+a file, you can type an output file name in 'outfile'.
 
 Implemented coder IDs
 -----------
 
 This library uses following coder IDs:
 
-### EncoderID   EncoderName
-
-0               Gamma
-1               Delta
-2               Variable Byte
-3               Binary Interpolative
-4               Simple 9
-5               Simple 16
-6               PForDelta
-7               OPTPForDelta
-8               VSEncodingBlocks
-9               VSE-R
-10              VSEncodingRest
-11              VSEncodingBlocksHybrid
-12              VSEncodingSimple v1
-13              VSEncodingSimple v2
-
-### DecoderID   DecoderName
+### coderID     CoderName
 
 0               N Gamma
 1               FU Gamma

@@ -12,13 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "open_coders.hpp"
+#include "integer_coding.hpp"
 
 #include "xxx_common.hpp"
 #include "misc/benchmarks.hpp"
 
 using namespace std;
-using namespace opc;
+using namespace integer_coding::compressor;
 
 /* A macro for header stuffs */
 #define __header_written(out)   \
@@ -131,11 +131,11 @@ main(int argc, char **argv)
                 }
         }
 
-        /* Read EncoderID */
-        int encID = strtol(argv[optind++], &end, 10);
-        if ((*end != '\0') || (encID < 0) ||
-                        (encID >= NUMENCODERS) ||(errno == ERANGE))
-                __usage("EncoderID '%s' invalid", argv[1]);
+        /* Read CoderID */
+        int codID = strtol(argv[optind++], &end, 10);
+        if ((*end != '\0') || (codID < 0) ||
+                        (codID >= NUMCODERS) ||(errno == ERANGE))
+                __usage("CoderID '%s' invalid", argv[1]);
 
         /* Open a output file and tune buffer mode */
         char            ifile[NFILENAME];
@@ -145,7 +145,7 @@ main(int argc, char **argv)
         ifile[NFILENAME - 1] = '\0';
 
         strncpy(ofile, ifile, NFILENAME);
-        strcat(ofile, enc_ext[encID]);
+        strcat(ofile, cod_ext[codID]);
 
         shared_ptr<FILE> __cmp(
                 fopen(ofile, (try_resume == 0)? "w" : "r+"),
@@ -232,6 +232,8 @@ RESUME:
                 uint32_t        cmp_size;
                 uint32_t        num;
 
+                CompressorPtr c = CompressorFactory::create(codID);
+
                 while (len < lenmax) {
                         if (show_progress)
                                 __show_progress("Encoded", len, rlen, lenmax);
@@ -263,7 +265,7 @@ RESUME:
                                         if (cur_doc < prev_doc)
                                                 cerr << "List ordering exception: list MUST be increasing" << endl;
 
-                                        if (encID != E_BINARYIPL)
+                                        if (codID != C_BINARYIPL)
                                                 list[j] = cur_doc - prev_doc - 1;
                                         else
                                                 list[j] = cur_doc;
@@ -272,7 +274,7 @@ RESUME:
                                 }
 
                                 /* Do encoding */
-                                (encoders[encID])(list, num - 1, cmp_array, cmp_size);
+                                c->encodeArray(list, num - 1, cmp_array, cmp_size);
 
                                 fwrite(cmp_array, sizeof(uint32_t), cmp_size, cmp);
 
@@ -335,29 +337,12 @@ __usage(const char *msg, ...)
                 cout << endl << endl;
         }
 
-        cout << "Usage: encoders [Options] <EncoderID> <infilename>" << endl;
+        cout << "Usage: encoders [Options] <CoderID> <infile>" << endl;
         cout << "Options" << endl;
         cout << "     -i: Show a progress indicator" << endl;
         cout << "     -r: Try to resume if a broken encoded file exists" << endl;
-        cout << "     -p [0.0-1.0]: File ratio to compress (default:1.0)" << endl;
 
-        cout << endl << "EncoderID\tEncoderName" << endl;
-        cout << "---" << endl;
-
-        cout << "\t0\tGamma" << endl;
-        cout << "\t1\tDelta" << endl;
-        cout << "\t2\tVariable Byte" << endl;
-        cout << "\t3\tBinary Interpolative" << endl;
-        cout << "\t4\tSimple 9" << endl;
-        cout << "\t5\tSimple 16" << endl;
-        cout << "\t6\tPForDelta" << endl; 
-        cout << "\t7\tOPTPForDelta" << endl; 
-        cout << "\t8\tVSEncodingBlocks" << endl;
-        cout << "\t9\tVSE-R" << endl;
-        cout << "\t10\tVSEncodingRest" << endl;
-        cout << "\t11\tVSEncodingBlocksHybrid" << endl;
-        cout << "\t12\tVSEncodingSimple V1" << endl;
-        cout << "\t13\tVSEncodingSimple V2" << endl << endl;
+        __show_id();
 
         exit(1);
 }

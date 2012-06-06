@@ -14,49 +14,23 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "open_coders.hpp"
+#include "integer_coding.hpp"
+#include "xxx_common.hpp"
+
 #include "misc/benchmarks.hpp"
 
 #define BUFSIZE         1024
 
 using namespace std;
-
-#define __array_size(x) (sizeof(x) / sizeof(x[0]))
+using namespace integer_coding::compressor;
 
 static void __usage(const char *msg, ...);
-
-struct __coders_list {
-        const char      *name;
-        int             encID;
-        int             decID;
-};
-
-/* A coder list to test */
-static __coders_list __clist[] = {
-        {"n-gamma", E_GAMMA, D_GAMMA},
-        {"fu-gamma", E_GAMMA, D_FU_GAMMA},
-        {"f-gamma", E_GAMMA, D_F_GAMMA},
-        {"n-delta", E_DELTA, D_DELTA},
-        {"fu-delta", E_DELTA, D_FU_DELTA},
-        {"fg-delta", E_DELTA, D_FG_DELTA},
-        {"f-delta", E_DELTA, D_F_DELTA},
-        {"varbyte", E_VARIABLEBYTE, D_VARIABLEBYTE},
-        {"biny-intpltv", E_BINARYIPL, D_BINARYIPL},
-        {"simple9", E_SIMPLE9, D_SIMPLE9},
-        {"simple16", E_SIMPLE16, D_SIMPLE16},
-        {"p4delta", E_P4D, D_P4D},
-        {"optp4delta", E_OPTP4D, D_OPTP4D},
-        {"vseblocks", E_VSEBLOCKS, D_VSEBLOCKS},
-        {"vse-r", E_VSER, D_VSER},
-        {"vserest", E_VSEREST, D_VSEREST},
-        {"vsehybrid", E_VSEHYB, D_VSEHYB},
-        {"vsesimple-v1", E_VSESIMPLEV1, D_VSESIMPLEV1},
-        {"vsesimple-v2", E_VSESIMPLEV2, D_VSESIMPLEV2}
-};
 
 int
 main(int argc, char **argv)
 {
+        char            *end;
+
         if (argc < 3)
                 __usage(NULL);
 
@@ -65,17 +39,11 @@ main(int argc, char **argv)
         uint64_t        tlen;
         char            buf[BUFSIZE];
 
-        strncpy(buf, argv[1], BUFSIZE);
-        buf[BUFSIZE - 1] = '\0';
-
-        int nlist = -1;
-        for (uint32_t i = 0; i < __array_size(__clist); i++) {
-                if (!strcmp(buf, __clist[i].name))
-                        nlist = i;
-        }
-
-        if (nlist == -1)
-                __usage("Invalid coder-type: %s\n", buf);
+        /* Read CoderID */
+        int codID = strtol(argv[1], &end, 10);
+        if ((*end != '\0') || (codID < 0) ||
+                        (codID >= NUMCODERS) ||(errno == ERANGE))
+                __usage("CoderID '%s' invalid", argv[1]);
 
         strncpy(buf, argv[2], BUFSIZE);
         buf[BUFSIZE - 1] = '\0';
@@ -105,20 +73,22 @@ main(int argc, char **argv)
                 if (tdata[i + 1] < tdata[i])
                         __usage("List ordering exception: list MUST be increasing");
 
-                if (__clist[nlist].encID != E_BINARYIPL)
+                if (codID != C_BINARYIPL)
                         list1[i] = tdata[i + 1] - tdata[i] - 1;
                 else
                         list1[i] = tdata[i + 1];
         }
 
+
         /* Do encoding */
         uint32_t        csize;
 
-        (encoders[__clist[nlist].encID])(list1, tlen, compressed, csize);
+        CompressorPtr c = CompressorFactory::create(codID);
+        c->encodeArray(list1, tlen, compressed, csize);
 
         /* Start benchmarking */
         double st = __get_time();
-        (decoders[__clist[nlist].decID])(compressed, csize, list2, tlen);
+        c->decodeArray(compressed, csize, list2, tlen);
         double et = __get_time();
 
         /* Validation check */
@@ -142,7 +112,7 @@ main(int argc, char **argv)
 void
 __usage(const char *msg, ...)
 {
-        cout << "Usage: decbench <coder-types> <test-data>" << endl;
+        cout << "Usage: decbench <CorderID> <TestData>" << endl;
 
         if (msg != NULL) {
                 va_list vargs;

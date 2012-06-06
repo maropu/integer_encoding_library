@@ -24,7 +24,8 @@
                 Fill += 32;     \
         }
 
-using namespace opc;
+using namespace integer_coding::utility;
+using namespace integer_coding::compressor;
 
 BitsReader::BitsReader(uint32_t *in)
                 : data(in), buffer(0), Fill(32)
@@ -32,7 +33,7 @@ BitsReader::BitsReader(uint32_t *in)
         buffer = *data++;
 }
 
-BitsReader::~BitsReader() {}
+BitsReader::~BitsReader() throw() {}
 
 uint32_t
 BitsReader::bit_reader(uint32_t bits)
@@ -324,4 +325,3 @@ BitsReader::InterpolativeArray(uint32_t* out, uint32_t nvalues,
         InterpolativeArray(out, nvalues - h - 1,
                         offset + h + 1, m + 1, hi);
 }
-

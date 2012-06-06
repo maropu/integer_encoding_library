@@ -15,6 +15,10 @@
 #ifndef __BENCHMARKS__
 #define __BENCHMARKS__
 
+#include <cstdio>
+#include <iostream>
+#include <memory>
+
 /* Magic numbers */
 #define MAGIC_NUM       0x0f823cb4
 #define VMAJOR          0
@@ -105,26 +109,8 @@
  #define __fadvise_sequential(fd, len)
 #endif
 
-/* Extensions for encoders */
-const char *enc_ext[] = {
-        ".Gamma",
-        ".Delta",
-        ".VariableByte",
-        ".Interpolative",
-        ".Simple9",
-        ".Simple16",
-        ".P4D",
-        ".OPT4D",
-        ".VSE",
-        ".VSERT",
-        ".VSERest",
-        ".VSEH",
-        ".VSESimpleV1",
-        ".VSESimpleV2"
-};
-
-/* Extensions for decoders */
-const char *dec_ext[] = {
+/* Extensions for coders */
+const char *cod_ext[] = {
         ".Gamma",
         ".Gamma",
         ".Gamma",
@@ -177,13 +163,15 @@ __get_file_size(FILE *fp)
 }
 
 /* Some deleter functions */
-static void __deleter_close(int *fd) {
+static void __deleter_close(int *fd)
+{
         /* FIXME: The statement below is necessary? */
         if (fd == NULL)
                 return;
         close(*fd);
 }
-static void __deleter_fclose(FILE *fd) {
+static void __deleter_fclose(FILE *fd)
+{
         /* FIXME: The statement below is necessary? */
         if (fd == NULL)
                 return;
@@ -192,14 +180,15 @@ static void __deleter_fclose(FILE *fd) {
 
 inline static uint32_t *
 __open_and_mmap_file(
-                char *filen, uint64_t &len) {
+                char *filen, uint64_t &len)
+{
         struct stat     sb;
 
         int file = open(filen, O_RDONLY);
         if (file == -1)
                 eoutput("Can't open a input file");
 
-        shared_ptr<int> __file(&file, __deleter_close);
+        std::shared_ptr<int> __file(&file, __deleter_close);
 
         /* Do mmap() for file */
         int ret = fstat(file, &sb);
@@ -223,5 +212,31 @@ __open_and_mmap_file(
         return addr;
 }
 
-#endif  /* __BENCHMARKS__ */
+inline void
+__show_id()
+{
+        std::cout << std::endl << "CoderID\t\tCoderName" << std::endl;
+        std::cout << "---" << std::endl;
 
+        std::cout << "\t0\tN Gamma" << std::endl;
+        std::cout << "\t1\tFU Gamma" << std::endl;
+        std::cout << "\t2\tF Gamma" << std::endl;
+        std::cout << "\t3\tN Delta" << std::endl;
+        std::cout << "\t4\tFU Delta" << std::endl;
+        std::cout << "\t5\tFG Delta" << std::endl;
+        std::cout << "\t6\tF Delta" << std::endl;
+        std::cout << "\t7\tVariable Byte" << std::endl;
+        std::cout << "\t8\tBinary Interpolative" << std::endl;
+        std::cout << "\t9\tSimple 9" << std::endl;
+        std::cout << "\t10\tSimple 16" << std::endl;
+        std::cout << "\t11\tPForDelta" << std::endl; 
+        std::cout << "\t12\tOPTPForDelta" << std::endl; 
+        std::cout << "\t13\tVSEncodingBlocks" << std::endl;
+        std::cout << "\t14\tVSE-R" << std::endl;
+        std::cout << "\t15\tVSEncodingRest" << std::endl;
+        std::cout << "\t16\tVSEncodingBlocksHybrid" << std::endl;
+        std::cout << "\t17\tVSEncodingSimple V1" << std::endl;
+        std::cout << "\t18\tVSEncodingSimple V2" << std::endl << std::endl;
+}
+
+#endif  /* __BENCHMARKS__ */

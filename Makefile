@@ -33,6 +33,7 @@ ENCODERS	= encoders
 DECODERS	= decoders
 
 # For check
+SCRIPT_COV	= .check-coverage.sh
 SCRIPT_CHK	= test/test_run.sh
 OBJS_CHK	= test/decbench.o
 CHECKERS	= decbench

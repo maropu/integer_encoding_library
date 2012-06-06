@@ -12,13 +12,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "open_coders.hpp"
+#include "integer_coding.hpp"
 
 #include "xxx_common.hpp"
 #include "misc/benchmarks.hpp"
 
 using namespace std;
-using namespace opc;
+using namespace integer_coding::compressor;
 
 static void __usage(const char *msg, ...);
 
@@ -30,10 +30,10 @@ main(int argc, char **argv)
         if (argc < 3)
                 __usage(NULL);
 
-        int decID = strtol(argv[1], &end, 10);
-        if ((*end != '\0') || (decID < 0) ||
-                        (decID >= NUMDECODERS) || (errno == ERANGE))
-                __usage("DecoderID '%s' invalid", argv[1]);
+        int codID = strtol(argv[1], &end, 10);
+        if ((*end != '\0') || (codID < 0) ||
+                        (codID >= NUMCODERS) || (errno == ERANGE))
+                __usage("CoderID '%s' invalid", argv[1]);
 
         shared_ptr<uint32_t> __list(
                 new uint32_t[OUTPUTMEM(MAXLEN)], default_delete<uint32_t[]>());
@@ -50,8 +50,8 @@ main(int argc, char **argv)
         shared_ptr<uint32_t> __sbuf(
                 static_cast<uint32_t *>(0), default_delete<uint32_t[]>());
 
-        if (decID == D_VSEREST ||
-                        decID == D_VSEHYB) {
+        if (codID == C_VSEREST ||
+                        codID == C_VSEHYB) {
                 shared_ptr<uint32_t> __temp(
                         new uint32_t[OUTPUTMEM(MAXLEN)],
                         default_delete<uint32_t[]>());
@@ -68,7 +68,7 @@ main(int argc, char **argv)
         strncpy(ifile, argv[2], NFILENAME);
         ifile[NFILENAME - 1] = '\0';
         
-        strcat(ifile, dec_ext[decID]);
+        strcat(ifile, cod_ext[codID]);
         uint32_t *cmp_addr = __open_and_mmap_file(ifile, cmpsz);
 
         strcat(ifile, TOCEXT);
@@ -107,6 +107,8 @@ main(int argc, char **argv)
         uint64_t sum_sizes = 0;
         double dtime = 0.0;
 
+        CompressorPtr c = CompressorFactory::create(codID);
+
         /* Start decoding */
         for (uint32_t j = 0; j < numHeaders; j++) {
                 uint64_t        next_pos;
@@ -133,8 +135,8 @@ main(int argc, char **argv)
 
                 uint32_t *ptr = cmp_addr + cmp_pos;
 
-                if (decID == D_VSEREST ||
-                                decID == D_VSEHYB) {
+                if (codID == C_VSEREST ||
+                                codID == C_VSEHYB) {
                         memcpy(sbuf, ptr, sizeof(uint32_t) *
                                         (next_pos - cmp_pos));
                         ptr = sbuf;
@@ -142,7 +144,7 @@ main(int argc, char **argv)
 
                 /* Do decoding */
                 double tm = __get_time();
-                (decoders[decID])(ptr, next_pos - cmp_pos, list, num - 1);
+                c->decodeArray(ptr, next_pos - cmp_pos, list, num - 1);
                 dtime += __get_time() - tm;
 
                 /* Accumulate each count */
@@ -151,7 +153,7 @@ main(int argc, char **argv)
 
                 /* Write on the output file */
                 if (dec != NULL) {
-                        if (decID != D_BINARYIPL) {
+                        if (codID != C_BINARYIPL) {
                                 fwrite(&num, 1, sizeof(uint32_t), dec);
                                 fwrite(&prev_doc, 1, sizeof(uint32_t), dec);
 
@@ -192,31 +194,9 @@ __usage(const char *msg, ...)
                 cout << endl;
         }
 
-        cout << "Usage: decoders <DecoderID> <infilename> <outfilename>" << endl;
+        cout << "Usage: decoders <CoderID> <infile> [<outfile>]" << endl;
 
-        cout << endl << "DecoderID\tDecoderName" << endl;
-        cout << "---" << endl;
-
-        cout << "\t0\tN Gamma" << endl;
-        cout << "\t1\tFU Gamma" << endl;
-        cout << "\t2\tF Gamma" << endl;
-        cout << "\t3\tN Delta" << endl;
-        cout << "\t4\tFU Delta" << endl;
-        cout << "\t5\tFG Delta" << endl;
-        cout << "\t6\tF Delta" << endl;
-        cout << "\t7\tVariable Byte" << endl;
-        cout << "\t8\tBinary Interpolative" << endl;
-        cout << "\t9\tSimple 9" << endl;
-        cout << "\t10\tSimple 16" << endl;
-        cout << "\t11\tPForDelta" << endl; 
-        cout << "\t12\tOPTPForDelta" << endl; 
-        cout << "\t13\tVSEncodingBlocks" << endl;
-        cout << "\t14\tVSE-R" << endl;
-        cout << "\t15\tVSEncodingRest" << endl;
-        cout << "\t16\tVSEncodingBlocksHybrid" << endl;
-        cout << "\t17\tVSEncodingSimple V1" << endl;
-        cout << "\t18\tVSEncodingSimple V2" << endl << endl;
+        __show_id();
 
         exit(1);
 }
-

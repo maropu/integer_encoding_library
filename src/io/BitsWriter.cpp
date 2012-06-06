@@ -14,7 +14,7 @@
 
 #include "io/BitsWriter.hpp"
 
-using namespace opc;
+using namespace integer_coding::utility;
 
 BitsWriter::BitsWriter()
                 : data(NULL), buffer(0),
@@ -24,7 +24,7 @@ BitsWriter::BitsWriter(uint32_t *out)
                 : data(out), buffer(0),
                         Fill(0), written(0) {}
 
-BitsWriter::~BitsWriter() {}
+BitsWriter::~BitsWriter() throw() {}
 
 void
 BitsWriter::initalize(uint32_t *out) {
@@ -184,4 +184,3 @@ BitsWriter::InterpolativeArray(uint32_t *in, uint32_t len,
         InterpolativeArray(in, len - h - 1,
                         offset + h + 1, m + 1, hi);
 }
-

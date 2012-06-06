@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
- *  err_utils.hpp - A header for err_utiils.cpp
+ *  decDelta.hpp - A transformation table for Delta codes
  *
  *  Coding-Style:
  *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
@@ -12,27 +12,15 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifndef __ERR_UTILS_HPP__
-#define __ERR_UTILS_HPP__
+#ifndef __DECDELTA_HPP__
+#define __DECDELTA_HPP__
 
-#include <assert.h>
+#include <stdint.h>
 
 namespace integer_coding {
-namespace utility {
-
-#define eoutput(fmt, ...)       \
-do {                            \
-        fprintf(stderr, fmt, ##__VA_ARGS__);    \
-        fprintf(stderr, "\n");  \
-        exit(1);                \
-} while (0)
-
-#ifndef NDEBUG
- #define __assert(cond)         assert(cond)
-#else
- #define __assert(cond)
-#endif /* NDEBUG */
-}; /* namespace: utility */
+namespace compressor {
+extern uint32_t decDelta[1 << 16];
+}; /* namespace: compressor */
 }; /* namespace: integer_coding */
 
-#endif  /* __ERR_UTILS_HPP__ */
+#endif /* __DECDELTA_HPP__ */

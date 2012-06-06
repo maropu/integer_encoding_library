@@ -60,14 +60,6 @@
 #endif /* __NOCOMPILER_OPT__ */
 
 /* Utility inline functions below */
-#define __log2_uint32(v)        \
-        ({                      \
-                uint32_t d;     \
-                __assert(v != 0);       \
-                __asm__("bsr %1, %0;" :"=r"(d) :"r"(v));        \
-                d;      \
-         })
-
 #define __array_size(x)         (sizeof(x) / sizeof(x[0]))
 
 inline void
@@ -136,6 +128,14 @@ __init_vector(std::vector<T>& seq, uint64_t len, int iv = 0)
         __assert(seq.size() == len);
 }
 
+#define __log2_uint32(v)        \
+        ({                      \
+                uint32_t d;     \
+                __assert(v != 0);       \
+                __asm__("bsr %1, %0;" :"=r"(d) :"r"(v));        \
+                d;      \
+         })
+
 inline int
 __get_msb(uint32_t v)
 {
@@ -149,4 +149,3 @@ __div_roundup(uint32_t v, uint32_t div)
 }
 
 #endif /* __XXX_COMMON_HPP__ */
-

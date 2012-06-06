@@ -18,11 +18,12 @@
 #include "xxx_common.hpp"
 
 /* A transformation table for fast decoding */
-#include "compress/decUnary.hpp"
-#include "compress/decGamma.hpp"
-#include "compress/decDelta.hpp"
+#include "compress/policy/decUnary.hpp"
+#include "compress/policy/decGamma.hpp"
+#include "compress/policy/decDelta.hpp"
 
-namespace opc {
+namespace integer_coding {
+namespace utility {
 
 class BitsReader {
 private:
@@ -32,10 +33,11 @@ private:
 
 public:
         /* Constructor */
-        BitsReader(uint32_t *in);
+        BitsReader();
+        explicit BitsReader(uint32_t *in);
 
         /* Destructor */
-        ~BitsReader();
+        ~BitsReader() throw();
                 
         uint32_t bit_reader(uint32_t bits);
 
@@ -74,7 +76,7 @@ public:
         uint32_t readMinimalBinary(uint32_t b);
 }; /* BitsReader */
 
-}; /* namespace: opc */
+}; /* namespace: utility */
+}; /* namespace: integer_coding */
 
 #endif /* __BITSREADER_HPP__  */
-
