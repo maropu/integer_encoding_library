@@ -67,7 +67,10 @@ private:
         std::shared_ptr<VSEncoding>     vdp;
 
 public:
-        VSEncodingSimpleV2() : CompressorBase(C_VSEBLOCKS),
+        VSEncodingSimpleV2() : CompressorBase(C_INVALID),
+                                vdp(new VSEncoding(&__vsesimplev2_possLens[0],
+                                        NULL, VSESIMPLEV2_LENS_LEN, true)) {}
+        VSEncodingSimpleV2(int policy) : CompressorBase(policy),
                                 vdp(new VSEncoding(&__vsesimplev2_possLens[0],
                                         NULL, VSESIMPLEV2_LENS_LEN, true)) {}
         ~VSEncodingSimpleV2() throw() {}

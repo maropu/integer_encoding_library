@@ -25,7 +25,8 @@ namespace compressor {
 
 class BinaryInterpolative : public CompressorBase {
 public:
-        BinaryInterpolative() : CompressorBase(C_BINARYIPL) {}
+        BinaryInterpolative() : CompressorBase(C_INVALID) {}
+        BinaryInterpolative(int policy) : CompressorBase(policy) {}
         ~BinaryInterpolative() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

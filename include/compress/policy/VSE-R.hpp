@@ -34,7 +34,10 @@ private:
         std::shared_ptr<uint32_t>    wmem_outs;
 
 public:
-        VSE_R() : CompressorBase(C_VSER),
+        VSE_R() : CompressorBase(C_INVALID),
+                        wmem_outs(new uint32_t[MAXLEN + 128],
+                                std::default_delete<uint32_t[]>()) {}
+        VSE_R(int policy) : CompressorBase(policy),
                         wmem_outs(new uint32_t[MAXLEN + 128],
                                 std::default_delete<uint32_t[]>()) {}
         ~VSE_R() throw() {}

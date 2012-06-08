@@ -32,7 +32,8 @@ namespace compressor {
 
 class VariableByte : public CompressorBase {
 public:
-        VariableByte() : CompressorBase(C_VARIABLEBYTE) {}
+        VariableByte() : CompressorBase(C_INVALID) {}
+        VariableByte(int policy) : CompressorBase(policy) {}
         ~VariableByte() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

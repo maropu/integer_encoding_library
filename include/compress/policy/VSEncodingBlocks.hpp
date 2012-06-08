@@ -74,7 +74,7 @@ protected:
                         uint32_t *out, uint32_t *aux) const;
 
 public:
-        VSEncodingBlocks() : CompressorBase(C_VSEBLOCKS),
+        VSEncodingBlocks() : CompressorBase(C_INVALID),
                         vdp(new VSEncoding(&__vseblocks_possLens[0],
                                 &__vseblocks_posszLens[0],
                                 VSEBLOCKS_LENS_LEN, false)),

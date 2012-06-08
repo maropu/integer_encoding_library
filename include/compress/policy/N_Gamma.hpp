@@ -27,7 +27,8 @@ namespace compressor {
 
 class N_Gamma : public CompressorBase {
 public:
-        N_Gamma() : CompressorBase(C_F_GAMMA) {}
+        N_Gamma() : CompressorBase(C_INVALID) {}
+        N_Gamma(int policy) : CompressorBase(policy) {}
         ~N_Gamma() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

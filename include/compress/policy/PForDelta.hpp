@@ -58,7 +58,7 @@ protected:
                         uint32_t *out, uint32_t &nvalue) const;
 
 public:
-        PForDelta() : CompressorBase(C_P4D) {}
+        PForDelta() : CompressorBase(C_INVALID) {}
         PForDelta(int policy) : CompressorBase(policy) {}
         virtual ~PForDelta() throw() {}
 

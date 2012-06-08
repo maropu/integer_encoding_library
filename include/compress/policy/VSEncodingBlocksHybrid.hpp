@@ -29,7 +29,8 @@ namespace compressor {
 
 class VSEncodingBlocksHybrid : public VSEncodingBlocks {
 public:
-        VSEncodingBlocksHybrid() : VSEncodingBlocks(C_VSEHYB) {}
+        VSEncodingBlocksHybrid() : VSEncodingBlocks(C_INVALID) {}
+        VSEncodingBlocksHybrid(int policy) : VSEncodingBlocks(policy) {}
         ~VSEncodingBlocksHybrid() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

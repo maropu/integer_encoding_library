@@ -273,10 +273,10 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
         if (out == NULL)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: out");
 
-        if (len == 0)
+        if (len == 0 || len > MAXLEN)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: len");
 
-        if (nvalue == 0 || len > MAXLEN)
+        if (nvalue == 0)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: nvalue");
 
         int32_t         lpos;

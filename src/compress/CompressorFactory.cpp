@@ -45,115 +45,115 @@ CompressorFactory::create(const int policy)
         case C_N_GAMMA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new N_Gamma));
+                                        new N_Gamma(C_N_GAMMA)));
                 break;
 
         case C_FU_GAMMA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new FU_Gamma));
+                                        new FU_Gamma(C_FU_GAMMA)));
                 break;
 
         case C_F_GAMMA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new F_Gamma));
+                                        new F_Gamma(C_F_GAMMA)));
                 break;
 
         case C_N_DELTA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new N_Delta));
+                                        new N_Delta(C_N_DELTA)));
                 break;
 
         case C_FU_DELTA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new FU_Delta));
+                                        new FU_Delta(C_FU_DELTA)));
                 break;
 
         case C_FG_DELTA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new FG_Delta));
+                                        new FG_Delta(C_FG_DELTA)));
                 break;
 
         case C_F_DELTA:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new F_Delta));
+                                        new F_Delta(C_F_DELTA)));
                 break;
 
         case C_VARIABLEBYTE:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VariableByte));
+                                        new VariableByte(C_VARIABLEBYTE)));
                 break;
 
         case C_BINARYIPL:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new BinaryInterpolative));
+                                        new BinaryInterpolative(C_BINARYIPL)));
                 break;
 
         case C_SIMPLE9:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new Simple9));
+                                        new Simple9(C_SIMPLE9)));
                 break;
 
         case C_SIMPLE16:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new Simple16));
+                                        new Simple16(C_SIMPLE16)));
                 break;
 
         case C_P4D:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new PForDelta));
+                                        new PForDelta(C_P4D)));
                 break;
 
         case C_OPTP4D:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new OPTPForDelta));
+                                        new OPTPForDelta(C_OPTP4D)));
                 break;
 
         case C_VSEBLOCKS:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSEncodingBlocks));
+                                        new VSEncodingBlocks(C_VSEBLOCKS)));
                 break;
 
         case C_VSER:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSE_R));
+                                        new VSE_R(C_VSER)));
                 break;
 
         case C_VSEREST:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSEncodingRest));
+                                        new VSEncodingRest(C_VSEREST)));
                 break;
 
         case C_VSEHYB:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSEncodingBlocksHybrid));
+                                        new VSEncodingBlocksHybrid(C_VSEHYB)));
                 break;
 
         case C_VSESIMPLEV1:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSEncodingSimpleV1));
+                                        new VSEncodingSimpleV1(C_VSESIMPLEV1)));
                 break;
 
         case C_VSESIMPLEV2:
                 return CompressorPtr(
                                 static_cast<CompressorBase *>(
-                                        new VSEncodingSimpleV2));
+                                        new VSEncodingSimpleV2(C_VSESIMPLEV2)));
                 break;
 
         default:
