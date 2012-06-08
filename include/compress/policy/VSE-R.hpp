@@ -37,7 +37,7 @@ public:
         VSE_R() : CompressorBase(C_INVALID),
                         wmem_outs(new uint32_t[MAXLEN + 128],
                                 std::default_delete<uint32_t[]>()) {}
-        VSE_R(int policy) : CompressorBase(policy),
+        explicit VSE_R(int policy) : CompressorBase(policy),
                         wmem_outs(new uint32_t[MAXLEN + 128],
                                 std::default_delete<uint32_t[]>()) {}
         ~VSE_R() throw() {}

@@ -74,13 +74,23 @@ VSEncodingBlocksHybrid::decodeArray(uint32_t *in, uint32_t len,
         uint32_t        res;
         uint32_t        sum;
 
-        for (res = nvalue; res > VSENCODING_BLOCKSZ;
+        uint32_t *iterm = in + len;
+
+        for (res = nvalue; res > VSENCODING_BLOCKSZ && in < iterm;
                         out += VSENCODING_BLOCKSZ, in += sum,
                         len -= sum, res -= VSENCODING_BLOCKSZ) {
                 sum = *in++;
                 decodeVS(VSENCODING_BLOCKSZ,
                                 in, out, wmem_aux.get());
         }
+
+        /*
+         * A sequence of the left inputs compressed
+         * depending on the length.
+         */
+
+        if (__unlikely(in >= iterm))
+                return;
 
         VSEncodingRest  vr;
 

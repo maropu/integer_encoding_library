@@ -176,11 +176,15 @@ Simple9::decodeArray(uint32_t *in, uint32_t len,
         if (nvalue == 0)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: nvalue");
 
-        uint32_t *end = out + nvalue;
+        uint32_t *iterm = in + len;
+        uint32_t *oterm = out + nvalue;
 
-        while (end > out) {
+        while (1) {
+                if (__unlikely(out >= oterm || in >= iterm))
+                        break;
+
                 (__simple9_unpack[*in >>
-                 (32 - SIMPLE9_LOGDESC)])(&out, &in);
+                         (32 - SIMPLE9_LOGDESC)])(&out, &in);
         }
 }
 

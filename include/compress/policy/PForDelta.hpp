@@ -59,7 +59,7 @@ protected:
 
 public:
         PForDelta() : CompressorBase(C_INVALID) {}
-        PForDelta(int policy) : CompressorBase(policy) {}
+        explicit PForDelta(int policy) : CompressorBase(policy) {}
         virtual ~PForDelta() throw() {}
 
         virtual void encodeArray(uint32_t *in, uint32_t len,

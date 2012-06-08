@@ -31,7 +31,7 @@ private:
         int     policy;
 
 public:
-        CompressorBase(const int id) : policy(id) {}
+        explicit CompressorBase(const int id) : policy(id) {}
         virtual ~CompressorBase() throw() {}
 
         /*

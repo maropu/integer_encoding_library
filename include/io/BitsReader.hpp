@@ -32,14 +32,13 @@ private:
         uint32_t        Fill; 
 
 public:
-        /* Constructor */
-        BitsReader();
-        explicit BitsReader(uint32_t *in);
-
-        /* Destructor */
-        ~BitsReader() throw();
+        BitsReader() : data(NULL), buffer(0), Fill(32) {}
+        explicit BitsReader(uint32_t *in) :
+                data(in), buffer(0), Fill(32) {buffer = *data++;}
+        ~BitsReader() throw() {};
                 
         uint32_t bit_reader(uint32_t bits);
+        uint32_t *get_pos() const;
 
         /* Unary code */
         void N_UnaryArray(uint32_t *out, uint32_t nvalues);
@@ -63,14 +62,14 @@ public:
         void N_DeltaArray(uint32_t *out, uint32_t nvalues);
         void FU_DeltaArray(uint32_t *out, uint32_t nvalues);
         void FG_DeltaArray(uint32_t *out, uint32_t nvalues);
-        void F_DeltaArray(uint32_t* out, uint32_t nvalues);
+        void F_DeltaArray(uint32_t *out, uint32_t nvalues);
 
         uint32_t N_Delta();
         uint32_t F_Delta();
         uint32_t FU_Delta();
 
         /* Binary Interpolative code */
-        void InterpolativeArray(uint32_t* out, uint32_t nvalues,
+        void InterpolativeArray(uint32_t *out, uint32_t nvalues,
                         uint32_t offset, uint32_t lo, uint32_t hi);
 
         uint32_t readMinimalBinary(uint32_t b);

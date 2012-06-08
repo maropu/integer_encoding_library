@@ -92,9 +92,13 @@ VSEncodingNaive::decodeArray(uint32_t *in,
 
         BitsReader      rd(in);
 
-        uint32_t *end = out + nvalue;
+        uint32_t *iterm = in + len;
+        uint32_t *oterm = out + nvalue;
 
-        while (end > out) {
+        while (1) {
+                if (__unlikely(out >= oterm || rd.get_pos() >= iterm))
+                        break;
+
                 uint32_t B = __vsenaive_possLogs[rd.bit_reader(VSENAIVE_LOGLOG)];
                 uint32_t K = __vsenaive_possLens[rd.bit_reader(VSENAIVE_LOGLEN)];
 

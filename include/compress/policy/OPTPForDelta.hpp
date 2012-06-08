@@ -42,7 +42,7 @@ protected:
 
 public:
         OPTPForDelta() : PForDelta(C_INVALID) {}
-        OPTPForDelta(int policy) : PForDelta(policy) {}
+        explicit OPTPForDelta(int policy) : PForDelta(policy) {}
         ~OPTPForDelta() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

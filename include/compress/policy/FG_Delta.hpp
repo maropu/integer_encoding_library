@@ -26,7 +26,7 @@ namespace compressor {
 class FG_Delta : public CompressorBase {
 public:
         FG_Delta() : CompressorBase(C_INVALID) {}
-        FG_Delta(int policy) : CompressorBase(policy) {}
+        explicit FG_Delta(int policy) : CompressorBase(policy) {}
         ~FG_Delta() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

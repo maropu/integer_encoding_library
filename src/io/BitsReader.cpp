@@ -27,14 +27,6 @@
 using namespace integer_coding::utility;
 using namespace integer_coding::compressor;
 
-BitsReader::BitsReader(uint32_t *in)
-                : data(in), buffer(0), Fill(32)
-{
-        buffer = *data++;
-}
-
-BitsReader::~BitsReader() throw() {}
-
 uint32_t
 BitsReader::bit_reader(uint32_t bits)
 {
@@ -51,6 +43,15 @@ BitsReader::bit_reader(uint32_t bits)
         Fill -= bits;
 
         return (buffer >> Fill) & ((1ULL << bits) - 1);
+}
+
+uint32_t *
+BitsReader::get_pos() const
+{
+        if (data == NULL)
+                return NULL;
+
+        return data - 1;
 }
 
 uint32_t
@@ -268,7 +269,7 @@ BitsReader::FG_DeltaArray(uint32_t *out, uint32_t nvalues)
 }
 
 void
-BitsReader::F_DeltaArray(uint32_t* out, uint32_t nvalues)
+BitsReader::F_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
@@ -297,7 +298,7 @@ BitsReader::readMinimalBinary(uint32_t b)
 }
 
 void
-BitsReader::InterpolativeArray(uint32_t* out, uint32_t nvalues, 
+BitsReader::InterpolativeArray(uint32_t *out, uint32_t nvalues, 
                 uint32_t offset, uint32_t lo, uint32_t hi)
 {
         __assert(lo <= hi);

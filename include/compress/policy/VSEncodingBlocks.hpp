@@ -80,7 +80,7 @@ public:
                                 VSEBLOCKS_LENS_LEN, false)),
                         wmem_aux(new uint32_t[VSENCODING_BLOCKSZ * 2 + 128],
                                 std::default_delete<uint32_t[]>()) {}
-        VSEncodingBlocks(int policy) : CompressorBase(policy),
+        explicit VSEncodingBlocks(int policy) : CompressorBase(policy),
                         vdp(new VSEncoding(&__vseblocks_possLens[0],
                                 &__vseblocks_posszLens[0],
                                 VSEBLOCKS_LENS_LEN, false)),

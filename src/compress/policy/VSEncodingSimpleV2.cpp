@@ -178,9 +178,14 @@ VSEncodingSimpleV2::decodeArray(uint32_t *in, uint32_t len,
         uint32_t *bin = in + 2;
         uint32_t *kin = in + *in + 2;
         uint32_t *data = in + *(in + 1) + 2;
-        uint32_t *end = out + nvalue;
         
+        uint32_t *iterm = in + len;
+        uint32_t *oterm = out + nvalue;
+
         while (1) {
+                if (__unlikely(out >= oterm || data >= iterm))
+                        break;
+
                 /* Unpacking integers with a first 4/8-bit */
                 B = (*bin) >> 7 * VSESIMPLEV2_LOGLOG;
                 K = (*kin) >> 3 * VSESIMPLEV2_LOGLEN;
@@ -205,7 +210,7 @@ VSEncodingSimpleV2::decodeArray(uint32_t *in, uint32_t len,
 
                 (__vsesimplev2_unpack[B])(&out, &data, __vsesimplev2_possLens[K]);
 
-                if (end <= out)
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
 
                 /* Unpacking integers with a second 4/8-bit */
@@ -232,7 +237,7 @@ VSEncodingSimpleV2::decodeArray(uint32_t *in, uint32_t len,
 
                 (__vsesimplev2_unpack[B])(&out, &data, __vsesimplev2_possLens[K]);
 
-                if (end <= out)
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
         }
 }

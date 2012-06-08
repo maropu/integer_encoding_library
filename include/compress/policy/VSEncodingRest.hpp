@@ -57,7 +57,7 @@ public:
         VSEncodingRest() : CompressorBase(C_INVALID),
                                 vdp(new VSEncoding(&__vserest_possLens[0],
                                         NULL, VSEREST_LENS_LEN, false)) {}
-        VSEncodingRest(int policy) : CompressorBase(policy),
+        explicit VSEncodingRest(int policy) : CompressorBase(policy),
                                 vdp(new VSEncoding(&__vserest_possLens[0],
                                         NULL, VSEREST_LENS_LEN, false)) {}
         ~VSEncodingRest() throw() {}

@@ -28,12 +28,11 @@ private:
         uint32_t        written;    
 
 public:
-        /* Constructor */
-        BitsWriter();
-        explicit BitsWriter(uint32_t *out);
-
-        /* Destructor */
-        ~BitsWriter() throw();
+        BitsWriter(): data(NULL),
+                buffer(0), Fill(0), written(0) {};
+        explicit BitsWriter(uint32_t *out) :
+                data(out), buffer(0), Fill(0), written(0) {};
+        ~BitsWriter() throw() {};
 
         void initalize(uint32_t *out);
 

@@ -108,9 +108,14 @@ VariableByte::decodeArray(uint32_t *in, uint32_t len,
         if (nvalue == 0)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: nvalue");
 
+        uint32_t *iterm = in + len;
+
         BitsReader rd(in);
 
         for (uint32_t i = 0; i < nvalue; i++) {
+                if (__unlikely(rd.get_pos() >= iterm))
+                        break;
+
                 uint32_t d = rd.bit_reader(8);
 
                 *out = d & VARIABLEBYTE_DATA;

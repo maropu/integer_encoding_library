@@ -16,16 +16,6 @@
 
 using namespace integer_coding::utility;
 
-BitsWriter::BitsWriter()
-                : data(NULL), buffer(0),
-                        Fill(0), written(0) {}
-
-BitsWriter::BitsWriter(uint32_t *out)
-                : data(out), buffer(0),
-                        Fill(0), written(0) {}
-
-BitsWriter::~BitsWriter() throw() {}
-
 void
 BitsWriter::initalize(uint32_t *out) {
         data = out;

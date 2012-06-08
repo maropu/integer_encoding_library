@@ -183,10 +183,11 @@ VSE_R::decodeArray(uint32_t *in, uint32_t len,
         if (nvalue == 0)
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: nvalue");
 
+        uint32_t *iterm = in + len;
         uint32_t *outs = wmem_outs.get();
 
         VSEncodingNaive vnav;
-        vnav.decodeArray(in + 1, nvalue, out, nvalue);
+        vnav.decodeArray(in + 1, *in, out, nvalue);
         in += *in + 1;
 
         /* *in stores the length of the Delta encoded block */
@@ -201,6 +202,9 @@ VSE_R::decodeArray(uint32_t *in, uint32_t len,
         uint32_t maxL = rd.F_Delta();
 
         for (uint32_t i = 1; i <= maxL; i++) {
+                if (__unlikely(rd.get_pos() >= iterm))
+                        break;
+
                 uint32_t n = rd.F_Delta();
 
                 if (n != 0) {

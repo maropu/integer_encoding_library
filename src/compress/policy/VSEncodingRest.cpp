@@ -990,48 +990,53 @@ VSEncodingRest::decodeArray(uint32_t *in, uint32_t len,
         uint32_t Fill = 0;
         uint64_t buffer = 0;
 
-        uint32_t *end = in + len;
+        uint32_t *iterm = in + len;
+        uint32_t *oterm = out + nvalue;
+
         uint32_t *data = in + *in + 1;
 
         __assert(*in < len);
 
         while (1) {
+                if (__unlikely(out >= oterm || data >= iterm))
+                        break;
+
                 /* Read B and K */
                 uint32_t d = *++in;
 
                 /* Unpacking integers with a first 8-bit */
                 (__vserest_unpack[d >> VSEREST_LOGDESC * 3])(&out, &data, Fill, buffer);
 
-                if (end >= data)
-                        __vserest_bufunfill(data, Fill, buffer);
-                else
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
+
+                __vserest_bufunfill(data, Fill, buffer);
 
                 /* Unpacking integers with a second 8-bit */
                 (__vserest_unpack[(d >> VSEREST_LOGDESC * 2) &
                          (VSEREST_LEN - 1)])(&out, &data, Fill, buffer);
 
-                if (end >= data)
-                        __vserest_bufunfill(data, Fill, buffer);
-                else
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
+
+                __vserest_bufunfill(data, Fill, buffer);
 
                 /* Unpacking integers with a third 8-bit */
                 (__vserest_unpack[(d >> VSEREST_LOGDESC * 1) &
                          (VSEREST_LEN - 1)])(&out, &data, Fill, buffer);
 
-                if (end >= data)
-                        __vserest_bufunfill(data, Fill, buffer);
-                else
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
+
+                __vserest_bufunfill(data, Fill, buffer);
 
                 /* Unpacking integers with a fourth 8-bit */
                 (__vserest_unpack[d & (VSEREST_LEN - 1)])(&out, &data, Fill, buffer);
 
-                if (end >= data)
-                        __vserest_bufunfill(data, Fill, buffer);
-                else
+                if (__unlikely(out >= oterm || data >= iterm))
                         break;
+
+                __vserest_bufunfill(data, Fill, buffer);
         }
 }
 

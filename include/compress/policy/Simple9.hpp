@@ -30,7 +30,7 @@ namespace compressor {
 class Simple9 : public CompressorBase {
 public:
         Simple9() : CompressorBase(C_INVALID) {}
-        Simple9(int policy) : CompressorBase(policy) {}
+        explicit Simple9(int policy) : CompressorBase(policy) {}
         ~Simple9() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,

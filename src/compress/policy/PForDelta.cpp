@@ -280,33 +280,38 @@ PForDelta::decodeArray(uint32_t *in, uint32_t len,
                 THROW_COMPRESSOR_EXCEPTION("Invalid input: nvalue");
 
         int32_t         lpos;
-        uint32_t        e;
-        uint32_t        b;
+        uint32_t        eidx;
         uint32_t        excVal;
-        uint32_t        nExceptions;
-        uint32_t        encodedExceptionsSize;
         uint32_t        except[2 * PFORDELTA_BLOCKSZ + 128];
+
+        uint32_t *iterm = in + len;
+        uint32_t *oterm = out + nvalue;
 
         uint32_t numBlocks = *in++;
 
         for (uint32_t i = 0; i < numBlocks; i++) {
-                b = *in >> (32 - PFORDELTA_B);
+                if (__unlikely(out >= oterm || in >= iterm))
+                        break;
 
-                nExceptions = (*in >>
+                uint32_t b = *in >> (32 - PFORDELTA_B);
+
+                uint32_t nExceptions = (*in >>
                                 (32 - (PFORDELTA_B + PFORDELTA_NEXCEPT))) &
                                 ((1 << PFORDELTA_NEXCEPT) - 1);
 
-                encodedExceptionsSize = *in & ((1 << PFORDELTA_EXCEPTSZ) - 1); 
+                uint32_t encodedExceptionsSize =
+                        *in & ((1 << PFORDELTA_EXCEPTSZ) - 1); 
 
-                __p4delta_simple16_decode(++in, 2 * nExceptions, except, 2 * nExceptions);
+                __p4delta_simple16_decode(++in,
+                                2 * nExceptions, except, 2 * nExceptions);
 
                 in += encodedExceptionsSize;
 
                 __p4delta_unpack[b](out, in);
 
-                for (e = 0, lpos = -1; e < nExceptions; e++) {
-                        lpos += except[e] + 1;
-                        excVal = except[e + nExceptions] + 1;
+                for (eidx = 0, lpos = -1; eidx < nExceptions; eidx++) {
+                        lpos += except[eidx] + 1;
+                        excVal = except[eidx + nExceptions] + 1;
                         excVal <<= b;
                         out[lpos] |= excVal;
 

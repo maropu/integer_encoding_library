@@ -238,9 +238,12 @@ VSEncodingBlocks::decodeVS(uint32_t len,
          * FIXME: We assume that a 32-bit block is processed in a loop here.
          * I might think some amount of 32-bit blocks are processed simutaneously.
          */
-        uint32_t *end = out + len;
+        uint32_t *oterm = out + len;
 
-        while  (end > out) {
+        while  (1) {
+                if (__unlikely(out >= oterm))
+                        break;
+
                 /* Permuting integers with a first 8-bit */
                 B = (*addr) >> (VSEBLOCKS_LOGDESC * 3 + VSEBLOCKS_LOGLEN);
                 K = (((*addr) >> (VSEBLOCKS_LOGDESC * 3)) & (VSEBLOCKS_LENS_LEN - 1));
@@ -265,7 +268,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 }
 
                 /* Check if it ends, or not */
-                if (end <= out)
+                if (__unlikely(out >= oterm))
                         break;
 
                 /* Permuting integers with a second 8-bit */
@@ -286,7 +289,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 }
 
                 /* Check if it ends, or not */
-                if (end <= out)
+                if (__unlikely(out >= oterm))
                         break;
 
                 /* Permuting integers with a third 8-bit */
@@ -307,7 +310,7 @@ VSEncodingBlocks::decodeVS(uint32_t len,
                 }
 
                 /* Check if it ends, or not */
-                if (end <= out)
+                if (__unlikely(out >= oterm))
                         break;
 
                 /* Permuting integers with a fourth 8-bit */
@@ -378,7 +381,9 @@ VSEncodingBlocks::decodeArray(uint32_t *in,
         uint32_t        res;
         uint32_t        sum;
 
-        for (res = nvalue; res > VSENCODING_BLOCKSZ;
+        uint32_t *iterm = in + len;
+
+        for (res = nvalue; res > VSENCODING_BLOCKSZ && in < iterm;
                         out += VSENCODING_BLOCKSZ, in += sum,
                         res -= VSENCODING_BLOCKSZ) {
                 sum = *in++;

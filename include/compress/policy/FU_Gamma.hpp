@@ -26,7 +26,7 @@ namespace compressor {
 class FU_Gamma : public CompressorBase {
 public:
         FU_Gamma() : CompressorBase(C_INVALID) {}
-        FU_Gamma(int policy) : CompressorBase(policy) {}
+        explicit FU_Gamma(int policy) : CompressorBase(policy) {}
         ~FU_Gamma() throw() {}
 
         void encodeArray(uint32_t *in, uint32_t len,
