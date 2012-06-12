@@ -42,7 +42,7 @@ public:
 
         void decodeArray(uint32_t *in, uint32_t len,
                         uint32_t *out, uint32_t nvalue) const {
-                utility::BitsReader rd(in + 1);
+                utility::BitsReader rd(in + 1, len - 1);
                 rd.InterpolativeArray(out, nvalue, 0, 0, *in);
         }
 }; /* BinaryInterpolative */

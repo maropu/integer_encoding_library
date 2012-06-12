@@ -71,7 +71,7 @@ BitsReader::N_UnaryArray(uint32_t *out, uint32_t nvalues)
         uint32_t i = 0;
         uint32_t count = 0;
 
-        while (i < nvalues) {
+        while (i < nvalues && data <= vadd) {
                 while (bit_reader(1) == 0)
                         count++;
 
@@ -85,7 +85,7 @@ BitsReader::F_UnaryArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = F_Unary();
 }
 
@@ -179,7 +179,7 @@ BitsReader::N_GammaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = N_Gamma();
 }
 
@@ -188,7 +188,7 @@ BitsReader::F_GammaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = F_Gamma();
 }
 
@@ -244,7 +244,7 @@ BitsReader::N_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = N_Delta();
 }
 
@@ -253,7 +253,7 @@ BitsReader::FU_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = FU_Delta();
 }
 
@@ -262,7 +262,7 @@ BitsReader::FG_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues) {
+        while (i < nvalues && data <= vadd) {
                 uint32_t count = F_Gamma();
                 out[i++] = ((1 << count) | bit_reader(count)) - 1;
         }
@@ -273,7 +273,7 @@ BitsReader::F_DeltaArray(uint32_t *out, uint32_t nvalues)
 {
         uint32_t i = 0;
 
-        while (i < nvalues)
+        while (i < nvalues && data <= vadd)
                 out[i++] = F_Delta();
 }
 

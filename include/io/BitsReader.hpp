@@ -28,13 +28,14 @@ namespace utility {
 class BitsReader {
 private:
         uint32_t        *data;
+        uint32_t        *vadd;
         uint64_t        buffer;
         uint32_t        Fill; 
 
 public:
-        BitsReader() : data(NULL), buffer(0), Fill(32) {}
-        explicit BitsReader(uint32_t *in) :
-                data(in), buffer(0), Fill(32) {buffer = *data++;}
+        BitsReader() : data(NULL), vadd(NULL), buffer(0), Fill(32) {}
+        explicit BitsReader(uint32_t *in, uint64_t len = 0) : data(in),
+                vadd(data + len), buffer(0), Fill(32) {buffer = *data++;}
         ~BitsReader() throw() {};
                 
         uint32_t bit_reader(uint32_t bits);
