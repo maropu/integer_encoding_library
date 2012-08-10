@@ -1,48 +1,66 @@
 /*-----------------------------------------------------------------------------
- *  F_Gamma.hpp - A encoder/decoder for improved Gamma
+ *  F_Gamma.hpp - A encoder/decoder for Gamma alternatives
  *
- *  Coding-Style:
- *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
- *      vi) tabstop: 8, expandtab
+ *  Coding-Style: google-styleguide
+ *      https://code.google.com/p/google-styleguide/
  *
  *  Authors:
  *      Takeshi Yamamuro <linguin.m.s_at_gmail.com>
  *      Fabrizio Silvestri <fabrizio.silvestri_at_isti.cnr.it>
  *      Rossano Venturini <rossano.venturini_at_isti.cnr.it>
+ *
+ *  Copyright 2012 Integer Encoding Library <integerencoding_at_isti.cnr.it>
+ *      http://integerencoding.ist.cnr.it/
  *-----------------------------------------------------------------------------
  */
 
 #ifndef __F_GAMMA_HPP__
 #define __F_GAMMA_HPP__
 
-#include "xxx_common.hpp"
+#include <misc/encoding_internals.hpp>
 
-#include "io/BitsWriter.hpp"
-#include "io/BitsReader.hpp"
+#include <compress/EncodingBase.hpp>
+#include <io/BitsReader.hpp>
+#include <io/BitsWriter.hpp>
 
-namespace integer_coding {
-namespace compressor {
+namespace integer_encoding {
+namespace internals {
 
-class F_Gamma : public CompressorBase {
-public:
-        F_Gamma() : CompressorBase(C_INVALID) {}
-        explicit F_Gamma(int policy) : CompressorBase(policy) {}
-        ~F_Gamma() throw() {}
+class F_Gamma : public EncodingBase {
+ public:
+  F_Gamma() : EncodingBase(E_F_GAMMA) {}
+  ~F_Gamma() throw() {}
 
-        void encodeArray(uint32_t *in, uint32_t len,
-                        uint32_t *out, uint32_t &nvalue) const {
-                utility::BitsWriter wt(out);
-                nvalue = wt.N_GammaArray(in, len);
-        }
+  void encodeArray(const uint32_t *in,
+                   uint64_t len,
+                   uint32_t *out,
+                   uint64_t *nvalue) const {
+    BitsWriter wt(out, *nvalue);
+    *nvalue = wt.N_GammaArray(in, len);
+  }
 
-        void decodeArray(uint32_t *in, uint32_t len,
-                        uint32_t *out, uint32_t nvalue) const {
-                utility::BitsReader rd(in, len);
-                rd.F_GammaArray(out, nvalue);
-        }
+  void decodeArray(const uint32_t *in,
+                   uint64_t len,
+                   uint32_t *out,
+                   uint64_t nvalue) const {
+    BitsReader rd(in, len);
+    rd.F_GammaArray(out, nvalue);
+  }
+
+  uint64_t inRequire(uint64_t len) const {
+    return len;
+  }
+
+  /*
+   * NOTE: Gamma codes need 64-bit for
+   * UINT32_MAX, so it is (64 * len / 32).
+   */
+  uint64_t outRequire(uint64_t len) const {
+    return (64 * len) >> 5;
+  }
 }; /* F_Gamma */
 
-} /* namespace: compressor */
-} /* namespace: integer_coding */
+} /* namespace: internals */
+} /* namespace: integer_encoding */
 
 #endif /* __F_GAMMA_HPP__ */

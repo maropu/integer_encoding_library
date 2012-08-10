@@ -1,78 +1,62 @@
-CC		= g++
-#CC		= ccache g++
+CC		= ccache g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
 CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
-WFLAGS		= -Wall
+#WFLAGS		= -Wall -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal \
+			-Wpointer-arith -Wswitch-enum -Woverloaded-virtual -Weffc++
+#WFLAGS		+= -Wextra -Wconversion -Wstrict-aliasing=2
 WFLAGS		+= $(if $(filter 4.6.% 4.7.%,$(CCVERSION)), -Wno-unused-but-set-variable,)
 LDFLAGS		= -L/usr/local/lib
 INCLUDE		= -I./include
-LIBS		= 
-SUBDIRS		= $(shell find ./src -mindepth 1 -maxdepth 1 -type d)
-SRCS		= $(shell find $(SUBDIRS) -type f -name '*.cpp')
+LIBS		= -lpthread
+SRCS		= $(shell find ./src ./tool ! -regex ".*test.*" -name '*.cpp' -type f)
 OBJS		= $(subst .cpp,.o,$(SRCS))
 
-# For shared lib
-NAME		= libcode
-SNAME		= $(NAME).so
-MAJOR		= 0
-MINOR		= 2
-RELEASE		= 0
-SHAREDLIB	= $(SNAME).$(MAJOR).$(MINOR).$(RELEASE)
-SLINK1		= $(SNAME).$(MAJOR).$(MINOR)
-SLINK2		= $(SNAME).$(MAJOR)
-SLINK3		= $(SNAME)
-SFLAGS		= -fPIC -shared
-#SFLAGS		= -Wl, -soname=$(SLINK).$(MAJOR) -fPIC -shared
+# vcompress
+VCOMPRESS	= vcompress
 
-# For bench
-OBJS_ENC	= src/encoders.o
-OBJS_DEC	= src/decoders.o
-ENCODERS	= encoders
-DECODERS	= decoders
+# For general test
+TEST_SRCS	= $(shell find ./src -name '*.cpp' -type f)
+TEST_OBJS	= $(subst .cpp,.o,$(TEST_SRCS))
+TEST		= encoding_utest
+INSPECT		= .inspection.sh
 
-# For check
-SCRIPT_COV	= .check-coverage.sh
-SCRIPT_CHK	= test/test_run.sh
-OBJS_CHK	= test/decbench.o
-CHECKERS	= decbench
+# For gtest
+GDIR		= .utest/gtest-1.6.0
+GINCLUDE	= -I$(GDIR)/include -I$(GDIR)
+GHEADERS	= $(GDIR)/include/gtest/*.h $(GDIR)/include/gtest/internal/*.h
+GSRCS		= $(GDIR)/src/*.cc $(GDIR)/src/*.h $(GTEST_HEADERS)
 
 .PHONY:all
-all:		$(SNAME)
+all:		$(VCOMPRESS)
 
-$(SNAME):	$(SHAREDLIB)
-		ln -sf $(SHAREDLIB) $(SLINK1)
-		ln -sf $(SLINK1) $(SLINK2)
-		ln -sf $(SLINK2) $(SLINK3)
-
-$(SHAREDLIB):	$(OBJS)
-		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) $(SFLAGS) -o $@
-
-.PHONY:bench
-bench:		$(ENCODERS) $(DECODERS)
-
-$(ENCODERS):	$(OBJS) $(OBJS_ENC)
-		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_ENC) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
-
-$(DECODERS):	$(OBJS) $(OBJS_DEC)
-		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_DEC) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
+$(VCOMPRESS):	$(OBJS)
+		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
 
 .cpp.o:
 		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -c $< -o $@
 
 .PHONY:check
-check:		$(CHECKERS)
-		cp $(SCRIPT_CHK) .
+check:
+		./$(INSPECT)
 
-$(CHECKERS):	$(OBJS) $(OBJS_CHK)
-		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(OBJS) $(OBJS_CHK) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
+.PHONY:test
+test:		$(TEST)
+
+$(TEST):	gtest-all.o $(TEST_OBJS)
+		$(CC) $(CXXFLAGS) $(CFLAGS) $(TEST_OBJS) $(LIBS) gtest-all.o -o $@
+
+gtest-all.o:	$(GSRCS)	
+		$(CC) $(GINCLUDE) -c $(GDIR)/src/gtest-all.cc
+
+$(TEST_OBJS):
+		$(CC) $(CXXFLAGS) $(CPPFLAGS) $(CFLAGS) $(INCLUDE) $(GINCLUDE) \
+		$(LDFLAGS) -c $(addsuffix .cpp, $(basename $@)) -o $@
 
 .PHONY:clean
 clean:
-		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a \
-			$(notdir $(SCRIPT_CHK)) $(OBJS) $(OBJS_ENC) $(OBJS_DEC) \
-			$(ENCODERS) $(DECODERS) $(CHECKERS) $(SHAREDLIB) $(SLINK1) $(SLINK2) $(SLINK3)
-		$(MAKE) -C test clean
+		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a $(VCOMPRESS) $(TEST)
 		$(MAKE) -C src clean
+		$(MAKE) -C tool clean
 

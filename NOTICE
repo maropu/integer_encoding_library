@@ -3,54 +3,70 @@ How to use, and some performance results
 
 How to use
 -----------
-
 You type a following line for encoding:
 
-./encoders coderID infile
+./vcompress [ID] [FILE]
 
-A pre-defined value needs to be input in 'coderID', and
-an input file in 'infilename' needs to follow a pre-defined
-format. These details can be found in following sections.
+A pre-defined value needs to be input in [ID], and
+the input in [FILE] needs to follow specified formats.
+These details can be found in following section.
+For decoding, you say a line below:
 
-For decoding, you say a following line:
+./vcompress -d [FILE] <[OUT]>
 
-./decoders coderID infile [outfile]
+When finishing decoding, it shows performance results
+such as compression ratios and speeds. To write decoded
+integers in local filesystems, a output filename needs
+to be specified in [OUT].
 
-You need to input a corresponding value in 'coderID', and a same
-name with 'infile' for encoding. For writing decoded integers to
-a file, you can type an output file name in 'outfile'.
 
-Implemented coder IDs
+For example, if you would like to compress a file, named
+XXX, following specified formats with N Gamma(ID: 0),
+you type a followin line:
+
+./vcompress 0 XXX
+
+This line generates two files; XXX.gamma and XXX.pos.
+And the, the corresponding decoding command is:
+
+./vcompress -d XXX
+
+Anyone who would like to do a quikc trial can access
+a following web site to have sample data sets.
+
+http://integerencoding.isti.cnr.it/
+
+
+Implemented encoder IDs
 -----------
+The library uses following IDs:
 
-This library uses following coder IDs:
+ID  Name
+---
+0   N Gamma
+1   FU Gamma
+2   F Gamma
+3   N Delta
+4   FU Delta
+5   FG Delta
+6   F Delta
+7   Variable Byte
+8   Binary Interpolative
+9   Simple 9
+10  Simple 16
+11  PForDelta
+12  OPTPForDelta
+13  VSEncodingBlocks
+14  VSE-R
+15  VSEncodingRest
+16  VSEncodingBlocksHybrid
+17  VSEncodingSimple V1
+18  VSEncodingSimple V2
 
-### coderID     CoderName
-
-0               N Gamma
-1               FU Gamma
-2               F Gamma
-3               N Delta
-4               FU Delta
-5               FG Delta
-6               F Delta
-7               Variable Byte
-8               Binary Interpolative
-9               Simple 9
-10              Simple 16
-11              PForDelta
-12              OPTPForDelta
-13              VSEncodingBlocks
-14              VSE-R
-15              VSEncodingRest
-16              VSEncodingBlocksHybrid
-17              VSEncodingSimple v1
-18              VSEncodingSimple v2
 
 An input/output file format
 -----------
-
-In the implemented coders in this library, an input/output format
+In the implemented encoders in the library, an input/output format
 follows a rule below:
 
 [total of int., a first int., a second int., ..., a last int.]
@@ -60,16 +76,17 @@ follows a rule below:
 Each entry occupies a 32-bit word, and these integers MUST appear
 in an ascending order.
 
+
 Performance
 -----------
-
-Some performance results (left and right values are mis and bpi,
-respectively) of these coders are shown here. gov2 was used as a
-test set, which is one of TREC test collections in the Terabyte
+Some performance results(left and right values are mis and bpi,
+respectively) of these encoders are shown here. gov2 was used as
+a test set, which is one of TREC test collections in the Terabyte
 Track. This test was done on a machine with a Intel Core i5-2500
 (3.3GHz) processor and 8GiB of memory.
 
-                                    mis          bpi
+CoderName                           mis          bpi
+---
 N Gamma                          114.53         5.05
 FU Gamma                         144.82         5.05
 F Gamma                          122.09         5.05
@@ -90,7 +107,7 @@ VSEncodingBlocksHybrid           616.58         4.82
 VSEncodingSimple v1             1701.11         6.40
 VSEncodingSimple v2             1812.66         6.79
 
-, where mis represents these average decompression speed expressed in
-millions of integers per second, and bpi does these compression
-performance expressed in bits per integers.
+, where 'mis' represents these average decompression speed
+expressed in millions of integers per second, and 'bpi' does
+these compression performance expressed in bits per integers.
 

@@ -1,65 +1,71 @@
 /*-----------------------------------------------------------------------------
- *  BitsWriter.hpp - A coder interface to write compressed data
+ *  BitsWriter.hpp - A write interface for a sequence of bits
  *
- *  Coding-Style:
- *      emacs) Mode: C, tab-width: 8, c-basic-offset: 8, indent-tabs-mode: nil
- *      vi) tabstop: 8, expandtab
+ *  Coding-Style: google-styleguide
+ *      https://code.google.com/p/google-styleguide/
  *
  *  Authors:
  *      Takeshi Yamamuro <linguin.m.s_at_gmail.com>
  *      Fabrizio Silvestri <fabrizio.silvestri_at_isti.cnr.it>
  *      Rossano Venturini <rossano.venturini_at_isti.cnr.it>
+ *
+ *  Copyright 2012 Integer Encoding Library <integerencoding_at_isti.cnr.it>
+ *      http://integerencoding.ist.cnr.it/
  *-----------------------------------------------------------------------------
  */
 
 #ifndef __BITSWRITER_HPP__
 #define __BITSWRITER_HPP__
 
-#include "xxx_common.hpp"
+#include <misc/encoding_internals.hpp>
 
-namespace integer_coding {
-namespace utility {
+namespace integer_encoding {
+namespace internals {
 
 class BitsWriter {
-private:
-        uint32_t        *data;
-        uint64_t        buffer;
-        uint32_t        Fill; 
-        uint32_t        written;    
+ public:
+  explicit BitsWriter(uint32_t *out, uint64_t len);
+  ~BitsWriter() throw();
 
-public:
-        BitsWriter(): data(NULL),
-                buffer(0), Fill(0), written(0) {};
-        explicit BitsWriter(uint32_t *out) :
-                data(out), buffer(0), Fill(0), written(0) {};
-        ~BitsWriter() throw() {};
+  void write_bits(uint32_t val, uint32_t num);
+  void flush_bits();
 
-        void initalize(uint32_t *out);
+  uint32_t *pos() const;
+  uint64_t size() const;
 
-        void bit_flush();
-        void bit_writer(uint32_t value, uint32_t bits);
+  /* For Unary codes */
+  void N_Unary(uint32_t num);
 
-        uint32_t *get_pos() const;
-        uint32_t get_written() const;
+  /* For Delta codes */
+  void N_Gamma(uint32_t val);
+  uint32_t N_GammaArray(const uint32_t *in,
+                        uint64_t len);
 
-        /* For Unary codes */
-        void N_Unary(int num);
-        uint32_t N_UnaryArray(uint32_t *in, uint32_t len);
+  /* For Delta codes */
+  uint32_t N_DeltaArray(const uint32_t *in,
+                        uint64_t len);
 
-        /* For Delta codes */
-        void N_Gamma(uint32_t val);
-        uint32_t N_GammaArray(uint32_t *in, uint32_t len);
+  /*
+   * Binary Interpolative code
+   * NOTE: This only supports 32-bit length.
+   */
+  void writeMinimalBinary(uint32_t x, uint32_t b);
+  void InterpolativeArray(const uint32_t *in,
+                          uint32_t len,
+                          uint32_t offset,
+                          uint32_t lo, uint32_t hi);
 
-        /* For Delta codes */
-        uint32_t N_DeltaArray(uint32_t *in, uint32_t len);
+ private:
+  uint32_t  *out_;
+  uint32_t  *term_;
+  uint64_t  buffer_;
+  uint32_t  fill_;
+  uint64_t  nwritten_;
 
-        /* For Binary Interpolative codes */
-        void writeMinimalBinary(uint32_t x, uint32_t b);
-        void InterpolativeArray(uint32_t *in, uint32_t len,
-                        uint32_t offset, uint32_t lo, uint32_t hi);
+  DISALLOW_COPY_AND_ASSIGN(BitsWriter);
 }; /* BitsWriter */
 
-}; /* namespace: utility */
-}; /* namespace: integer_coding */
+} /* namespace: internals */
+} /* namespace: integer_encoding */
 
-#endif /* __BITS_WRITER_HPP__ */
+#endif /* __BITSWRITER_HPP__ */
