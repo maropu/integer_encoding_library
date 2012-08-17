@@ -22,14 +22,14 @@ namespace internals {
 namespace {
 
 #define BITSRD_BUFFILL(__cond__)  \
-  ASSERT(__cond__ <= 32); \
-  ASSERT(in_ != NULL);    \
-  if (fill_ < __cond__) { \
-    buffer_ = (buffer_ << 32) | BYTEORDER_FREE_LOAD32(in_); \
-    in_++, fill_ += 32;         \
-    if (UNLIKELY(in_ > term_))  \
-      THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");  \
-  }
+    ASSERT(__cond__ <= 32);       \
+    ASSERT(in_ != NULL);          \
+    if (fill_ < __cond__) {       \
+      buffer_ = (buffer_ << 32) | BYTEORDER_FREE_LOAD32(in_);     \
+      in_++, fill_ += 32;         \
+      if (UNLIKELY(in_ > term_))  \
+        THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");  \
+    }
 
 const uint32_t F_MASK32 = 0xffff;
 
@@ -37,10 +37,10 @@ const uint32_t F_MASK32 = 0xffff;
 
 BitsReader::BitsReader(const uint32_t *in,
                        uint64_t len)
-  : in_(in),
-    term_(in + len),
-    buffer_(0),
-    fill_(0) {
+    : in_(in),
+      term_(in + len),
+      buffer_(0),
+      fill_(0) {
   if (in == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: in");
   if (len == 0)
@@ -57,7 +57,8 @@ uint32_t BitsReader::read_bits(uint32_t num) {
   ASSERT(num <= 32);
   BITSRD_BUFFILL(num);
   fill_ -= num;
-  return (buffer_ >> fill_) & ((1ULL << num) - 1);
+  return (buffer_ >> fill_) &
+      ((uint64_t(1) << num) - 1);
 }
 
 const uint32_t *BitsReader::pos() const {
@@ -65,14 +66,14 @@ const uint32_t *BitsReader::pos() const {
   return in_ - 1;
 }
 
-uint32_t BitsReader::N_Unary() {
+uint32_t BitsReader::read_unary() {
   uint32_t count = 0;
   while (read_bits(1) == 0)
     count++;
   return count;
 }
 
-uint32_t BitsReader::F_Unary() {
+uint32_t BitsReader::read_funary() {
   if (LIKELY(in_ != term_)) {
     BITSRD_BUFFILL(16);
     uint32_t idx = (buffer_ >> (fill_ - 16)) & F_MASK32;
@@ -82,45 +83,77 @@ uint32_t BitsReader::F_Unary() {
 
     if (UNLIKELY(dec == 16)) {
       fill_ -= 16;
-      return F_Unary() + dec;
+      return read_funary() + dec;
     }
 
     fill_ -= dec + 1;
     return dec;
   }
 
-  return N_Unary();
+  return read_unary();
 }
 
-uint32_t BitsReader::N_Gamma() {
-  uint32_t count = N_Unary();
+uint32_t BitsReader::read_ngamma() {
+  uint32_t count = read_unary();
   ASSERT(count < 32);
   return ((1U << count) | read_bits(count)) - 1;
 }
 
-uint32_t BitsReader::F_Gamma() {
+uint32_t BitsReader::read_fgamma() {
   if (LIKELY(in_ != term_)) {
     BITSRD_BUFFILL(16);
     uint32_t idx = (buffer_ >> (fill_ - 16)) & F_MASK32;
     uint32_t dec = decGamma[idx];
 
     if (UNLIKELY(dec == 0))
-      return N_Gamma();
+      return read_ngamma();
 
     fill_ -= (dec >> 16);
     return (dec & F_MASK32) - 1;
   }
 
-  return N_Gamma();
+  return read_ngamma();
 }
 
-uint32_t BitsReader::FU_Gamma() {
-  uint32_t count = F_Unary();
+uint32_t BitsReader::read_fugamma() {
+  uint32_t count = read_funary();
   ASSERT(count < 32);
   return ((1U << count) | read_bits(count)) - 1;
 }
 
-void BitsReader::N_GammaArray(uint32_t *out,
+void BitsReader::ngammaArray(uint32_t *out,
+                             uint64_t nvalues) {
+  if (out == NULL)
+    THROW_ENCODING_EXCEPTION("Invalid value: out");
+  if (nvalues == 0)
+    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
+  if (in_ > term_)
+    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
+
+  ASSERT_ADDR(out, nvalues);
+
+  for (uint64_t i = 0;
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_ngamma();
+}
+
+void BitsReader::fgammaArray(uint32_t *out,
+                             uint64_t nvalues) {
+  if (out == NULL)
+    THROW_ENCODING_EXCEPTION("Invalid value: out");
+  if (nvalues == 0)
+    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
+  if (in_ > term_)
+    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
+
+  ASSERT_ADDR(out, nvalues);
+
+  for (uint64_t i = 0;
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_fgamma();
+}
+
+void BitsReader::fugammaArray(uint32_t *out,
                               uint64_t nvalues) {
   if (out == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: out");
@@ -132,73 +165,57 @@ void BitsReader::N_GammaArray(uint32_t *out,
   ASSERT_ADDR(out, nvalues);
 
   for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = N_Gamma();
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_fugamma();
 }
 
-void BitsReader::F_GammaArray(uint32_t *out,
-                              uint64_t nvalues) {
-  if (out == NULL)
-    THROW_ENCODING_EXCEPTION("Invalid value: out");
-  if (nvalues == 0)
-    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
-  if (in_ > term_)
-    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
-
-  ASSERT_ADDR(out, nvalues);
-
-  for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = F_Gamma();
-}
-
-void BitsReader::FU_GammaArray(uint32_t *out,
-                               uint64_t nvalues) {
-  if (out == NULL)
-    THROW_ENCODING_EXCEPTION("Invalid value: out");
-  if (nvalues == 0)
-    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
-  if (in_ > term_)
-    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
-
-  ASSERT_ADDR(out, nvalues);
-
-  for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = FU_Gamma();
-}
-
-uint32_t BitsReader::N_Delta() {
-  uint32_t count = N_Gamma();
+uint32_t BitsReader::read_ndelta() {
+  uint32_t count = read_ngamma();
   ASSERT(count < 32);
   return ((1U << count) | read_bits(count)) - 1;
 }
 
-uint32_t BitsReader::F_Delta() {
+uint32_t BitsReader::read_fdelta() {
   if (LIKELY(in_ != term_)) {
     BITSRD_BUFFILL(16);
     uint32_t idx = (buffer_ >> (fill_ - 16)) & F_MASK32;
     uint32_t dec = decDelta[idx];
 
     if (UNLIKELY(dec == 0))
-      return N_Delta();
+      return read_ndelta();
 
     fill_ -= (dec >> 16);
-    return (dec & ((1ULL << 16) - 1)) - 1;
+    return (dec & ((uint64_t(1) << 16) - 1)) - 1;
   }
 
-  return N_Delta();
+  return read_ndelta();
 }
 
-uint32_t BitsReader::FU_Delta() {
-  uint32_t count = F_Unary();
+uint32_t BitsReader::read_fudelta() {
+  uint32_t count = read_funary();
   ASSERT(count < 6);
   uint32_t log = ((1U << count) | read_bits(count)) - 1;
   ASSERT(log < 32);
   return ((1U << log) | read_bits(log)) - 1;
 }
 
-void BitsReader::N_DeltaArray(uint32_t *out,
+void BitsReader::ndeltaArray(uint32_t *out,
+                             uint64_t nvalues) {
+  if (out == NULL)
+    THROW_ENCODING_EXCEPTION("Invalid value: out");
+  if (nvalues == 0)
+    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
+  if (in_ > term_)
+    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
+
+  ASSERT_ADDR(out, nvalues);
+
+  for (uint64_t i = 0;
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_ndelta();
+}
+
+void BitsReader::fudeltaArray(uint32_t *out,
                               uint64_t nvalues) {
   if (out == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: out");
@@ -210,12 +227,12 @@ void BitsReader::N_DeltaArray(uint32_t *out,
   ASSERT_ADDR(out, nvalues);
 
   for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = N_Delta();
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_fudelta();
 }
 
-void BitsReader::FU_DeltaArray(uint32_t *out,
-                               uint64_t nvalues) {
+void BitsReader::fgdeltaArray(uint32_t *out,
+                              uint64_t nvalues) {
   if (out == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: out");
   if (nvalues == 0)
@@ -226,31 +243,15 @@ void BitsReader::FU_DeltaArray(uint32_t *out,
   ASSERT_ADDR(out, nvalues);
 
   for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = FU_Delta();
-}
-
-void BitsReader::FG_DeltaArray(uint32_t *out,
-                               uint64_t nvalues) {
-  if (out == NULL)
-    THROW_ENCODING_EXCEPTION("Invalid value: out");
-  if (nvalues == 0)
-    THROW_ENCODING_EXCEPTION("Invalid value: nvalues");
-  if (in_ > term_)
-    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
-
-  ASSERT_ADDR(out, nvalues);
-
-  for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++) {
-    uint32_t count = F_Gamma();
+           i < nvalues && in_ <= term_; i++) {
+    uint32_t count = read_fgamma();
     ASSERT(count < 32);
     out[i] = ((1U << count) | read_bits(count)) - 1;
   }
 }
 
-void BitsReader::F_DeltaArray(uint32_t *out,
-                              uint64_t nvalues) {
+void BitsReader::fdeltaArray(uint32_t *out,
+                             uint64_t nvalues) {
   if (out == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: out");
   if (nvalues == 0)
@@ -261,25 +262,29 @@ void BitsReader::F_DeltaArray(uint32_t *out,
   ASSERT_ADDR(out, nvalues);
 
   for (uint64_t i = 0;
-       i < nvalues && in_ <= term_; i++)
-    out[i] = F_Delta();
+           i < nvalues && in_ <= term_; i++)
+    out[i] = read_fdelta();
 }
 
-uint32_t BitsReader::readMinimalBinary(uint32_t b) {
-  ASSERT(1 <= b);
-  uint32_t d = 31 - MSB32(b);
-  uint32_t m = (1ULL << (d + 1)) - b;
+uint32_t BitsReader::read_intrpolatv(uint32_t intvl) {
+  ASSERT(1 <= intvl);
+
+  uint32_t d = 31 - MSB32(intvl);
+  ASSERT(d < 32);
+
+  uint32_t m = (uint64_t(1) << (d + 1)) - intvl;
   uint32_t x = read_bits(d);
+
   if (x < m)
     return x;
   return (x << 1) + read_bits(1) - m;
 }
 
-void BitsReader::InterpolativeArray(uint32_t *out,
-                                    uint32_t nvalues,
-                                    uint32_t offset,
-                                    uint32_t lo,
-                                    uint32_t hi) {
+void BitsReader::intrpolatvArray(uint32_t *out,
+                                 uint32_t nvalues,
+                                 uint32_t offset,
+                                 uint32_t low,
+                                 uint32_t high) {
   if (UNLIKELY(nvalues == 0))
     return;
 
@@ -287,24 +292,24 @@ void BitsReader::InterpolativeArray(uint32_t *out,
     THROW_ENCODING_EXCEPTION("Invalid value: out");
   if (in_ > term_)
     THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
-  if (lo > hi)
-    THROW_ENCODING_EXCEPTION("Invalid equality: lo > hi");
+  if (low > high)
+    THROW_ENCODING_EXCEPTION("Invalid equality: low > high");
 
   ASSERT_ADDR(out, nvalues);
 
   if (UNLIKELY(nvalues == 1)) {
-    out[offset] = readMinimalBinary(hi - lo + 1) + lo;
+    out[offset] = read_intrpolatv(high - low + 1) + low;
     return;
   }
 
   uint32_t h = nvalues >> 1;
-  uint32_t m = readMinimalBinary(
-      hi - nvalues + h + 1 - (lo + h) + 1) + lo + h;
+  uint32_t m = read_intrpolatv(
+      high - nvalues + h + 1 - (low + h) + 1) + low + h;
 
   out[offset + h] = m;
-  InterpolativeArray(out, h, offset, lo, m - 1);
-  InterpolativeArray(out, nvalues - h - 1,
-  offset + h + 1, m + 1, hi);
+  intrpolatvArray(out, h, offset, low, m - 1);
+  intrpolatvArray(out, nvalues - h - 1,
+                  offset + h + 1, m + 1, high);
 }
 
 } /* namespace: internals */

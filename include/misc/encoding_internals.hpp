@@ -18,7 +18,7 @@
 #define __ENCODING_INTERNALS_HPP__
 
 #ifndef __STDC_LIMIT_MACROS
-  #define __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
 #endif
 
 #include <misc/encoding_port_internals.hpp>
@@ -45,6 +45,13 @@
 #include <memory>
 
 namespace integer_encoding {
+
+/*
+ * NOTE: Get the maximum required size of memory when
+ * decoding. Some are intended to overrun the tail of
+ * given memory for performance reasons.
+ */
+#define DECODE_REQUIRE_MEM(x)   ((x) + 128)
 
 /* Smart pointer stuffs */
 #define REGISTER_VECTOR_RAII(__type__, __name__, __size__)  \
@@ -109,7 +116,12 @@ class encoding_exception : public std::exception {
       : msg_(msg),
         file_(file),
         func_(func),
-        line_(line) {}
+        line_(line) {
+    char buf[256];
+    int n = snprintf(buf, 256, "(src:%s func:%s line:%d)",
+                     file_.c_str(), func_.c_str(), line_);
+    msg_ += std::string(buf, n);
+  }
 
   ~encoding_exception() throw() {}
 

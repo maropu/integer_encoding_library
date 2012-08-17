@@ -27,7 +27,7 @@ const uint32_t VC_MAJOR = 0;
 const uint32_t VC_MINOR = 3;
 const uint32_t VC_PATCHLEVEL = 0;
 const uint32_t VC_VERSION =
-  ((VC_MAJOR << 16) | (VC_MINOR << 8) | VC_PATCHLEVEL);
+    ((VC_MAJOR << 16) | (VC_MINOR << 8) | VC_PATCHLEVEL);
 
 /* Valid options */
 bool decompress_enabled =  false;
@@ -77,7 +77,7 @@ void show_usage() {
 void show_ids() {
   fprintf(stderr, "The library uses following IDs:\n");
   fprintf(stderr, "ID\tName\n");
-  fprintf(stderr, "---\n"); 
+  fprintf(stderr, "---\n");
   fprintf(stderr, "0\tN Gamma\n");
   fprintf(stderr, "1\tFU Gamma\n");
   fprintf(stderr, "2\tF Gamma\n");
@@ -159,7 +159,7 @@ void write_headerinfo(FILE *cmp, FILE *pos) {
   char  buf[32];
 
   /* Generate a random-generated magic number */
-  srand(time(NULL)); 
+  srand(time(NULL));
   uint32_t rmagic = rand();
 
   /* Get file size */
@@ -330,12 +330,9 @@ void do_decompress(const std::string& input,
   /* Validate input files with header infomation */
   validate_headerinfo(&cmp, cmplen, &pos, poslen);
 
-  /*
-   * Some decoders are intended to overrun a given
-   * memory space by +128(SIMD register length) for 
-   * performance reasons.
-   */
-  REGISTER_VECTOR_RAII(uint32_t, list, MAXLEN + 128);
+  REGISTER_VECTOR_RAII(uint32_t,
+                       list,
+                       DECODE_REQUIRE_MEM(MAXLEN + 128));
 
   EncodingPtr c = EncodingFactory::create(encoder_id);
 

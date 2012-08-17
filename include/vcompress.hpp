@@ -82,7 +82,6 @@ void FastMemcpy(void *dest,
 
   char *s = reinterpret_cast<char *>(src);
   char *d = reinterpret_cast<char *>(dest);
-
   uint64_t num = n >> 4;
   for (uint64_t i = 0; i < num; i++, s += 16, d += 16)
     MEMCPY128(s, d);

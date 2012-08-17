@@ -15,19 +15,19 @@ For decoding, you say a line below:
 ./vcompress -d [FILE] <[OUT]>
 
 When finishing decoding, it shows performance results
-such as compression ratios and speeds. To write decoded
-integers in local filesystems, a output filename needs
-to be specified in [OUT].
+such as the compression ratio and the speed. To write
+the decoded integers in local filesystems, a output
+filename needs to be filled in [OUT].
 
 
 For example, if you would like to compress a file, named
-XXX, following specified formats with N Gamma(ID: 0),
-you type a followin line:
+XXX, following specified formats with N Gamma(ID: 0), you
+just type a followin line:
 
 ./vcompress 0 XXX
 
 This line generates two files; XXX.gamma and XXX.pos.
-And the, the corresponding decoding command is:
+And then, the corresponding decoding command is:
 
 ./vcompress -d XXX
 
@@ -107,7 +107,7 @@ VSEncodingBlocksHybrid           616.58         4.82
 VSEncodingSimple v1             1701.11         6.40
 VSEncodingSimple v2             1812.66         6.79
 
-, where 'mis' represents these average decompression speed
+, where 'mis' represents these average decompression speeds
 expressed in millions of integers per second, and 'bpi' does
 these compression performance expressed in bits per integers.
 

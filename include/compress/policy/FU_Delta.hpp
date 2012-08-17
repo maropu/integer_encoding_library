@@ -36,7 +36,12 @@ class FU_Delta : public EncodingBase {
                    uint32_t *out,
                    uint64_t *nvalue) const {
     BitsWriter wt(out, *nvalue);
-    *nvalue = wt.N_DeltaArray(in, len);
+    *nvalue = wt.deltaArray(in, len);
+  }
+
+  uint64_t require(uint64_t len) const {
+    /* Delta needs 42-bit for UINT32_MAX */
+    return (42 * len) >> 5;
   }
 
   void decodeArray(const uint32_t *in,
@@ -44,19 +49,7 @@ class FU_Delta : public EncodingBase {
                    uint32_t *out,
                    uint64_t nvalue) const {
     BitsReader rd(in, len);
-    rd.FU_DeltaArray(out, nvalue);
-  }
-
-  uint64_t inRequire(uint64_t len) const {
-    return len;
-  }
-
-  /*
-   * NOTE: Delta codes need 42-bit for
-   * UINT32_MAX, so it is (42 * len / 32).
-   */
-  uint64_t outRequire(uint64_t len) const {
-    return (42 * len) >> 5;
+    rd.fudeltaArray(out, nvalue);
   }
 }; /* FU_Delta */
 

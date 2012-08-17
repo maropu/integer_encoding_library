@@ -36,7 +36,12 @@ class F_Gamma : public EncodingBase {
                    uint32_t *out,
                    uint64_t *nvalue) const {
     BitsWriter wt(out, *nvalue);
-    *nvalue = wt.N_GammaArray(in, len);
+    *nvalue = wt.gammaArray(in, len);
+  }
+
+  uint64_t require(uint64_t len) const {
+    /* Gamma needs 64-bit for UINT32_MAX */
+    return (64 * len) >> 5;
   }
 
   void decodeArray(const uint32_t *in,
@@ -44,19 +49,7 @@ class F_Gamma : public EncodingBase {
                    uint32_t *out,
                    uint64_t nvalue) const {
     BitsReader rd(in, len);
-    rd.F_GammaArray(out, nvalue);
-  }
-
-  uint64_t inRequire(uint64_t len) const {
-    return len;
-  }
-
-  /*
-   * NOTE: Gamma codes need 64-bit for
-   * UINT32_MAX, so it is (64 * len / 32).
-   */
-  uint64_t outRequire(uint64_t len) const {
-    return (64 * len) >> 5;
+    rd.fgammaArray(out, nvalue);
   }
 }; /* F_Gamma */
 

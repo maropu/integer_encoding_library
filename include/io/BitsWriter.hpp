@@ -33,29 +33,22 @@ class BitsWriter {
   uint32_t *pos() const;
   uint64_t size() const;
 
-  /* For Unary codes */
-  void N_Unary(uint32_t num);
+  uint32_t gammaArray(const uint32_t *in,
+                      uint64_t len);
+  uint32_t deltaArray(const uint32_t *in,
+                      uint64_t len);
 
-  /* For Delta codes */
-  void N_Gamma(uint32_t val);
-  uint32_t N_GammaArray(const uint32_t *in,
-                        uint64_t len);
-
-  /* For Delta codes */
-  uint32_t N_DeltaArray(const uint32_t *in,
-                        uint64_t len);
-
-  /*
-   * Binary Interpolative code
-   * NOTE: This only supports 32-bit length.
-   */
-  void writeMinimalBinary(uint32_t x, uint32_t b);
-  void InterpolativeArray(const uint32_t *in,
-                          uint32_t len,
-                          uint32_t offset,
-                          uint32_t lo, uint32_t hi);
+  /* Binary Interpolative only supports 32-bit */
+  void intrpolatvArray(const uint32_t *in,
+                       uint32_t len,
+                       uint32_t offset,
+                       uint32_t low, uint32_t high);
 
  private:
+  void write_unary(uint32_t val);
+  void write_gamma(uint32_t val);
+  void write_intrpolatv(uint32_t val, uint32_t intvl);
+
   uint32_t  *out_;
   uint32_t  *term_;
   uint64_t  buffer_;

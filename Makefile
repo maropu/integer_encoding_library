@@ -1,6 +1,7 @@
 CC		= ccache g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
-CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+#CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
+CFLAGS		+= -O2 -msse2 -fomit-frame-pointer -fstrict-aliasing -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 #WFLAGS		= -Wall -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal \
@@ -35,7 +36,7 @@ $(VCOMPRESS):	$(OBJS)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
 
 .cpp.o:
-		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -fPIC -c $< -o $@
+		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $< -o $@
 
 .PHONY:check
 check:
@@ -47,7 +48,7 @@ test:		$(TEST)
 $(TEST):	gtest-all.o $(TEST_OBJS)
 		$(CC) $(CXXFLAGS) $(CFLAGS) $(TEST_OBJS) $(LIBS) gtest-all.o -o $@
 
-gtest-all.o:	$(GSRCS)	
+gtest-all.o:	$(GSRCS)
 		$(CC) $(GINCLUDE) -c $(GDIR)/src/gtest-all.cc
 
 $(TEST_OBJS):

@@ -59,18 +59,28 @@
 
 #if !defined(LZE_ENABLE_UNALIGNED_RW)
 
-#pragma pack(push, 1)
+# pragma pack(push, 1)
 
 typedef struct {uint32_t  v;} U32_S;
 typedef struct {uint64_t  v;} U64_S;
 
-#pragma pack(pop)
+# pragma pack(pop)
+
+/* Not display some warnings in gcc */
+# if defined(__GNUC__) && (GCC_VERSION >= 406)
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored -fstrict-aliasing
+# endif
 
 # define LOAD32(__x__)  (((U32_S *)(__x__))->v)
 # define LOAD64(__x__)  (((U64_S *)(__x__))->v)
 
 # define STORE32(__x__, __y__)  ((((U32_S *)(__x__))->v) = __y__)
 # define STORE64(__x__, __y__)  ((((U64_S *)(__x__))->v) = __y__)
+
+# if defined(__GNUC__) && (GCC_VERSION >= 406)
+#   pragma GCC diagnostic pop
+# endif
 
 #else
 
@@ -179,7 +189,7 @@ inline void MEMCPY128(const void *src, void *dest) {
   STORE32(d + 4, LOAD32(s + 4));
   STORE32(d + 8, LOAD32(s + 8));
   STORE32(d + 12, LOAD32(s + 12));
-#endif 
+#endif
 }
 
 #endif
@@ -191,7 +201,7 @@ inline void MEMCPY128(const void *src, void *dest) {
 # endif
 # define _FILE_OFFSET_BITS  64
 #else
-/* Not defined yet */
+  /* Not defined yet */
 #endif
 
 #endif /* __ENCODING_PORT_INTERNALS_HPP__ */

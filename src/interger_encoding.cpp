@@ -69,6 +69,13 @@ EncodingPtr EncodingFactory::create(const int policy) {
       break;
     }
 
+    case E_VARIABLEBYTE: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::VariableByte()));
+      break;
+    }
+
     case E_BINARYIPL: {
       return EncodingPtr(
           static_cast<internals::EncodingBase *>(

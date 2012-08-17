@@ -21,11 +21,11 @@ namespace internals {
 
 BitsWriter::BitsWriter(uint32_t *out,
                        uint64_t len)
-  : out_(out),
-    term_(out + len),
-    buffer_(0),
-    fill_(0),
-    nwritten_(0) {
+    : out_(out),
+      term_(out + len),
+      buffer_(0),
+      fill_(0),
+      nwritten_(0) {
   if (out == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: out");
   if (len == 0)
@@ -38,36 +38,41 @@ BitsWriter::~BitsWriter() throw() {}
 
 void BitsWriter::write_bits(uint32_t val,
                             uint32_t num) {
-  ASSERT(out_ != NULL);
-  ASSERT(out_ < term_);
-  ASSERT(num <= 32);
+  if (num > 32)
+    THROW_ENCODING_EXCEPTION("Out of range exception: num");
 
-  if (out_ >= term_ && num > 0) 
-    THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
+  ASSERT(out_ != NULL);
 
   if (LIKELY(num > 0)) {
-    buffer_ = (buffer_ << num) | (val & ((1ULL << num) - 1));
+    if (out_ >= term_)
+      THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
+
+    buffer_ = (buffer_ << num) |
+        (val & ((uint64_t(1) << num) - 1));
     fill_ += num;
 
     if (fill_ >= 32) {
       BYTEORDER_FREE_STORE32(
-          out_, (buffer_ >> (fill_ - 32)) & ((1ULL << 32) - 1));
+          out_, (buffer_ >> (fill_ - 32)) &
+                    ((uint64_t(1) << 32) - 1));
       out_++, nwritten_++, fill_ -= 32;
       if (out_ >= term_&& fill_ > 0)
         THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
     }
-  } 
+  }
 }
 
 void BitsWriter::flush_bits() {
-  if (out_ >= term_ && fill_ > 0) 
+  if (out_ >= term_ && fill_ > 0)
     THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
 
   ASSERT(out_ != NULL);
+  ASSERT(fill_ < 32);
 
   if (fill_ > 0) {
     BYTEORDER_FREE_STORE32(
-      out_, buffer_ << (32 - fill_) & ((1ULL << 32) - 1));
+      out_, buffer_ << (32 - fill_) &
+                ((uint64_t(1) << 32) - 1));
     out_++, nwritten_++;
     buffer_ = 0, fill_ = 0;
   }
@@ -82,22 +87,21 @@ uint64_t BitsWriter::size() const {
   return nwritten_;
 }
 
-void BitsWriter::N_Unary(uint32_t num) {
-  write_bits(0, num);
+void BitsWriter::write_unary(uint32_t val) {
+  ASSERT(val < 32);
+  write_bits(0, val);
   write_bits(1, 1);
 }
 
-void BitsWriter::N_Gamma(uint32_t val) {
-  if (val == UINT32_MAX)
-    THROW_ENCODING_EXCEPTION("Invalid value: val");
-
+void BitsWriter::write_gamma(uint32_t val) {
   uint32_t d = 31 - MSB32(val + 1);
-  N_Unary(d);
+  ASSERT(d < 32);
+  write_unary(d);
   write_bits(val + 1, d);
 }
 
-uint32_t BitsWriter::N_GammaArray(const uint32_t *in,
-                                  uint64_t len) {
+uint32_t BitsWriter::gammaArray(const uint32_t *in,
+                                uint64_t len) {
   if (in == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: in");
   if (len == 0)
@@ -106,18 +110,15 @@ uint32_t BitsWriter::N_GammaArray(const uint32_t *in,
   ASSERT_ADDR(in, len);
 
   for (uint64_t i = 0;
-       i < len && out_ < term_; i++) {
-    uint32_t d = 31 - MSB32(in[i] + 1);
-    N_Unary(d);
-    write_bits(in[i] + 1, d);
-  }
+          i < len && out_ < term_; i++)
+    write_gamma(in[i]);
 
   flush_bits();
   return nwritten_;
 }
 
-uint32_t BitsWriter::N_DeltaArray(const uint32_t *in,
-                                  uint64_t len) {
+uint32_t BitsWriter::deltaArray(const uint32_t *in,
+                                uint64_t len) {
   if (in == NULL)
     THROW_ENCODING_EXCEPTION("Invalid value: in");
   if (len == 0)
@@ -126,9 +127,10 @@ uint32_t BitsWriter::N_DeltaArray(const uint32_t *in,
   ASSERT_ADDR(in, len);
 
   for (uint64_t i = 0;
-       i < len && out_ < term_; i++) {
+           i < len && out_ < term_; i++) {
     uint32_t d = 31 - MSB32(in[i] + 1);
-    N_Gamma(d);
+    ASSERT(d < 32);
+    write_gamma(d);
     write_bits(in[i] + 1, d);
   }
 
@@ -136,24 +138,24 @@ uint32_t BitsWriter::N_DeltaArray(const uint32_t *in,
   return nwritten_;
 }
 
-void BitsWriter::writeMinimalBinary(uint32_t x,
-                                    uint32_t b) {
+void BitsWriter::write_intrpolatv(uint32_t val,
+                                  uint32_t intvl) {
   ASSERT(out_ != NULL);
 
-  int d = 31 - MSB32(b);
-  uint32_t m = (1ULL << (d + 1)) - b;
+  uint32_t d = 31 - MSB32(intvl);
+  uint32_t m = (uint64_t(1) << (d + 1)) - intvl;
 
-  if (x < m)
-    write_bits(x, d);
+  if (val < m)
+    write_bits(val, d);
   else
-    write_bits(x + m, d + 1);
+    write_bits(val + m, d + 1);
 }
 
-void BitsWriter::InterpolativeArray(const uint32_t *in,
-                                    uint32_t len,
-                                    uint32_t offset,
-                                    uint32_t lo,
-                                    uint32_t hi) {
+void BitsWriter::intrpolatvArray(const uint32_t *in,
+                                 uint32_t len,
+                                 uint32_t offset,
+                                 uint32_t low,
+                                 uint32_t high) {
   if (len == 0)
     return;
 
@@ -161,24 +163,24 @@ void BitsWriter::InterpolativeArray(const uint32_t *in,
     THROW_ENCODING_EXCEPTION("Invalid value: in");
   if (out_ >= term_)
     THROW_ENCODING_EXCEPTION("Buffer-overflowed exception");
-  if (lo > hi)
-    THROW_ENCODING_EXCEPTION("Invalid equality: lo > hi");
+  if (low > high)
+    THROW_ENCODING_EXCEPTION("Invalid equality: low > high");
 
   ASSERT_ADDR(in, len);
 
-  if (len == 1) {
-    writeMinimalBinary(in[offset] - lo, hi - lo + 1);
+  if (UNLIKELY(len == 1)) {
+    write_intrpolatv(in[offset] - low, high - low + 1);
     return;
   }
 
   uint32_t h = len / 2;
   uint32_t m = in[offset + h];
 
-  writeMinimalBinary(m - (lo + h),
-                     hi - len + h + 1 - (lo + h) + 1);
-  InterpolativeArray(in, h, offset, lo, m - 1);
-  InterpolativeArray(in, len - h - 1,
-                     offset + h + 1, m + 1, hi);
+  write_intrpolatv(m - (low + h),
+                   high - len + h + 1 - (low + h) + 1);
+  intrpolatvArray(in, h, offset, low, m - 1);
+  intrpolatvArray(in, len - h - 1,
+                  offset + h + 1, m + 1, high);
 }
 
 } /* namespace: internals */

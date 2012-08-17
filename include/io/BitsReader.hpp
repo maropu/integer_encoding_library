@@ -32,48 +32,49 @@ class BitsReader {
   explicit BitsReader(const uint32_t *in,
                       uint64_t len);
   ~BitsReader() throw();
-                
+
   uint32_t read_bits(uint32_t num);
   const uint32_t *pos() const;
 
-  /* Unary code */
-  uint32_t N_Unary();
-  uint32_t F_Unary();
-        
-  /* Gamma code */
-  void N_GammaArray(uint32_t *out, uint64_t nvalues);
-  void F_GammaArray(uint32_t *out, uint64_t nvalues);
-  void FU_GammaArray(uint32_t *out, uint64_t nvalues);
+  /* Decoders for gamma alternatives */
+  void ngammaArray(uint32_t *out, uint64_t nvalues);
+  void fgammaArray(uint32_t *out, uint64_t nvalues);
+  void fugammaArray(uint32_t *out, uint64_t nvalues);
 
-  uint32_t N_Gamma();
-  uint32_t F_Gamma();
-  uint32_t FU_Gamma();
+  /* Decoders for delta alternatives */
+  void ndeltaArray(uint32_t *out, uint64_t nvalues);
+  void fdeltaArray(uint32_t *out, uint64_t nvalues);
+  void fudeltaArray(uint32_t *out, uint64_t nvalues);
+  void fgdeltaArray(uint32_t *out, uint64_t nvalues);
 
-  /* Delta code */
-  void N_DeltaArray(uint32_t *out, uint64_t nvalues);
-  void FU_DeltaArray(uint32_t *out, uint64_t nvalues);
-  void FG_DeltaArray(uint32_t *out, uint64_t nvalues);
-  void F_DeltaArray(uint32_t *out, uint64_t nvalues);
-
-  uint32_t N_Delta();
-  uint32_t F_Delta();
-  uint32_t FU_Delta();
-
-  /*
-   * Binary Interpolative code
-   * NOTE: This only supports 32-bit length.
-   */
-  void InterpolativeArray(uint32_t *out,
-                          uint32_t nvalues,
-                          uint32_t offset,
-                          uint32_t lo, uint32_t hi);
-  uint32_t readMinimalBinary(uint32_t b);
+  /* Decoders for binary interpolative */
+  void intrpolatvArray(uint32_t *out,
+                       uint32_t nvalues,
+                       uint32_t offset,
+                       uint32_t low, uint32_t high);
 
  private:
+  /* A single value decoder for unary */
+  uint32_t read_unary();
+  uint32_t read_funary();
+
+  /* A single value decoder for gamma */
+  uint32_t read_ngamma();
+  uint32_t read_fgamma();
+  uint32_t read_fugamma();
+
+  /* A single value decoder for delta */
+  uint32_t read_ndelta();
+  uint32_t read_fdelta();
+  uint32_t read_fudelta();
+
+  /* A single value decoder for binary interpolative */
+  uint32_t read_intrpolatv(uint32_t intvl);
+
   const uint32_t  *in_;
   const uint32_t  *term_;
   uint64_t  buffer_;
-  uint32_t  fill_; 
+  uint32_t  fill_;
 
   DISALLOW_COPY_AND_ASSIGN(BitsReader);
 }; /* BitsReader */

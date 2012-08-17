@@ -35,31 +35,37 @@ class BinaryInterpolative : public EncodingBase {
                    uint64_t len,
                    uint32_t *out,
                    uint64_t *nvalue) const {
+    if (len > UINT32_MAX || *nvalue > UINT32_MAX)
+      THROW_ENCODING_EXCEPTION(
+          "BinaryInterpolative only supports 32-bit length");
+
     /* Write a maximum value in the head of out */
     out[0] = in[len - 1];
 
     /* Do actual binary interpolative code */
     BitsWriter  wt(out + 1, len - 1);
-    wt.InterpolativeArray(in, len, 0, 0, in[len - 1]);
+    wt.intrpolatvArray(in, len, 0, 0, in[len - 1]);
     wt.flush_bits();
     *nvalue = wt.size() + 1;
+  }
+
+  uint64_t require(uint64_t len) const {
+    if (len > UINT32_MAX)
+      THROW_ENCODING_EXCEPTION(
+          "BinaryInterpolative only supports 32-bit length");
+    /* FIXME: Fill correct the required size */
+    return len;
   }
 
   void decodeArray(const uint32_t *in,
                    uint64_t len,
                    uint32_t *out,
                    uint64_t nvalue) const {
+    if (len > UINT32_MAX || nvalue > UINT32_MAX)
+      THROW_ENCODING_EXCEPTION(
+          "BinaryInterpolative only supports 32-bit length");
     BitsReader  rd(in + 1, len - 1);
-    rd.InterpolativeArray(out, nvalue, 0, 0, *in);
-  }
-
-  uint64_t inRequire(uint64_t len) const {
-    return len;
-  }
-
-  /* FIXME: Fill correct required size */
-  uint64_t outRequire(uint64_t len) const {
-    return len;
+    rd.intrpolatvArray(out, nvalue, 0, 0, *in);
   }
 }; /* BinaryInterpolative */
 
