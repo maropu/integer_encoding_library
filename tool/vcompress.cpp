@@ -207,7 +207,7 @@ void write_pos_entry(uint64_t pos, FILE *out) {
 void validate_encoder_id(uint32_t **pos) {
   encoder_id = VC_LOAD32(*pos);
   if ((encoder_id < 0) || (encoder_id >= NUMCODERS))
-    OUTPUT_AND_DIE("File Format Exception: Encoder ID");
+    OUTPUT_AND_DIE("File format xxception: encoder ID");
 }
 
 void validate_headerinfo(uint32_t **cmp, uint64_t cmplen,
@@ -217,21 +217,21 @@ void validate_headerinfo(uint32_t **cmp, uint64_t cmplen,
   uint32_t magic = VC_LOAD32(*pos);
 
   if (magic != VC_MAGIC || version != VC_VERSION)
-    OUTPUT_AND_DIE("File Format Exception: Version");
+    OUTPUT_AND_DIE("File format exception: version");
 
   /* Check a correct pair of compressed data */
   uint32_t rmagic = VC_LOAD32(*pos);
   uint32_t cmp_rmagic = VC_LOAD32(*cmp);
 
   if (rmagic != cmp_rmagic)
-    OUTPUT_AND_DIE("File Format Exception: File");
+    OUTPUT_AND_DIE("File format exception: file");
 
   /* Check a length of input files */
   uint64_t cmpvlen = VC_LOAD64(*pos);
   uint64_t posvlen = VC_LOAD64(*pos);
 
   if (cmplen != cmpvlen || poslen != posvlen)
-    OUTPUT_AND_DIE("File Format Exception: File Length");
+    OUTPUT_AND_DIE("File format exception: file length");
 }
 
 void do_compress(const std::string& input, int id) {
@@ -243,7 +243,7 @@ void do_compress(const std::string& input, int id) {
   FILE *cmp = fopen((input + encoder_suffix[id]).c_str(), "w");
   FILE *pos = fopen((input + pos_suffix).c_str(), "w");
   if (cmp == NULL || pos == NULL)
-    OUTPUT_AND_DIE("Exception: Can't open output files");
+    OUTPUT_AND_DIE("Exception: can't open output files");
 
   /* Allocate the pre-defined size of memory */
   REGISTER_VECTOR_RAII(uint32_t, list, MAXLEN);
@@ -324,7 +324,7 @@ void do_decompress(const std::string& input,
   if (output.length() != 0) {
     out = fopen(output.c_str(), "w");
     if (out == NULL)
-      OUTPUT_AND_DIE("Exception: Can't open a output file");
+      OUTPUT_AND_DIE("Exception: can't open a output file");
   }
 
   /* Validate input files with header infomation */
