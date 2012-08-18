@@ -19,6 +19,16 @@
 namespace integer_encoding {
 namespace internals {
 
+namespace {
+
+#define VBYTE_EXT7BITS(val, num)  \
+    ((val >> (7 * num)) & 0x7f)
+
+const uint32_t VBYTE_DESC = 0x80;
+const uint32_t VBYTE_DATA = VBYTE_DESC - 1;
+
+} /* namespace: */
+
 void VariableByte::encodeArray(const uint32_t *in,
                                uint64_t len,
                                uint32_t *out,

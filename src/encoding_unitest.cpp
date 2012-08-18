@@ -188,7 +188,8 @@ INSTANTIATE_TEST_CASE_P(
     IntegerEncoding,
     testing::Values(E_N_GAMMA, E_F_GAMMA, E_FU_GAMMA,
                     E_N_DELTA, E_F_DELTA, E_FU_DELTA, E_FG_DELTA,
-                    E_VARIABLEBYTE, E_BINARYIPL));
+                    E_VARIABLEBYTE, E_BINARYIPL,
+                    E_SIMPLE9));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -26,12 +26,6 @@
 namespace integer_encoding {
 namespace internals {
 
-const uint32_t VBYTE_DESC = 0x80;
-const uint32_t VBYTE_DATA = VBYTE_DESC - 1;
-
-#define VBYTE_EXT7BITS(val, num)  \
-    ((val >> (7 * num)) & 0x7f)
-
 class VariableByte : public EncodingBase {
  public:
   VariableByte() : EncodingBase(E_VARIABLEBYTE) {}

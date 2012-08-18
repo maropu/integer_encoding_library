@@ -82,6 +82,13 @@ EncodingPtr EncodingFactory::create(const int policy) {
               new internals::BinaryInterpolative()));
       break;
     }
+
+    case E_SIMPLE9: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::Simple9()));
+      break;
+    }
   }
 
   THROW_ENCODING_EXCEPTION("Invalid value: policy");
