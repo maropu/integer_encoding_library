@@ -5,7 +5,7 @@ CFLAGS		+= -O2 -msse2 -fomit-frame-pointer -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 WFLAGS		= -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal \
-			-Wno-strict-aliasing -Wpointer-arith -Wswitch-enum -Woverloaded-virtual -Weffc++
+			-Wno-strict-aliasing -Wpointer-arith -Wswitch-enum -Woverloaded-virtual -Weffc++  -Wno-unused
 # WFLAGS		+= -Wconversion
 WFLAGS		+= $(if $(filter 4.6.% 4.7.%,$(CCVERSION)), -Wno-unused-but-set-variable,)
 LDFLAGS		= -L/usr/local/lib

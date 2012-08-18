@@ -25,10 +25,17 @@
 namespace integer_encoding {
 namespace internals {
 
+const uint32_t SIMPLE9_LOGDESC = 4;
+const uint32_t SIMPLE9_LEN = (1U << SIMPLE9_LOGDESC);
+
+/* A interface of unpacking functions above */
+typedef void (*simple9_unpacker_t)(uint32_t **out,
+                                   const uint32_t **in);
+
 class Simple9 : public EncodingBase {
  public:
-  Simple9() : EncodingBase(E_SIMPLE9) {}
-  ~Simple9() throw() {}
+  Simple9();
+  ~Simple9() throw();
 
   void encodeArray(const uint32_t *in,
                    uint64_t len,
@@ -41,6 +48,36 @@ class Simple9 : public EncodingBase {
                    uint64_t nvalue) const;
 
   uint64_t require(uint64_t len) const;
+
+ private:
+  /* Check whether a word can pack values */
+  static bool try_pack(const uint32_t *in,
+                       uint32_t len,
+                       uint32_t num1,
+                       uint32_t log1);
+
+  /* A series of integer unpackers */
+  static void unpack28_1(uint32_t **out,
+                         const uint32_t **in);
+  static void unpack14_2(uint32_t **out,
+                         const uint32_t **in);
+  static void unpack9_3(uint32_t **out,
+                        const uint32_t **in);
+  static void unpack7_4(uint32_t **out,
+                        const uint32_t **in);
+  static void unpack5_5(uint32_t **out,
+                        const uint32_t **in);
+  static void unpack4_7(uint32_t **out,
+                        const uint32_t **in);
+  static void unpack3_9(uint32_t **out,
+                        const uint32_t **in);
+  static void unpack2_14(uint32_t **out,
+                         const uint32_t **in);
+  static void unpack1_28(uint32_t **out,
+                         const uint32_t **in);
+
+ private:
+  simple9_unpacker_t unpack_[SIMPLE9_LEN];
 }; /* Simple9 */
 
 } /* namespace: internals */
