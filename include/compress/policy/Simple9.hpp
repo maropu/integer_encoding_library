@@ -35,6 +35,8 @@ typedef void (*simple9_unpacker_t)(uint32_t **out,
 class Simple9 : public EncodingBase {
  public:
   Simple9();
+  explicit Simple9(int policy);
+
   ~Simple9() throw();
 
   void encodeArray(const uint32_t *in,
@@ -49,12 +51,11 @@ class Simple9 : public EncodingBase {
 
   uint64_t require(uint64_t len) const;
 
- private:
+ protected:
   /* Check whether a word can pack values */
   static bool try_pack(const uint32_t *in,
                        uint32_t len,
-                       uint32_t num1,
-                       uint32_t log1);
+                       uint32_t num1, uint32_t log1);
 
   /* A series of integer unpackers */
   static void unpack28_1(uint32_t **out,
@@ -76,7 +77,7 @@ class Simple9 : public EncodingBase {
   static void unpack1_28(uint32_t **out,
                          const uint32_t **in);
 
- private:
+ protected:
   simple9_unpacker_t unpack_[SIMPLE9_LEN];
 }; /* Simple9 */
 
