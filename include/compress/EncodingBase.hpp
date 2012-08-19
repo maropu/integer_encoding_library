@@ -71,7 +71,7 @@ class EncodingBase {
 
 } /* namespace: internals */
 
-typedef std::shared_ptr<internals::EncodingBase> EncodingPtr;
+typedef std::shared_ptr<internals::EncodingBase>  EncodingPtr;
 
 } /* namespace: integer_encoding */
 
