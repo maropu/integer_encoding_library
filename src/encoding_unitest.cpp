@@ -77,6 +77,24 @@ TEST(IntegerEncodingInternals, FactoryTests) {
     EXPECT_EQ(typeid(BinaryInterpolative), typeid(*c));
   }
 
+  {
+    /* Encoder ID: E_SIMPLE9 */
+    EncodingPtr c = EncodingFactory::create(E_SIMPLE9);
+    EXPECT_EQ(typeid(Simple9), typeid(*c));
+  }
+
+  {
+    /* Encoder ID: E_SIMPLE16 */
+    EncodingPtr c = EncodingFactory::create(E_SIMPLE16);
+    EXPECT_EQ(typeid(Simple16), typeid(*c));
+  }
+
+  {
+    /* Encoder ID: E_P4D */
+    EncodingPtr c = EncodingFactory::create(E_P4D);
+    EXPECT_EQ(typeid(PForDelta), typeid(*c));
+  }
+
   EXPECT_THROW(EncodingFactory::create(E_INVALID),
                encoding_exception);
 }
@@ -189,7 +207,8 @@ INSTANTIATE_TEST_CASE_P(
     testing::Values(E_N_GAMMA, E_F_GAMMA, E_FU_GAMMA,
                     E_N_DELTA, E_F_DELTA, E_FU_DELTA, E_FG_DELTA,
                     E_VARIABLEBYTE, E_BINARYIPL,
-                    E_SIMPLE9, E_SIMPLE16));
+                    E_SIMPLE9, E_SIMPLE16,
+                    E_P4D));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

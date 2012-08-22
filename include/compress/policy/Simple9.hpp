@@ -25,8 +25,8 @@
 namespace integer_encoding {
 namespace internals {
 
-const uint32_t SIMPLE9_LOGDESC = 4;
-const uint32_t SIMPLE9_LEN = (1U << SIMPLE9_LOGDESC);
+const size_t SIMPLE9_LOGDESC = 4;
+const size_t SIMPLE9_LEN = (1U << SIMPLE9_LOGDESC);
 
 /* A interface of unpacking functions above */
 typedef void (*simple9_unpacker_t)(uint32_t **out,

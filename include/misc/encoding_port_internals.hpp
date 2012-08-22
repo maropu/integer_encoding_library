@@ -175,21 +175,39 @@ inline void MEMCPY128(const void *src, void *dest) {
     :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
 }
 
+inline void ZMEMCPY128(void *dest) {
+  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+
+  __asm__ __volatile__(
+    "pxor   %%xmm0, %%xmm0\n\t"
+    "movdqu %%xmm0, %0\n\t"
+    :"=m" (dest[0]) ::"memory", "%xmm0");
+}
+
 #else
 
 inline void MEMCPY128(const void *src, void *dest) {
   const char *s = reinterpret_cast<const char *>(src);
   char *d = reinterpret_cast<char *>(dest);
-
-#if defined(LZE_ARCH64)
+# if defined(LZE_ARCH64)
   STORE64(d, LOAD64(s));
   STORE64(d + 8, LOAD64(s + 8));
-#else
+# else
   STORE32(d, LOAD32(s));
   STORE32(d + 4, LOAD32(s + 4));
   STORE32(d + 8, LOAD32(s + 8));
   STORE32(d + 12, LOAD32(s + 12));
-#endif
+# endif
+}
+
+inline void ZMEMCPY128(void *dest) {
+  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+# if defined(LZE_ARCH64)
+  STORE64(d, 0);
+# else
+  STORE32(d, 0);
+  STORE32(d + 4, 0);
+# endif
 }
 
 #endif
