@@ -104,6 +104,12 @@ EncodingPtr EncodingFactory::create(const int policy) {
       break;
     }
 
+    case E_OPTP4D: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::OPTPForDelta()));
+      break;
+    }
   }
 
   THROW_ENCODING_EXCEPTION("Invalid value: policy");

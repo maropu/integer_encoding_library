@@ -49,6 +49,12 @@ class PForDelta : public EncodingBase {
 
   uint64_t require(uint64_t len) const;
 
+ private:
+  void encodeBlock(const uint32_t *in,
+                   uint64_t len,
+                   uint32_t *out,
+                   uint64_t *nvalue) const;
+
  protected:
   /*
    * Two functions below are intended to
@@ -59,12 +65,6 @@ class PForDelta : public EncodingBase {
                         uint64_t len) const;
   virtual uint32_t findBestB(const uint32_t *in,
                              uint64_t len) const;
-
- private:
-  void encodeBlock(const uint32_t *in,
-                   uint64_t len,
-                   uint32_t *out,
-                   uint64_t *nvalue) const;
 
   /* Compress overflowed values */
   Simple16  s16;

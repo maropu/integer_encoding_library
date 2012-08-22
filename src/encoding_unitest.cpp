@@ -95,6 +95,12 @@ TEST(IntegerEncodingInternals, FactoryTests) {
     EXPECT_EQ(typeid(PForDelta), typeid(*c));
   }
 
+  {
+    /* Encoder ID: E_OPTP4D */
+    EncodingPtr c = EncodingFactory::create(E_OPTP4D);
+    EXPECT_EQ(typeid(OPTPForDelta), typeid(*c));
+  }
+
   EXPECT_THROW(EncodingFactory::create(E_INVALID),
                encoding_exception);
 }
@@ -170,7 +176,8 @@ TEST_P(IntegerEncoding, EncoderTests) {
         data[i] += data[i - 1] + 1;
     }
 
-    EXPECT_NO_THROW(c->encodeArray(data, 16, out, &nvalue));
+    // EXPECT_NO_THROW(c->encodeArray(data, 16, out, &nvalue));
+    c->encodeArray(data, 16, out, &nvalue);
     EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, 16));
     for (int i = 0; i < 16; i++)
       EXPECT_EQ(data[i], dec[i]);
@@ -208,7 +215,7 @@ INSTANTIATE_TEST_CASE_P(
                     E_N_DELTA, E_F_DELTA, E_FU_DELTA, E_FG_DELTA,
                     E_VARIABLEBYTE, E_BINARYIPL,
                     E_SIMPLE9, E_SIMPLE16,
-                    E_P4D));
+                    E_P4D, E_OPTP4D));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

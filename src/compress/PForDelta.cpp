@@ -1071,9 +1071,20 @@ PForDelta::PForDelta()
               new uint32_t[s16.require(2 * PFORDELTA_BLOCKSZ)])) {}
 
 PForDelta::PForDelta(int policy)
-    : EncodingBase(policy) {PForDelta();}
+    : EncodingBase(policy),
+      s16(),
+      codewords_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptionsPositions_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptionsValues_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptions_(std::shared_ptr<uint32_t>(
+              new uint32_t[2 * PFORDELTA_BLOCKSZ])),
+      encodedExceptions_(std::shared_ptr<uint32_t>(
+              new uint32_t[s16.require(2 * PFORDELTA_BLOCKSZ)])) {}
 
-PForDelta::~PForDelta() throw(){}
+PForDelta::~PForDelta() throw() {}
 
 uint32_t PForDelta::tryB(uint32_t b,
                          const uint32_t *in,
@@ -1135,7 +1146,7 @@ void PForDelta::encodeBlock(const uint32_t *in,
   BitsWriter wt(codewords, len);
 
   uint32_t b = findBestB(in, len);
-  ASSERT(b > 0 && b <= 32);
+  ASSERT(b >= 0 && b <= 32);
 
   uint64_t curExcept = 0;
   uint64_t encodedExceptions_sz = 0;
