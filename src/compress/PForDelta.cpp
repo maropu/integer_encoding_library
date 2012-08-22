@@ -21,12 +21,31 @@ namespace internals {
 
 namespace {
 
+const double PFORDELTA_RATIO = 0.1;
+
+/*
+ * Lemme resume the block's format here:
+ *  |--------------------------------------------------|
+ *  |     b   | nExceptions | s16encodedExceptionSize  |
+ *  |  6 bits |   10 bits   |         16 bits          |
+ *  |--------------------------------------------------|
+ *  |              fixed_b(codewords)                  |
+ *  |--------------------------------------------------|
+ *  |                s16(exceptions)                   |
+ *  |--------------------------------------------------|
+ */
+const size_t PFORDELTA_B = 6;
+const size_t PFORDELTA_NEXCEPT = 10;
+const size_t PFORDELTA_EXCEPTSZ = 16;
+
 void PFORDELTA_UNPACK0(uint32_t *out,
                        const uint32_t *in) {
   for (uint32_t i = 0;
           i < PFORDELTA_BLOCKSZ; i += 16, out += 16) {
     ZMEMCPY128(out);
-    ZMEMCPY128(out);
+    ZMEMCPY128(out + 4);
+    ZMEMCPY128(out + 8);
+    ZMEMCPY128(out + 12);
   }
 }
 
@@ -1038,10 +1057,21 @@ const uint32_t PFORDELTA_LOGS[] = {
 } /* namespace: */
 
 PForDelta::PForDelta()
-    : EncodingBase(E_P4D) {}
+    : EncodingBase(E_P4D),
+      s16(),
+      codewords_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptionsPositions_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptionsValues_(std::shared_ptr<uint32_t>(
+              new uint32_t[PFORDELTA_BLOCKSZ])),
+      exceptions_(std::shared_ptr<uint32_t>(
+              new uint32_t[2 * PFORDELTA_BLOCKSZ])),
+      encodedExceptions_(std::shared_ptr<uint32_t>(
+              new uint32_t[s16.require(2 * PFORDELTA_BLOCKSZ)])) {}
 
 PForDelta::PForDelta(int policy)
-    : EncodingBase(policy) {}
+    : EncodingBase(policy) {PForDelta();}
 
 PForDelta::~PForDelta() throw(){}
 
@@ -1066,8 +1096,6 @@ uint32_t PForDelta::tryB(uint32_t b,
 
   return curExcept;
 }
-
-#define ARRAY_SZ(__x__)   (sizeof(__x__) / sizeof(__x__[0]))
 
 uint32_t PForDelta::findBestB(const uint32_t *in,
                               uint64_t len) const {
@@ -1097,15 +1125,12 @@ void PForDelta::encodeBlock(const uint32_t *in,
   ASSERT_ADDR(in, len);
   ASSERT_ADDR(out, *nvalue);
 
-  /* Compress overflowed values */
-  Simple16  s16;
-
-  REGISTER_VECTOR_RAII(uint32_t, codewords, len);
-  REGISTER_VECTOR_RAII(uint32_t, exceptionsPositions, len);
-  REGISTER_VECTOR_RAII(uint32_t, exceptionsValues, len);
-  REGISTER_VECTOR_RAII(uint32_t, exceptions, len * 2);
-  REGISTER_VECTOR_RAII(uint32_t, encodedExceptions,
-                       s16.require(len * 2));
+  /* Get working spaces */
+  uint32_t *codewords = codewords_.get();
+  uint32_t *exceptionsPositions = exceptionsPositions_.get();
+  uint32_t *exceptionsValues = exceptionsValues_.get();
+  uint32_t *exceptions = exceptions_.get();
+  uint32_t *encodedExceptions = encodedExceptions_.get();
 
   BitsWriter wt(codewords, len);
 
@@ -1174,8 +1199,6 @@ void PForDelta::encodeBlock(const uint32_t *in,
 
   *nvalue = 1 + encodedExceptions_sz + codewords_sz;
 }
-
-#define DIV_ROUNDUP(__x__, __y__)   ((__x__ + __y__ - 1) / __y__)
 
 void PForDelta::encodeArray(const uint32_t *in,
                             uint64_t len,

@@ -29,22 +29,6 @@ namespace internals {
 /* FIXME: There is a bug with 128 of PFORDELTA_BLOCKSZ */
 const size_t PFORDELTA_NBLOCK = 1;
 const size_t PFORDELTA_BLOCKSZ = 32 * PFORDELTA_NBLOCK;
-const double PFORDELTA_RATIO = 0.1;
-
-/*
- * Lemme resume the block's format here:
- *  |--------------------------------------------------|
- *  |     b   | nExceptions | s16encodedExceptionSize  |
- *  |  6 bits |   10 bits   |         16 bits          |
- *  |--------------------------------------------------|
- *  |              fixed_b(codewords)                  |
- *  |--------------------------------------------------|
- *  |                s16(exceptions)                   |
- *  |--------------------------------------------------|
- */
-const size_t PFORDELTA_B = 6;
-const size_t PFORDELTA_NEXCEPT = 10;
-const size_t PFORDELTA_EXCEPTSZ = 16;
 
 class PForDelta : public EncodingBase {
  public:
@@ -65,12 +49,6 @@ class PForDelta : public EncodingBase {
 
   uint64_t require(uint64_t len) const;
 
- private:
-  void encodeBlock(const uint32_t *in,
-                   uint64_t len,
-                   uint32_t *out,
-                   uint64_t *nvalue) const;
-
  protected:
   /*
    * Two functions below are intended to
@@ -81,6 +59,22 @@ class PForDelta : public EncodingBase {
                         uint64_t len) const;
   virtual uint32_t findBestB(const uint32_t *in,
                              uint64_t len) const;
+
+ private:
+  void encodeBlock(const uint32_t *in,
+                   uint64_t len,
+                   uint32_t *out,
+                   uint64_t *nvalue) const;
+
+  /* Compress overflowed values */
+  Simple16  s16;
+
+  /* Used during compression phases */
+  std::shared_ptr<uint32_t> codewords_;
+  std::shared_ptr<uint32_t> exceptionsPositions_;
+  std::shared_ptr<uint32_t> exceptionsValues_;
+  std::shared_ptr<uint32_t> exceptions_;
+  std::shared_ptr<uint32_t> encodedExceptions_;
 }; /* PForDelta */
 
 } /* namespace: internals */
