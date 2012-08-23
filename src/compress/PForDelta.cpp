@@ -1115,14 +1115,14 @@ uint32_t PForDelta::findBestB(const uint32_t *in,
 
   ASSERT_ADDR(in, len);
 
-  for (uint32_t i = 0; i < ARRAY_SZ(PFORDELTA_LOGS) - 1; i++) {
+  for (uint32_t i = 0; i < ARRAYSIZE(PFORDELTA_LOGS) - 1; i++) {
     uint32_t nExceptions = tryB(PFORDELTA_LOGS[i], in, len);
 
     if (nExceptions <= len * PFORDELTA_RATIO)
       return PFORDELTA_LOGS[i];
   }
 
-  return PFORDELTA_LOGS[ARRAY_SZ(PFORDELTA_LOGS) - 1];
+  return PFORDELTA_LOGS[ARRAYSIZE(PFORDELTA_LOGS) - 1];
 }
 
 void PForDelta::encodeBlock(const uint32_t *in,

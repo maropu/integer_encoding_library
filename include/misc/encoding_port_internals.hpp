@@ -222,4 +222,15 @@ inline void ZMEMCPY128(void *dest) {
   /* Not defined yet */
 #endif
 
+/*
+ * Some compilers already have a definition, so
+ * it is undefined first and defined again.
+ */
+#ifdef ARRAYSIZE
+# undef ARRAYSIZE
+#endif
+
+#define ARRAYSIZE(__x__)  \
+    (sizeof(__x__) / sizeof(*(__x__)))
+
 #endif /* __ENCODING_PORT_INTERNALS_HPP__ */

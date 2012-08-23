@@ -99,10 +99,10 @@ uint32_t OPTPForDelta::findBestB(const uint32_t *in,
 
   ASSERT_ADDR(in, len);
 
-  uint32_t b = OPTPFORDELTA_LOGS[ARRAY_SZ(OPTPFORDELTA_LOGS) - 1];
+  uint32_t b = OPTPFORDELTA_LOGS[ARRAYSIZE(OPTPFORDELTA_LOGS) - 1];
 
   uint32_t bsize = len;
-  for (uint32_t i = 0; i < ARRAY_SZ(OPTPFORDELTA_LOGS) - 1; i++) {
+  for (uint32_t i = 0; i < ARRAYSIZE(OPTPFORDELTA_LOGS) - 1; i++) {
     uint32_t csize = tryB(OPTPFORDELTA_LOGS[i], in, len);
     if (csize <= bsize) {
       b = OPTPFORDELTA_LOGS[i];

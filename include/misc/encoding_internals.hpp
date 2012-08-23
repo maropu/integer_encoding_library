@@ -72,9 +72,6 @@ namespace integer_encoding {
 #define DIV_ROUNDUP(__x__, __y__) \
     ((__x__ + __y__ - 1) / __y__)
 
-#define ARRAY_SZ(__x__) \
-    (sizeof(__x__) / sizeof(__x__[0]))
-
 #define DISALLOW_COPY_AND_ASSIGN(__Type__)  \
     __Type__(const __Type__&);              \
     void operator= (const __Type__&)
