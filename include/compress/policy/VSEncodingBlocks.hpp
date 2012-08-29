@@ -56,7 +56,6 @@ class VSEncodingBlocks : public EncodingBase {
                 uint32_t nvalue) const;
 
  private:
-  /* Used during decompression phases */
   std::shared_ptr<uint32_t>     wmem_;
   std::shared_ptr<VSEncodingDP> vdp_;
 }; /* VSEncodingBlocks */

@@ -209,28 +209,30 @@ void Simple16::unpack7_2_14_1(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 26) & 0x03;
-  pout[1] = (pin[0] >> 24) & 0x03;
-  pout[2] = (pin[0] >> 22) & 0x03;
-  pout[3] = (pin[0] >> 20) & 0x03;
-  pout[4] = (pin[0] >> 18) & 0x03;
-  pout[5] = (pin[0] >> 16) & 0x03;
-  pout[6] = (pin[0] >> 14) & 0x03;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[7] = (pin[0] >> 13) & 0x01;
-  pout[8] = (pin[0] >> 12) & 0x01;
-  pout[9] = (pin[0] >> 11) & 0x01;
-  pout[10] = (pin[0] >> 10) & 0x01;
-  pout[11] = (pin[0] >> 9) & 0x01;
-  pout[12] = (pin[0] >> 8) & 0x01;
-  pout[13] = (pin[0] >> 7) & 0x01;
-  pout[14] = (pin[0] >> 6) & 0x01;
-  pout[15] = (pin[0] >> 5) & 0x01;
-  pout[16] = (pin[0] >> 4) & 0x01;
-  pout[17] = (pin[0] >> 3) & 0x01;
-  pout[18] = (pin[0] >> 2) & 0x01;
-  pout[19] = (pin[0] >> 1) & 0x01;
-  pout[20] = pin[0] & 0x01;
+  pout[0] = (val >> 26) & 0x03;
+  pout[1] = (val >> 24) & 0x03;
+  pout[2] = (val >> 22) & 0x03;
+  pout[3] = (val >> 20) & 0x03;
+  pout[4] = (val >> 18) & 0x03;
+  pout[5] = (val >> 16) & 0x03;
+  pout[6] = (val >> 14) & 0x03;
+
+  pout[7] = (val >> 13) & 0x01;
+  pout[8] = (val >> 12) & 0x01;
+  pout[9] = (val >> 11) & 0x01;
+  pout[10] = (val >> 10) & 0x01;
+  pout[11] = (val >> 9) & 0x01;
+  pout[12] = (val >> 8) & 0x01;
+  pout[13] = (val >> 7) & 0x01;
+  pout[14] = (val >> 6) & 0x01;
+  pout[15] = (val >> 5) & 0x01;
+  pout[16] = (val >> 4) & 0x01;
+  pout[17] = (val >> 3) & 0x01;
+  pout[18] = (val >> 2) & 0x01;
+  pout[19] = (val >> 1) & 0x01;
+  pout[20] = val & 0x01;
 
   *in = pin + 1;
   *out = pout + 21;
@@ -241,29 +243,31 @@ void Simple16::unpack7_1_7_2_7_1(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 27) & 0x01;
-  pout[1] = (pin[0] >> 26) & 0x01;
-  pout[2] = (pin[0] >> 25) & 0x01;
-  pout[3] = (pin[0] >> 24) & 0x01;
-  pout[4] = (pin[0] >> 23) & 0x01;
-  pout[5] = (pin[0] >> 22) & 0x01;
-  pout[6] = (pin[0] >> 21) & 0x01;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[7] = (pin[0] >> 19) & 0x03;
-  pout[8] = (pin[0] >> 17) & 0x03;
-  pout[9] = (pin[0] >> 15) & 0x03;
-  pout[10] = (pin[0] >> 13) & 0x03;
-  pout[11] = (pin[0] >> 11) & 0x03;
-  pout[12] = (pin[0] >> 9) & 0x03;
-  pout[13] = (pin[0] >> 7) & 0x03;
+  pout[0] = (val >> 27) & 0x01;
+  pout[1] = (val >> 26) & 0x01;
+  pout[2] = (val >> 25) & 0x01;
+  pout[3] = (val >> 24) & 0x01;
+  pout[4] = (val >> 23) & 0x01;
+  pout[5] = (val >> 22) & 0x01;
+  pout[6] = (val >> 21) & 0x01;
 
-  pout[14] = (pin[0] >> 6) & 0x01;
-  pout[15] = (pin[0] >> 5) & 0x01;
-  pout[16] = (pin[0] >> 4) & 0x01;
-  pout[17] = (pin[0] >> 3) & 0x01;
-  pout[18] = (pin[0] >> 2) & 0x01;
-  pout[19] = (pin[0] >> 1) & 0x01;
-  pout[20] = pin[0] & 0x01;
+  pout[7] = (val >> 19) & 0x03;
+  pout[8] = (val >> 17) & 0x03;
+  pout[9] = (val >> 15) & 0x03;
+  pout[10] = (val >> 13) & 0x03;
+  pout[11] = (val >> 11) & 0x03;
+  pout[12] = (val >> 9) & 0x03;
+  pout[13] = (val >> 7) & 0x03;
+
+  pout[14] = (val >> 6) & 0x01;
+  pout[15] = (val >> 5) & 0x01;
+  pout[16] = (val >> 4) & 0x01;
+  pout[17] = (val >> 3) & 0x01;
+  pout[18] = (val >> 2) & 0x01;
+  pout[19] = (val >> 1) & 0x01;
+  pout[20] = val & 0x01;
 
   *in = pin + 1;
   *out = pout + 21;
@@ -274,28 +278,30 @@ void Simple16::unpack14_1_7_2(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 27) & 0x01;
-  pout[1] = (pin[0] >> 26) & 0x01;
-  pout[2] = (pin[0] >> 25) & 0x01;
-  pout[3] = (pin[0] >> 24) & 0x01;
-  pout[4] = (pin[0] >> 23) & 0x01;
-  pout[5] = (pin[0] >> 22) & 0x01;
-  pout[6] = (pin[0] >> 21) & 0x01;
-  pout[7] = (pin[0] >> 20) & 0x01;
-  pout[8] = (pin[0] >> 19) & 0x01;
-  pout[9] = (pin[0] >> 18) & 0x01;
-  pout[10] = (pin[0] >> 17) & 0x01;
-  pout[11] = (pin[0] >> 16) & 0x01;
-  pout[12] = (pin[0] >> 15) & 0x01;
-  pout[13] = (pin[0] >> 14) & 0x01;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[14] = (pin[0] >> 12) & 0x03;
-  pout[15] = (pin[0] >> 10) & 0x03;
-  pout[16] = (pin[0] >> 8) & 0x03;
-  pout[17] = (pin[0] >> 6) & 0x03;
-  pout[18] = (pin[0] >> 4) & 0x03;
-  pout[19] = (pin[0] >> 2) & 0x03;
-  pout[20] = pin[0] & 0x03;
+  pout[0] = (val >> 27) & 0x01;
+  pout[1] = (val >> 26) & 0x01;
+  pout[2] = (val >> 25) & 0x01;
+  pout[3] = (val >> 24) & 0x01;
+  pout[4] = (val >> 23) & 0x01;
+  pout[5] = (val >> 22) & 0x01;
+  pout[6] = (val >> 21) & 0x01;
+  pout[7] = (val >> 20) & 0x01;
+  pout[8] = (val >> 19) & 0x01;
+  pout[9] = (val >> 18) & 0x01;
+  pout[10] = (val >> 17) & 0x01;
+  pout[11] = (val >> 16) & 0x01;
+  pout[12] = (val >> 15) & 0x01;
+  pout[13] = (val >> 14) & 0x01;
+
+  pout[14] = (val >> 12) & 0x03;
+  pout[15] = (val >> 10) & 0x03;
+  pout[16] = (val >> 8) & 0x03;
+  pout[17] = (val >> 6) & 0x03;
+  pout[18] = (val >> 4) & 0x03;
+  pout[19] = (val >> 2) & 0x03;
+  pout[20] = val & 0x03;
 
   *in = pin + 1;
   *out = pout + 21;
@@ -306,16 +312,18 @@ void Simple16::unpack1_4_8_3(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 24) & 0x0f;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[1] = (pin[0] >> 21) & 0x07;
-  pout[2] = (pin[0] >> 18) & 0x07;
-  pout[3] = (pin[0] >> 15) & 0x07;
-  pout[4] = (pin[0] >> 12) & 0x07;
-  pout[5] = (pin[0] >> 9) & 0x07;
-  pout[6] = (pin[0] >> 6) & 0x07;
-  pout[7] = (pin[0] >> 3) & 0x07;
-  pout[8] = pin[0] & 0x07;
+  pout[0] = (val >> 24) & 0x0f;
+
+  pout[1] = (val >> 21) & 0x07;
+  pout[2] = (val >> 18) & 0x07;
+  pout[3] = (val >> 15) & 0x07;
+  pout[4] = (val >> 12) & 0x07;
+  pout[5] = (val >> 9) & 0x07;
+  pout[6] = (val >> 6) & 0x07;
+  pout[7] = (val >> 3) & 0x07;
+  pout[8] = val & 0x07;
 
   *in = pin + 1;
   *out = pout + 9;
@@ -326,16 +334,18 @@ void Simple16::unpack1_3_4_4_3_3(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 25) & 0x07;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[1] = (pin[0] >> 21) & 0x0f;
-  pout[2] = (pin[0] >> 17) & 0x0f;
-  pout[3] = (pin[0] >> 13) & 0x0f;
-  pout[4] = (pin[0] >> 9) & 0x0f;
+  pout[0] = (val >> 25) & 0x07;
 
-  pout[5] = (pin[0] >> 6) & 0x07;
-  pout[6] = (pin[0] >> 3) & 0x07;
-  pout[7] = pin[0] & 0x07;
+  pout[1] = (val >> 21) & 0x0f;
+  pout[2] = (val >> 17) & 0x0f;
+  pout[3] = (val >> 13) & 0x0f;
+  pout[4] = (val >> 9) & 0x0f;
+
+  pout[5] = (val >> 6) & 0x07;
+  pout[6] = (val >> 3) & 0x07;
+  pout[7] = val & 0x07;
 
   *in = pin + 1;
   *out = pout + 8;
@@ -346,13 +356,15 @@ void Simple16::unpack4_5_2_4(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 23) & 0x1f;
-  pout[1] = (pin[0] >> 18) & 0x1f;
-  pout[2] = (pin[0] >> 13) & 0x1f;
-  pout[3] = (pin[0] >> 8) & 0x1f;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[4] = (pin[0] >> 4) & 0x0f;
-  pout[5] = pin[0] & 0x0f;
+  pout[0] = (val >> 23) & 0x1f;
+  pout[1] = (val >> 18) & 0x1f;
+  pout[2] = (val >> 13) & 0x1f;
+  pout[3] = (val >> 8) & 0x1f;
+
+  pout[4] = (val >> 4) & 0x0f;
+  pout[5] = val & 0x0f;
 
   *in = pin + 1;
   *out = pout + 6;
@@ -363,13 +375,15 @@ void Simple16::unpack2_4_4_5(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 24) & 0x0f;
-  pout[1] = (pin[0] >> 20) & 0x0f;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[2] = (pin[0] >> 15) & 0x1f;
-  pout[3] = (pin[0] >> 10) & 0x1f;
-  pout[4] = (pin[0] >> 5) & 0x1f;
-  pout[5] = pin[0] & 0x1f;
+  pout[0] = (val >> 24) & 0x0f;
+  pout[1] = (val >> 20) & 0x0f;
+
+  pout[2] = (val >> 15) & 0x1f;
+  pout[3] = (val >> 10) & 0x1f;
+  pout[4] = (val >> 5) & 0x1f;
+  pout[5] = val & 0x1f;
 
   *in = pin + 1;
   *out = pout + 6;
@@ -380,12 +394,14 @@ void Simple16::unpack3_6_2_5(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 22) & 0x3f;
-  pout[1] = (pin[0] >> 16) & 0x3f;
-  pout[2] = (pin[0] >> 10) & 0x3f;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[3] = (pin[0] >> 5) & 0x1f;
-  pout[4] = pin[0] & 0x1f;
+  pout[0] = (val >> 22) & 0x3f;
+  pout[1] = (val >> 16) & 0x3f;
+  pout[2] = (val >> 10) & 0x3f;
+
+  pout[3] = (val >> 5) & 0x1f;
+  pout[4] = val & 0x1f;
 
   *in = pin + 1;
   *out = pout + 5;
@@ -396,12 +412,14 @@ void Simple16::unpack2_5_3_6(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 23) & 0x1f;
-  pout[1] = (pin[0] >> 18) & 0x1f;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[2] = (pin[0] >> 12) & 0x3f;
-  pout[3] = (pin[0] >> 6) & 0x3f;
-  pout[4] = pin[0] & 0x3f;
+  pout[0] = (val >> 23) & 0x1f;
+  pout[1] = (val >> 18) & 0x1f;
+
+  pout[2] = (val >> 12) & 0x3f;
+  pout[3] = (val >> 6) & 0x3f;
+  pout[4] = val & 0x3f;
 
   *in = pin + 1;
   *out = pout + 5;
@@ -412,10 +430,12 @@ void Simple16::unpack1_10_2_9(uint32_t **out,
   uint32_t *pout = *out;
   const uint32_t *pin = *in;
 
-  pout[0] = (pin[0] >> 18) & 0x03ff;
+  uint32_t val = BYTEORDER_FREE_LOAD32(pin);
 
-  pout[1] = (pin[0] >> 9) & 0x01ff;
-  pout[2] = pin[0] & 0x01ff;
+  pout[0] = (val >> 18) & 0x03ff;
+
+  pout[1] = (val >> 9) & 0x01ff;
+  pout[2] = val & 0x01ff;
 
   *in = pin + 1;
   *out = pout + 3;
