@@ -201,12 +201,15 @@ inline void MEMCPY128(const void *src, void *dest) {
 }
 
 inline void ZMEMCPY128(void *dest) {
-  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+  char *d = reinterpret_cast<char *>(dest);
 # if defined(LZE_ARCH64)
   STORE64(d, 0);
+  STORE64(d + 8, 0);
 # else
   STORE32(d, 0);
   STORE32(d + 4, 0);
+  STORE32(d + 8, 0);
+  STORE32(d + 12, 0);
 # endif
 }
 

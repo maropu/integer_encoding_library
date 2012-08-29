@@ -65,8 +65,6 @@ class EncodingBase {
 
  private:
   int policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodingBase);
 };
 
 } /* namespace: internals */

@@ -1058,33 +1058,34 @@ const uint32_t PFORDELTA_LOGS[] = {
 
 PForDelta::PForDelta()
     : EncodingBase(E_P4D),
-      s16(),
-      codewords_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptionsPositions_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptionsValues_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptions_(std::shared_ptr<uint32_t>(
-              new uint32_t[2 * PFORDELTA_BLOCKSZ])),
-      encodedExceptions_(std::shared_ptr<uint32_t>(
-              new uint32_t[s16.require(2 * PFORDELTA_BLOCKSZ)])) {}
+      s16_(),
+      codewords_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptionsPositions_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptionsValues_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptions_(INITIALIZE_SPTR(
+              uint32_t, 2 * PFORDELTA_BLOCKSZ)),
+      encodedExceptions_(INITIALIZE_SPTR(
+              uint32_t, s16_.require(2 * PFORDELTA_BLOCKSZ))) {}
 
 PForDelta::PForDelta(int policy)
     : EncodingBase(policy),
-      s16(),
-      codewords_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptionsPositions_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptionsValues_(std::shared_ptr<uint32_t>(
-              new uint32_t[PFORDELTA_BLOCKSZ])),
-      exceptions_(std::shared_ptr<uint32_t>(
-              new uint32_t[2 * PFORDELTA_BLOCKSZ])),
-      encodedExceptions_(std::shared_ptr<uint32_t>(
-              new uint32_t[s16.require(2 * PFORDELTA_BLOCKSZ)])) {}
+      s16_(),
+      codewords_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptionsPositions_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptionsValues_(INITIALIZE_SPTR(
+              uint32_t, PFORDELTA_BLOCKSZ)),
+      exceptions_(INITIALIZE_SPTR(
+              uint32_t, 2 * PFORDELTA_BLOCKSZ)),
+      encodedExceptions_(INITIALIZE_SPTR(
+              uint32_t, s16_.require(2 * PFORDELTA_BLOCKSZ))) {}
 
 PForDelta::~PForDelta() throw() {}
+
 
 uint32_t PForDelta::tryB(uint32_t b,
                          const uint32_t *in,
@@ -1146,7 +1147,7 @@ void PForDelta::encodeBlock(const uint32_t *in,
   BitsWriter wt(codewords, len);
 
   uint32_t b = findBestB(in, len);
-  ASSERT(b >= 0 && b <= 32);
+  ASSERT(b <= 32);
 
   uint64_t curExcept = 0;
   uint64_t encodedExceptions_sz = 0;
@@ -1179,8 +1180,8 @@ void PForDelta::encodeBlock(const uint32_t *in,
         exceptions[i + curExcept] = excVal;
       }
 
-      encodedExceptions_sz = s16.require(len * 2);
-      s16.encodeArray(exceptions,
+      encodedExceptions_sz = s16_.require(len * 2);
+      s16_.encodeArray(exceptions,
                       2 * curExcept,
                       encodedExceptions,
                       &encodedExceptions_sz);

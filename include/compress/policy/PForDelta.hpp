@@ -67,7 +67,7 @@ class PForDelta : public EncodingBase {
                              uint64_t len) const;
 
   /* Compress overflowed values */
-  Simple16  s16;
+  Simple16  s16_;
 
   /* Used during compression phases */
   std::shared_ptr<uint32_t> codewords_;

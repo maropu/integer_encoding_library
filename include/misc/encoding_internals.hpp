@@ -54,10 +54,15 @@ namespace integer_encoding {
 #define DECODE_REQUIRE_MEM(x)   ((x) + 128)
 
 /* Smart pointer stuffs */
+#define INITIALIZE_SPTR(__type__, __size__)  \
+    std::shared_ptr<__type__>(  \
+        new __type__[__size__], \
+        std::default_delete<__type__[]>())
+
 #define REGISTER_VECTOR_RAII(__type__, __name__, __size__)  \
-    std::shared_ptr<__type__>               \
-      __##__name__(new __type__[__size__],  \
-                   std::default_delete<__type__[]>());  \
+    std::shared_ptr<__type__>   \
+        __##__name__(new __type__[__size__],  \
+                     std::default_delete<__type__[]>());    \
     __type__ *__name__ = __##__name__.get()
 
 /* Assertion macros */
@@ -71,6 +76,41 @@ namespace integer_encoding {
 
 #define DIV_ROUNDUP(__x__, __y__) \
     ((__x__ + __y__ - 1) / __y__)
+
+/*
+ * NOTE: Fast memory copy stuffs, these functions
+ * are intended to overrun given memory spaces
+ * for performance reasons. A caller needs to make
+ * sure that the overruning causes no crashes.
+ */
+inline void MEMCPY(void *dest,
+                   void *src, uint64_t n) {
+  if (n == 0) return;
+
+  ASSERT(dest != NULL);
+  ASSERT(src != NULL);
+
+  char *s = reinterpret_cast<char *>(src);
+  char *d = reinterpret_cast<char *>(dest);
+
+  uint64_t num = DIV_ROUNDUP(n, 4);
+  for (uint64_t i = 0;
+          i < num; i++, s += 16, d += 16)
+    MEMCPY128(s, d);
+}
+
+inline void ZMEMCPY(void *dest, uint64_t n) {
+  if (n == 0) return;
+
+  ASSERT(dest != NULL);
+
+  char *d = reinterpret_cast<char *>(dest);
+
+  uint64_t num = DIV_ROUNDUP(n, 4);
+  for (uint64_t i = 0;
+          i < num; i++, d += 16)
+    ZMEMCPY128(d);
+}
 
 #define DISALLOW_COPY_AND_ASSIGN(__Type__)  \
     __Type__(const __Type__&);              \

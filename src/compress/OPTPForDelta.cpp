@@ -80,8 +80,8 @@ uint32_t OPTPForDelta::tryB(uint32_t b,
       }
 
       /* Write down values in the exception area */
-      uint64_t encodedExceptions_sz = s16.require(len * 2);
-      s16.encodeArray(exceptions,
+      uint64_t encodedExceptions_sz = s16_.require(len * 2);
+      s16_.encodeArray(exceptions,
                       2 * curExcept,
                       encodedExceptions,
                       &encodedExceptions_sz);
