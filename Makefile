@@ -1,7 +1,7 @@
 CC		= ccache g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
 # CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -march=nocona
-CFLAGS		+= -O2 -msse2 -fomit-frame-pointer -march=nocona
+CFLAGS		+= -O2 -g -msse2 -fomit-frame-pointer -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 WFLAGS		= -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal \

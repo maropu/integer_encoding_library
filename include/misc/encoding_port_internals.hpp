@@ -181,7 +181,7 @@ inline void ZMEMCPY128(void *dest) {
   __asm__ __volatile__(
     "pxor   %%xmm0, %%xmm0\n\t"
     "movdqu %%xmm0, %0\n\t"
-    :"=m" (dest[0]) ::"memory", "%xmm0");
+    :"=m" (d[0]) ::"memory", "%xmm0");
 }
 
 #else

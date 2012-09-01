@@ -60,8 +60,7 @@ ID  Name
 14  VSE-R
 15  VSEncodingRest
 16  VSEncodingBlocksHybrid
-17  VSEncodingSimple V1
-18  VSEncodingSimple V2
+17  VSEncodingSimple
 
 
 An input/output file format
@@ -104,8 +103,7 @@ VSEncodingBlocks                 915.36         4.95
 VSE-R                            167.21         4.55
 VSEncodingRest                   586.07         4.69
 VSEncodingBlocksHybrid           616.58         4.82
-VSEncodingSimple v1             1701.11         6.40
-VSEncodingSimple v2             1812.66         6.79
+VSEncodingSimple                1701.11         6.40
 
 , where 'mis' represents these average decompression speeds
 expressed in millions of integers per second, and 'bpi' does

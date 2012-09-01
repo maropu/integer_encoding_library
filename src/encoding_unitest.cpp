@@ -107,6 +107,12 @@ TEST(IntegerEncodingInternals, FactoryTests) {
     EXPECT_EQ(typeid(VSEncodingBlocks), typeid(*c));
   }
 
+  {
+    /* Encoder ID: E_VSESIMPLE */
+    EncodingPtr c = EncodingFactory::create(E_VSESIMPLE);
+    EXPECT_EQ(typeid(VSEncodingSimple), typeid(*c));
+  }
+
   EXPECT_THROW(EncodingFactory::create(E_INVALID),
                encoding_exception);
 }
@@ -221,7 +227,7 @@ INSTANTIATE_TEST_CASE_P(
                     E_VARIABLEBYTE, E_BINARYIPL,
                     E_SIMPLE9, E_SIMPLE16,
                     E_P4D, E_OPTP4D,
-                    E_VSEBLOCKS));
+                    E_VSEBLOCKS, E_VSESIMPLE));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

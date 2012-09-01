@@ -55,8 +55,7 @@ const std::string encoder_suffix[] = {
   ".vser",    /* VSE-R */
   ".vsert",   /* VSencodingRest */
   ".vseh",    /* VSEncodingBlocksHybrid */
-  ".vses1",   /* VSEncodingSimple V1 */
-  ".vses2"    /* VSEncodingSimple V2 */
+  ".vses",    /* VSEncodingSimple */
 };
 
 /* For position of data */
@@ -95,8 +94,7 @@ void show_ids() {
   fprintf(stderr, "14\tVSE-R\n");
   fprintf(stderr, "15\tVSEncodingRest\n");
   fprintf(stderr, "16\tVSEncodingBlocksHybrid\n");
-  fprintf(stderr, "17\tVSEncodingSimple V1\n");
-  fprintf(stderr, "18\tVSEncodingSimple V2\n");
+  fprintf(stderr, "17\tVSEncodingSimple\n");
   fprintf(stderr, "\n");
 
   exit(1);

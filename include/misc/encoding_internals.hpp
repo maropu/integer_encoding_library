@@ -117,7 +117,7 @@ inline void ZMEMCPY(void *dest, uint64_t n) {
     void operator= (const __Type__&)
 
 /* Num of coders */
-const int NUMCODERS = 19;
+const int NUMCODERS = 18;
 
 /* Encoder ID for policy */
 const int E_INVALID       = -1;
@@ -138,8 +138,7 @@ const int E_VSEBLOCKS     = 13;
 const int E_VSER          = 14;
 const int E_VSEREST       = 15;
 const int E_VSEHYB        = 16;
-const int E_VSESIMPLEV1   = 17;
-const int E_VSESIMPLEV2   = 18;
+const int E_VSESIMPLE     = 17;
 
 #define THROW_ENCODING_EXCEPTION(msg) \
     throw encoding_exception(msg, __FILE__, __func__, __LINE__)

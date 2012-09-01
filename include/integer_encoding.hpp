@@ -38,8 +38,7 @@
 #include <compress/policy/VSE-R.hpp>
 #include <compress/policy/VSEncodingRest.hpp>
 #include <compress/policy/VSEncodingBlocksHybrid.hpp>
-#include <compress/policy/VSEncodingSimpleV1.hpp>
-#include <compress/policy/VSEncodingSimpleV2.hpp>
+#include <compress/policy/VSEncodingSimple.hpp>
 
 namespace integer_encoding {
 

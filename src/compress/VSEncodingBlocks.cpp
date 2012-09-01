@@ -714,7 +714,7 @@ void VSEncodingBlocks::encodeVS(const uint32_t *in,
   vdp_->computePartition(logs, &parts,
                          VSEBLOCKS_LOGLEN + VSEBLOCKS_LOGLOG);
 
-  ASSERT(parts.size() > 0);
+  ASSERT(parts.size() > 1);
 
   uint32_t numBlocks = parts.size() - 1;
 

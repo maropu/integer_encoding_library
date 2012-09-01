@@ -117,6 +117,13 @@ EncodingPtr EncodingFactory::create(const int policy) {
               new internals::VSEncodingBlocks()));
       break;
     }
+
+    case E_VSESIMPLE: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::VSEncodingSimple()));
+      break;
+    }
   }
 
   THROW_ENCODING_EXCEPTION("Invalid value: policy");
