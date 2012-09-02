@@ -83,6 +83,7 @@ respectively) of these encoders are shown here. gov2 was used as
 a test set, which is one of TREC test collections in the Terabyte
 Track. This test was done on a machine with a Intel Core i5-2500
 (3.3GHz) processor and 8GiB of memory.
+(git tag benchmark-20120902):
 
 CoderName                           mis          bpi
 ---
@@ -103,7 +104,7 @@ VSEncodingBlocks                 915.36         4.95
 VSE-R                            167.21         4.55
 VSEncodingRest                   586.07         4.69
 VSEncodingBlocksHybrid           616.58         4.82
-VSEncodingSimple                1701.11         6.40
+VSEncodingSimple                1554.63         6.13
 
 , where 'mis' represents these average decompression speeds
 expressed in millions of integers per second, and 'bpi' does
