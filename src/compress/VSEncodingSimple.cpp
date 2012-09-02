@@ -34,1610 +34,4707 @@ const uint32_t VSESIMPLE_LEN = 1U << VSESIMPLE_LOGDESC;
 /* Unpacker: 0 */
 inline void VSESIMPLE_UNPACK0_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
+  ZMEMCPY128(*out);
   *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK0_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
+  ZMEMCPY128(*out);
   *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK0_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
+  ZMEMCPY128(*out);
   *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK0_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
+  ZMEMCPY128(*out);
   *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK0_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
   *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK0_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
   *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK0_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
   *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK0_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
   *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK0_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
   *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK0_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
   *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK0_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
   *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK0_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
   *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK0_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
 
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
-  ZMEMCPY128(out + 12);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
+  ZMEMCPY128(*out + 12);
   *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK0_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
-  ZMEMCPY128(out + 12);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
+  ZMEMCPY128(*out + 12);
   *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK0_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
 
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
-  ZMEMCPY128(out + 12);
-  ZMEMCPY128(out + 16);
-  ZMEMCPY128(out + 20);
-  ZMEMCPY128(out + 24);
-  ZMEMCPY128(out + 28);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
+  ZMEMCPY128(*out + 12);
+  ZMEMCPY128(*out + 16);
+  ZMEMCPY128(*out + 20);
+  ZMEMCPY128(*out + 24);
+  ZMEMCPY128(*out + 28);
   *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK0_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-  ZMEMCPY128(out);
-  ZMEMCPY128(out + 4);
-  ZMEMCPY128(out + 8);
-  ZMEMCPY128(out + 12);
-  ZMEMCPY128(out + 16);
-  ZMEMCPY128(out + 20);
-  ZMEMCPY128(out + 24);
-  ZMEMCPY128(out + 28);
-  ZMEMCPY128(out + 32);
-  ZMEMCPY128(out + 36);
-  ZMEMCPY128(out + 40);
-  ZMEMCPY128(out + 44);
-  ZMEMCPY128(out + 48);
-  ZMEMCPY128(out + 52);
-  ZMEMCPY128(out + 56);
-  ZMEMCPY128(out + 60);
+  ZMEMCPY128(*out);
+  ZMEMCPY128(*out + 4);
+  ZMEMCPY128(*out + 8);
+  ZMEMCPY128(*out + 12);
+  ZMEMCPY128(*out + 16);
+  ZMEMCPY128(*out + 20);
+  ZMEMCPY128(*out + 24);
+  ZMEMCPY128(*out + 28);
+  ZMEMCPY128(*out + 32);
+  ZMEMCPY128(*out + 36);
+  ZMEMCPY128(*out + 40);
+  ZMEMCPY128(*out + 44);
+  ZMEMCPY128(*out + 48);
+  ZMEMCPY128(*out + 52);
+  ZMEMCPY128(*out + 56);
+  ZMEMCPY128(*out + 60);
   *out += 64;
 }
 
 /* UNPACKER: 1 */
 inline void VSESIMPLE_UNPACK1_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK1_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK1_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 3;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK1_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK1_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
 
-  *out += 5;
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK1_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
 
-  *out += 6;
+  *in += 1, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK1_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
 
-  *out += 7;
+  *in += 1, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK1_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
 
-  *out += 8;
+  *in += 1, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK1_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
 
-  *out += 9;
+  *in += 1, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK1_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
 
-  *out += 10;
+  *in += 1, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK1_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
+  (*out)[10] = (val >> 21) & 0x01;
 
-  *out += 11;
+  *in += 1, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK1_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
+  (*out)[10] = (val >> 21) & 0x01;
+  (*out)[11] = (val >> 20) & 0x01;
 
-  *out += 12;
+  *in += 1, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK1_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
+  (*out)[10] = (val >> 21) & 0x01;
+  (*out)[11] = (val >> 20) & 0x01;
+  (*out)[12] = (val >> 19) & 0x01;
+  (*out)[13] = (val >> 18) & 0x01;
 
-  *out += 14;
+  *in += 1, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK1_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
+  (*out)[10] = (val >> 21) & 0x01;
+  (*out)[11] = (val >> 20) & 0x01;
+  (*out)[12] = (val >> 19) & 0x01;
+  (*out)[13] = (val >> 18) & 0x01;
+  (*out)[14] = (val >> 17) & 0x01;
+  (*out)[15] = (val >> 16) & 0x01;
 
-  *out += 16;
+  *in += 1, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK1_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 31;
+  (*out)[1] = (val >> 30) & 0x01;
+  (*out)[2] = (val >> 29) & 0x01;
+  (*out)[3] = (val >> 28) & 0x01;
+  (*out)[4] = (val >> 27) & 0x01;
+  (*out)[5] = (val >> 26) & 0x01;
+  (*out)[6] = (val >> 25) & 0x01;
+  (*out)[7] = (val >> 24) & 0x01;
+  (*out)[8] = (val >> 23) & 0x01;
+  (*out)[9] = (val >> 22) & 0x01;
+  (*out)[10] = (val >> 21) & 0x01;
+  (*out)[11] = (val >> 20) & 0x01;
+  (*out)[12] = (val >> 19) & 0x01;
+  (*out)[13] = (val >> 18) & 0x01;
+  (*out)[14] = (val >> 17) & 0x01;
+  (*out)[15] = (val >> 16) & 0x01;
+  (*out)[16] = (val >> 15) & 0x01;
+  (*out)[17] = (val >> 14) & 0x01;
+  (*out)[18] = (val >> 13) & 0x01;
+  (*out)[19] = (val >> 12) & 0x01;
+  (*out)[20] = (val >> 11) & 0x01;
+  (*out)[21] = (val >> 10) & 0x01;
+  (*out)[22] = (val >> 9) & 0x01;
+  (*out)[23] = (val >> 8) & 0x01;
+  (*out)[24] = (val >> 7) & 0x01;
+  (*out)[25] = (val >> 6) & 0x01;
+  (*out)[26] = (val >> 5) & 0x01;
+  (*out)[27] = (val >> 4) & 0x01;
+  (*out)[28] = (val >> 3) & 0x01;
+  (*out)[29] = (val >> 2) & 0x01;
+  (*out)[30] = (val >> 1) & 0x01;
+  (*out)[31] = val & 0x01;
 
-
-  *out += 32;
+  *in += 1, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK1_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 31;
+    (*out)[1] = (val >> 30) & 0x01;
+    (*out)[2] = (val >> 29) & 0x01;
+    (*out)[3] = (val >> 28) & 0x01;
+    (*out)[4] = (val >> 27) & 0x01;
+    (*out)[5] = (val >> 26) & 0x01;
+    (*out)[6] = (val >> 25) & 0x01;
+    (*out)[7] = (val >> 24) & 0x01;
+    (*out)[8] = (val >> 23) & 0x01;
+    (*out)[9] = (val >> 22) & 0x01;
+    (*out)[10] = (val >> 21) & 0x01;
+    (*out)[11] = (val >> 20) & 0x01;
+    (*out)[12] = (val >> 19) & 0x01;
+    (*out)[13] = (val >> 18) & 0x01;
+    (*out)[14] = (val >> 17) & 0x01;
+    (*out)[15] = (val >> 16) & 0x01;
+    (*out)[16] = (val >> 15) & 0x01;
+    (*out)[17] = (val >> 14) & 0x01;
+    (*out)[18] = (val >> 13) & 0x01;
+    (*out)[19] = (val >> 12) & 0x01;
+    (*out)[20] = (val >> 11) & 0x01;
+    (*out)[21] = (val >> 10) & 0x01;
+    (*out)[22] = (val >> 9) & 0x01;
+    (*out)[23] = (val >> 8) & 0x01;
+    (*out)[24] = (val >> 7) & 0x01;
+    (*out)[25] = (val >> 6) & 0x01;
+    (*out)[26] = (val >> 5) & 0x01;
+    (*out)[27] = (val >> 4) & 0x01;
+    (*out)[28] = (val >> 3) & 0x01;
+    (*out)[29] = (val >> 2) & 0x01;
+    (*out)[30] = (val >> 1) & 0x01;
+    (*out)[31] = val & 0x01;
+  }
 }
 
 /* UNPACKER: 2 */
 inline void VSESIMPLE_UNPACK2_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 1;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK2_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK2_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK2_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK2_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
 
-  *out += 5;
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK2_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
 
-  *out += 6;
+  *in += 1, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK2_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
 
-  *out += 7;
+  *in += 1, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK2_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
 
-  *out += 8;
+  *in += 1, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK2_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
 
-  *out += 9;
+  *in += 1, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK2_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
+  (*out)[9] = (val >> 12) & 0x03;
 
-  *out += 10;
+  *in += 1, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK2_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
+  (*out)[9] = (val >> 12) & 0x03;
+  (*out)[10] = (val >> 10) & 0x03;
 
-  *out += 11;
+  *in += 1, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK2_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
+  (*out)[9] = (val >> 12) & 0x03;
+  (*out)[10] = (val >> 10) & 0x03;
+  (*out)[11] = (val >> 8) & 0x03;
 
-  *out += 12;
+  *in += 1, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK2_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
+  (*out)[9] = (val >> 12) & 0x03;
+  (*out)[10] = (val >> 10) & 0x03;
+  (*out)[11] = (val >> 8) & 0x03;
+  (*out)[12] = (val >> 6) & 0x03;
+  (*out)[13] = (val >> 4) & 0x03;
 
-  *out += 14;
+  *in += 1, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK2_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 30;
+  (*out)[1] = (val >> 28) & 0x03;
+  (*out)[2] = (val >> 26) & 0x03;
+  (*out)[3] = (val >> 24) & 0x03;
+  (*out)[4] = (val >> 22) & 0x03;
+  (*out)[5] = (val >> 20) & 0x03;
+  (*out)[6] = (val >> 18) & 0x03;
+  (*out)[7] = (val >> 16) & 0x03;
+  (*out)[8] = (val >> 14) & 0x03;
+  (*out)[9] = (val >> 12) & 0x03;
+  (*out)[10] = (val >> 10) & 0x03;
+  (*out)[11] = (val >> 8) & 0x03;
+  (*out)[12] = (val >> 6) & 0x03;
+  (*out)[13] = (val >> 4) & 0x03;
+  (*out)[14] = (val >> 2) & 0x03;
+  (*out)[15] = val & 0x03;
 
-  *out += 16;
+  *in += 1, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK2_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-
-  *out += 32;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 30;
+    (*out)[1] = (val >> 28) & 0x03;
+    (*out)[2] = (val >> 26) & 0x03;
+    (*out)[3] = (val >> 24) & 0x03;
+    (*out)[4] = (val >> 22) & 0x03;
+    (*out)[5] = (val >> 20) & 0x03;
+    (*out)[6] = (val >> 18) & 0x03;
+    (*out)[7] = (val >> 16) & 0x03;
+    (*out)[8] = (val >> 14) & 0x03;
+    (*out)[9] = (val >> 12) & 0x03;
+    (*out)[10] = (val >> 10) & 0x03;
+    (*out)[11] = (val >> 8) & 0x03;
+    (*out)[12] = (val >> 6) & 0x03;
+    (*out)[13] = (val >> 4) & 0x03;
+    (*out)[14] = (val >> 2) & 0x03;
+    (*out)[15] = val & 0x03;
+  }
 }
 
 inline void VSESIMPLE_UNPACK2_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 30;
+    (*out)[1] = (val >> 28) & 0x03;
+    (*out)[2] = (val >> 26) & 0x03;
+    (*out)[3] = (val >> 24) & 0x03;
+    (*out)[4] = (val >> 22) & 0x03;
+    (*out)[5] = (val >> 20) & 0x03;
+    (*out)[6] = (val >> 18) & 0x03;
+    (*out)[7] = (val >> 16) & 0x03;
+    (*out)[8] = (val >> 14) & 0x03;
+    (*out)[9] = (val >> 12) & 0x03;
+    (*out)[10] = (val >> 10) & 0x03;
+    (*out)[11] = (val >> 8) & 0x03;
+    (*out)[12] = (val >> 6) & 0x03;
+    (*out)[13] = (val >> 4) & 0x03;
+    (*out)[14] = (val >> 2) & 0x03;
+    (*out)[15] = val & 0x03;
+  }
 }
 
 /* UNPACKER: 3 */
 inline void VSESIMPLE_UNPACK3_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK3_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK3_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK3_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK3_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
 
-  *out += 5;
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK3_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
 
-  *out += 6;
+  *in += 1, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK3_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
 
-  *out += 7;
+  *in += 1, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK3_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
 
-  *out += 8;
+  *in += 1, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK3_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
 
-  *out += 9;
+  *in += 1, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK3_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
 
-  *out += 10;
+  *in += 1, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK3_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
+  (*out)[10] = (val << 1) & 0x07;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[10] |= val >> 31;
+
+  *in += 2, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK3_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
+  (*out)[10] = (val << 1) & 0x07;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[10] |= val >> 31;
+  (*out)[11] = (val >> 28) & 0x07;
+
+  *in += 2, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK3_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
+  (*out)[10] = (val << 1) & 0x07;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[10] |= val >> 31;
+  (*out)[11] = (val >> 28) & 0x07;
+  (*out)[12] = (val >> 25) & 0x07;
+  (*out)[13] = (val >> 22) & 0x07;
+
+  *in += 2, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK3_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
+  (*out)[10] = (val << 1) & 0x07;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[10] |= val >> 31;
+  (*out)[11] = (val >> 28) & 0x07;
+  (*out)[12] = (val >> 25) & 0x07;
+  (*out)[13] = (val >> 22) & 0x07;
+  (*out)[14] = (val >> 19) & 0x07;
+  (*out)[15] = (val >> 16) & 0x07;
+
+  *in += 2, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK3_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 29;
+  (*out)[1] = (val >> 26) & 0x07;
+  (*out)[2] = (val >> 23) & 0x07;
+  (*out)[3] = (val >> 20) & 0x07;
+  (*out)[4] = (val >> 17) & 0x07;
+  (*out)[5] = (val >> 14) & 0x07;
+  (*out)[6] = (val >> 11) & 0x07;
+  (*out)[7] = (val >> 8) & 0x07;
+  (*out)[8] = (val >> 5) & 0x07;
+  (*out)[9] = (val >> 2) & 0x07;
+  (*out)[10] = (val << 1) & 0x07;
 
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[10] |= val >> 31;
+  (*out)[11] = (val >> 28) & 0x07;
+  (*out)[12] = (val >> 25) & 0x07;
+  (*out)[13] = (val >> 22) & 0x07;
+  (*out)[14] = (val >> 19) & 0x07;
+  (*out)[15] = (val >> 16) & 0x07;
+  (*out)[16] = (val >> 13) & 0x07;
+  (*out)[17] = (val >> 10) & 0x07;
+  (*out)[18] = (val >> 7) & 0x07;
+  (*out)[19] = (val >> 4) & 0x07;
+  (*out)[20] = (val >> 1) & 0x07;
+  (*out)[21] = (val << 2) & 0x07;
 
-  *out += 32;
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[21] |= val >> 30;
+  (*out)[22] = (val >> 27) & 0x07;
+  (*out)[23] = (val >> 24) & 0x07;
+  (*out)[24] = (val >> 21) & 0x07;
+  (*out)[25] = (val >> 18) & 0x07;
+  (*out)[26] = (val >> 15) & 0x07;
+  (*out)[27] = (val >> 12) & 0x07;
+  (*out)[28] = (val >> 9) & 0x07;
+  (*out)[29] = (val >> 6) & 0x07;
+  (*out)[30] = (val >> 3) & 0x07;
+  (*out)[31] = val & 0x07;
+
+  *in += 3, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK3_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 3, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 29;
+    (*out)[1] = (val >> 26) & 0x07;
+    (*out)[2] = (val >> 23) & 0x07;
+    (*out)[3] = (val >> 20) & 0x07;
+    (*out)[4] = (val >> 17) & 0x07;
+    (*out)[5] = (val >> 14) & 0x07;
+    (*out)[6] = (val >> 11) & 0x07;
+    (*out)[7] = (val >> 8) & 0x07;
+    (*out)[8] = (val >> 5) & 0x07;
+    (*out)[9] = (val >> 2) & 0x07;
+    (*out)[10] = (val << 1) & 0x07;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[10] |= val >> 31;
+    (*out)[11] = (val >> 28) & 0x07;
+    (*out)[12] = (val >> 25) & 0x07;
+    (*out)[13] = (val >> 22) & 0x07;
+    (*out)[14] = (val >> 19) & 0x07;
+    (*out)[15] = (val >> 16) & 0x07;
+    (*out)[16] = (val >> 13) & 0x07;
+    (*out)[17] = (val >> 10) & 0x07;
+    (*out)[18] = (val >> 7) & 0x07;
+    (*out)[19] = (val >> 4) & 0x07;
+    (*out)[20] = (val >> 1) & 0x07;
+    (*out)[21] = (val << 2) & 0x07;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[21] |= val >> 30;
+    (*out)[22] = (val >> 27) & 0x07;
+    (*out)[23] = (val >> 24) & 0x07;
+    (*out)[24] = (val >> 21) & 0x07;
+    (*out)[25] = (val >> 18) & 0x07;
+    (*out)[26] = (val >> 15) & 0x07;
+    (*out)[27] = (val >> 12) & 0x07;
+    (*out)[28] = (val >> 9) & 0x07;
+    (*out)[29] = (val >> 6) & 0x07;
+    (*out)[30] = (val >> 3) & 0x07;
+    (*out)[31] = val & 0x07;
+  }
 }
 
 /* UNPACKER: 4 */
 inline void VSESIMPLE_UNPACK4_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK4_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK4_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK4_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK4_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
 
-  *out += 5;
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK4_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
 
-  *out += 6;
+  *in += 1, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK4_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
 
-  *out += 7;
+  *in += 1, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK4_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 8;
+  *in += 1, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK4_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[8] = val >> 28;
+
+  *in += 2, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK4_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[8] = val >> 28;
+  (*out)[9] = (val >> 24) & 0x0f;
+
+  *in += 2, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK4_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[8] = val >> 28;
+  (*out)[9] = (val >> 24) & 0x0f;
+  (*out)[10] = (val >> 20) & 0x0f;
+
+  *in += 2, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK4_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[8] = val >> 28;
+  (*out)[9] = (val >> 24) & 0x0f;
+  (*out)[10] = (val >> 20) & 0x0f;
+  (*out)[11] = (val >> 16) & 0x0f;
+
+  *in += 2, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK4_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 28;
+  (*out)[1] = (val >> 24) & 0x0f;
+  (*out)[2] = (val >> 20) & 0x0f;
+  (*out)[3] = (val >> 16) & 0x0f;
+  (*out)[4] = (val >> 12) & 0x0f;
+  (*out)[5] = (val >> 8) & 0x0f;
+  (*out)[6] = (val >> 4) & 0x0f;
+  (*out)[7] = val  & 0x0f;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[8] = val >> 28;
+  (*out)[9] = (val >> 24) & 0x0f;
+  (*out)[10] = (val >> 20) & 0x0f;
+  (*out)[11] = (val >> 16) & 0x0f;
+  (*out)[12] = (val >> 12) & 0x0f;
+  (*out)[13] = (val >> 8) & 0x0f;
+
+  *in += 2, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK4_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 16;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 28;
+    (*out)[1] = (val >> 24) & 0x0f;
+    (*out)[2] = (val >> 20) & 0x0f;
+    (*out)[3] = (val >> 16) & 0x0f;
+    (*out)[4] = (val >> 12) & 0x0f;
+    (*out)[5] = (val >> 8) & 0x0f;
+    (*out)[6] = (val >> 4) & 0x0f;
+    (*out)[7] = val  & 0x0f;
+  }
 }
 
 inline void VSESIMPLE_UNPACK4_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-
-  *out += 32;
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 28;
+    (*out)[1] = (val >> 24) & 0x0f;
+    (*out)[2] = (val >> 20) & 0x0f;
+    (*out)[3] = (val >> 16) & 0x0f;
+    (*out)[4] = (val >> 12) & 0x0f;
+    (*out)[5] = (val >> 8) & 0x0f;
+    (*out)[6] = (val >> 4) & 0x0f;
+    (*out)[7] = val  & 0x0f;
+  }
 }
 
 inline void VSESIMPLE_UNPACK4_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 8;
+          i++, *in += 1, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 28;
+    (*out)[1] = (val >> 24) & 0x0f;
+    (*out)[2] = (val >> 20) & 0x0f;
+    (*out)[3] = (val >> 16) & 0x0f;
+    (*out)[4] = (val >> 12) & 0x0f;
+    (*out)[5] = (val >> 8) & 0x0f;
+    (*out)[6] = (val >> 4) & 0x0f;
+    (*out)[7] = val  & 0x0f;
+  }
 }
 
 /* UNPACKER: 5 */
 inline void VSESIMPLE_UNPACK5_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 1;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK5_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK5_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK5_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK5_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 5;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK5_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
 
-  *out += 6;
+  *in += 1, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK5_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+
+  *in += 2, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK5_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+
+  *in += 2, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK5_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+
+  *in += 2, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK5_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+
+  *in += 2, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK5_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+  (*out)[10] = (val >> 9) & 0x1f;
+
+  *in += 2, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK5_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+  (*out)[10] = (val >> 9) & 0x1f;
+  (*out)[11] = (val >> 4) & 0x1f;
+
+  *in += 2, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK5_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+  (*out)[10] = (val >> 9) & 0x1f;
+  (*out)[11] = (val >> 4) & 0x1f;
+  (*out)[12] = (val << 1) & 0x1f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[12] |= val >> 31;
+  (*out)[13] = (val >> 26) & 0x1f;
+
+  *in += 3, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK5_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+  (*out)[10] = (val >> 9) & 0x1f;
+  (*out)[11] = (val >> 4) & 0x1f;
+  (*out)[12] = (val << 1) & 0x1f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[12] |= val >> 31;
+  (*out)[13] = (val >> 26) & 0x1f;
+  (*out)[14] = (val >> 21) & 0x1f;
+  (*out)[15] = (val >> 16) & 0x1f;
+
+  *in += 3, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK5_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 27;
+  (*out)[1] = (val >> 22) & 0x1f;
+  (*out)[2] = (val >> 17) & 0x1f;
+  (*out)[3] = (val >> 12) & 0x1f;
+  (*out)[4] = (val >> 7) & 0x1f;
+  (*out)[5] = (val >> 2) & 0x1f;
+  (*out)[6] = (val << 3) & 0x1f;
 
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[6] |= val >> 29;
+  (*out)[7] = (val >> 24) & 0x1f;
+  (*out)[8] = (val >> 19) & 0x1f;
+  (*out)[9] = (val >> 14) & 0x1f;
+  (*out)[10] = (val >> 9) & 0x1f;
+  (*out)[11] = (val >> 4) & 0x1f;
+  (*out)[12] = (val << 1) & 0x1f;
 
-  *out += 32;
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[12] |= val >> 31;
+  (*out)[13] = (val >> 26) & 0x1f;
+  (*out)[14] = (val >> 21) & 0x1f;
+  (*out)[15] = (val >> 16) & 0x1f;
+  (*out)[16] = (val >> 11) & 0x1f;
+  (*out)[17] = (val >> 6) & 0x1f;
+  (*out)[18] = (val >> 1) & 0x1f;
+  (*out)[19] = (val << 4) & 0x1f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[19] |= val >> 28;
+  (*out)[20] = (val >> 23) & 0x1f;
+  (*out)[21] = (val >> 18) & 0x1f;
+  (*out)[22] = (val >> 13) & 0x1f;
+  (*out)[23] = (val >> 8) & 0x1f;
+  (*out)[24] = (val >> 3) & 0x1f;
+  (*out)[25] = (val << 2) & 0x1f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[25] |= val >> 30;
+  (*out)[26] = (val >> 25) & 0x1f;
+  (*out)[27] = (val >> 20) & 0x1f;
+  (*out)[28] = (val >> 15) & 0x1f;
+  (*out)[29] = (val >> 10) & 0x1f;
+  (*out)[30] = (val >> 5) & 0x1f;
+  (*out)[31] = val & 0x1f;
+
+  *in += 5, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK5_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 5, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 27;
+    (*out)[1] = (val >> 22) & 0x1f;
+    (*out)[2] = (val >> 17) & 0x1f;
+    (*out)[3] = (val >> 12) & 0x1f;
+    (*out)[4] = (val >> 7) & 0x1f;
+    (*out)[5] = (val >> 2) & 0x1f;
+    (*out)[6] = (val << 3) & 0x1f;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[6] |= val >> 29;
+    (*out)[7] = (val >> 24) & 0x1f;
+    (*out)[8] = (val >> 19) & 0x1f;
+    (*out)[9] = (val >> 14) & 0x1f;
+    (*out)[10] = (val >> 9) & 0x1f;
+    (*out)[11] = (val >> 4) & 0x1f;
+    (*out)[12] = (val << 1) & 0x1f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[12] |= val >> 31;
+    (*out)[13] = (val >> 26) & 0x1f;
+    (*out)[14] = (val >> 21) & 0x1f;
+    (*out)[15] = (val >> 16) & 0x1f;
+    (*out)[16] = (val >> 11) & 0x1f;
+    (*out)[17] = (val >> 6) & 0x1f;
+    (*out)[18] = (val >> 1) & 0x1f;
+    (*out)[19] = (val << 4) & 0x1f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[19] |= val >> 28;
+    (*out)[20] = (val >> 23) & 0x1f;
+    (*out)[21] = (val >> 18) & 0x1f;
+    (*out)[22] = (val >> 13) & 0x1f;
+    (*out)[23] = (val >> 8) & 0x1f;
+    (*out)[24] = (val >> 3) & 0x1f;
+    (*out)[25] = (val << 2) & 0x1f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[25] |= val >> 30;
+    (*out)[26] = (val >> 25) & 0x1f;
+    (*out)[27] = (val >> 20) & 0x1f;
+    (*out)[28] = (val >> 15) & 0x1f;
+    (*out)[29] = (val >> 10) & 0x1f;
+    (*out)[30] = (val >> 5) & 0x1f;
+    (*out)[31] = val & 0x1f;
+  }
 }
 
 /* UNPACKER: 6 */
 inline void VSESIMPLE_UNPACK6_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK6_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK6_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK6_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK6_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
 
-  *out += 5;
+  *in += 1, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK6_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+
+  *in += 2, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK6_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+
+  *in += 2, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK6_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+
+  *in += 2, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK6_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+
+  *in += 2, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK6_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+  (*out)[9] = (val >> 4) & 0x3f;
+
+  *in += 2, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK6_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+  (*out)[9] = (val >> 4) & 0x3f;
+  (*out)[10] = (val << 2) & 0x3f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[10] |= val >> 30;
+
+  *in += 3, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK6_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+  (*out)[9] = (val >> 4) & 0x3f;
+  (*out)[10] = (val << 2) & 0x3f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[10] |= val >> 30;
+  (*out)[11] = (val >> 24) & 0x3f;
+
+  *in += 3, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK6_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+  (*out)[9] = (val >> 4) & 0x3f;
+  (*out)[10] = (val << 2) & 0x3f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[10] |= val >> 30;
+  (*out)[11] = (val >> 24) & 0x3f;
+  (*out)[12] = (val >> 18) & 0x3f;
+  (*out)[13] = (val >> 12) & 0x3f;
+
+  *in += 3, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK6_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 26;
+  (*out)[1] = (val >> 20) & 0x3f;
+  (*out)[2] = (val >> 14) & 0x3f;
+  (*out)[3] = (val >> 8) & 0x3f;
+  (*out)[4] = (val >> 2) & 0x3f;
+  (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[5] |= val >> 28;
+  (*out)[6] = (val >> 22) & 0x3f;
+  (*out)[7] = (val >> 16) & 0x3f;
+  (*out)[8] = (val >> 10) & 0x3f;
+  (*out)[9] = (val >> 4) & 0x3f;
+  (*out)[10] = (val << 2) & 0x3f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[10] |= val >> 30;
+  (*out)[11] = (val >> 24) & 0x3f;
+  (*out)[12] = (val >> 18) & 0x3f;
+  (*out)[13] = (val >> 12) & 0x3f;
+  (*out)[14] = (val >> 6) & 0x3f;
+  (*out)[15] = val & 0x3f;
+
+  *in += 3, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK6_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 3, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 26;
+    (*out)[1] = (val >> 20) & 0x3f;
+    (*out)[2] = (val >> 14) & 0x3f;
+    (*out)[3] = (val >> 8) & 0x3f;
+    (*out)[4] = (val >> 2) & 0x3f;
+    (*out)[5] = (val << 4) & 0x3f;
 
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[5] |= val >> 28;
+    (*out)[6] = (val >> 22) & 0x3f;
+    (*out)[7] = (val >> 16) & 0x3f;
+    (*out)[8] = (val >> 10) & 0x3f;
+    (*out)[9] = (val >> 4) & 0x3f;
+    (*out)[10] = (val << 2) & 0x3f;
 
-  *out += 32;
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[10] |= val >> 30;
+    (*out)[11] = (val >> 24) & 0x3f;
+    (*out)[12] = (val >> 18) & 0x3f;
+    (*out)[13] = (val >> 12) & 0x3f;
+    (*out)[14] = (val >> 6) & 0x3f;
+    (*out)[15] = val & 0x3f;
+  }
 }
 
 inline void VSESIMPLE_UNPACK6_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 3, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 26;
+    (*out)[1] = (val >> 20) & 0x3f;
+    (*out)[2] = (val >> 14) & 0x3f;
+    (*out)[3] = (val >> 8) & 0x3f;
+    (*out)[4] = (val >> 2) & 0x3f;
+    (*out)[5] = (val << 4) & 0x3f;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[5] |= val >> 28;
+    (*out)[6] = (val >> 22) & 0x3f;
+    (*out)[7] = (val >> 16) & 0x3f;
+    (*out)[8] = (val >> 10) & 0x3f;
+    (*out)[9] = (val >> 4) & 0x3f;
+    (*out)[10] = (val << 2) & 0x3f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[10] |= val >> 30;
+    (*out)[11] = (val >> 24) & 0x3f;
+    (*out)[12] = (val >> 18) & 0x3f;
+    (*out)[13] = (val >> 12) & 0x3f;
+    (*out)[14] = (val >> 6) & 0x3f;
+    (*out)[15] = val & 0x3f;
+  }
 }
 
 /* UNPACKER: 7 */
 inline void VSESIMPLE_UNPACK7_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK7_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK7_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK7_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK7_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK7_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+
+  *in += 2, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK7_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+
+  *in += 2, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK7_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+
+  *in += 2, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK7_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+
+  *in += 2, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK7_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+
+  *in += 3, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK7_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+  (*out)[10] = (val >> 19) & 0x7f;
+
+  *in += 3, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK7_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+  (*out)[10] = (val >> 19) & 0x7f;
+  (*out)[11] = (val >> 12) & 0x7f;
+
+  *in += 3, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK7_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+  (*out)[10] = (val >> 19) & 0x7f;
+  (*out)[11] = (val >> 12) & 0x7f;
+  (*out)[12] = (val >> 5) & 0x7f;
+  (*out)[13] = (val << 2) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[13] |= val >> 30;
+
+  *in += 4, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK7_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+  (*out)[10] = (val >> 19) & 0x7f;
+  (*out)[11] = (val >> 12) & 0x7f;
+  (*out)[12] = (val >> 5) & 0x7f;
+  (*out)[13] = (val << 2) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[13] |= val >> 30;
+  (*out)[14] = (val >> 23) & 0x7f;
+  (*out)[15] = (val >> 16) & 0x7f;
+
+  *in += 4, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK7_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 25;
+  (*out)[1] = (val >> 18) & 0x7f;
+  (*out)[2] = (val >> 11) & 0x7f;
+  (*out)[3] = (val >> 4) & 0x7f;
+  (*out)[4] = (val << 3) & 0x7f;
 
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] |= val >> 29;
+  (*out)[5] = (val >> 22) & 0x7f;
+  (*out)[6] = (val >> 15) & 0x7f;
+  (*out)[7] = (val >> 8) & 0x7f;
+  (*out)[8] = (val >> 1) & 0x7f;
+  (*out)[9] = (val << 6) & 0x7f;
 
-  *out += 32;
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[9] |= val >> 26;
+  (*out)[10] = (val >> 19) & 0x7f;
+  (*out)[11] = (val >> 12) & 0x7f;
+  (*out)[12] = (val >> 5) & 0x7f;
+  (*out)[13] = (val << 2) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[13] |= val >> 30;
+  (*out)[14] = (val >> 23) & 0x7f;
+  (*out)[15] = (val >> 16) & 0x7f;
+  (*out)[16] = (val >> 9) & 0x7f;
+  (*out)[17] = (val >> 2) & 0x7f;
+  (*out)[18] = (val << 5) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[18] |= val >> 27;
+  (*out)[19] = (val >> 20) & 0x7f;
+  (*out)[20] = (val >> 13) & 0x7f;
+  (*out)[21] = (val >> 6) & 0x7f;
+  (*out)[22] = (val << 1) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[22] |= val >> 31;
+  (*out)[23] = (val >> 24) & 0x7f;
+  (*out)[24] = (val >> 17) & 0x7f;
+  (*out)[25] = (val >> 10) & 0x7f;
+  (*out)[26] = (val >> 3) & 0x7f;
+  (*out)[27] = (val << 4) & 0x7f;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[27] |= val >> 28;
+  (*out)[28] = (val >> 21) & 0x7f;
+  (*out)[29] = (val >> 14) & 0x7f;
+  (*out)[30] = (val >> 7) & 0x7f;
+  (*out)[31] = val & 0x7f;
+
+  *in += 7, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK7_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 7, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 25;
+    (*out)[1] = (val >> 18) & 0x7f;
+    (*out)[2] = (val >> 11) & 0x7f;
+    (*out)[3] = (val >> 4) & 0x7f;
+    (*out)[4] = (val << 3) & 0x7f;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[4] |= val >> 29;
+    (*out)[5] = (val >> 22) & 0x7f;
+    (*out)[6] = (val >> 15) & 0x7f;
+    (*out)[7] = (val >> 8) & 0x7f;
+    (*out)[8] = (val >> 1) & 0x7f;
+    (*out)[9] = (val << 6) & 0x7f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[9] |= val >> 26;
+    (*out)[10] = (val >> 19) & 0x7f;
+    (*out)[11] = (val >> 12) & 0x7f;
+    (*out)[12] = (val >> 5) & 0x7f;
+    (*out)[13] = (val << 2) & 0x7f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[13] |= val >> 30;
+    (*out)[14] = (val >> 23) & 0x7f;
+    (*out)[15] = (val >> 16) & 0x7f;
+    (*out)[16] = (val >> 9) & 0x7f;
+    (*out)[17] = (val >> 2) & 0x7f;
+    (*out)[18] = (val << 5) & 0x7f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[18] |= val >> 27;
+    (*out)[19] = (val >> 20) & 0x7f;
+    (*out)[20] = (val >> 13) & 0x7f;
+    (*out)[21] = (val >> 6) & 0x7f;
+    (*out)[22] = (val << 1) & 0x7f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 5);
+    (*out)[22] |= val >> 31;
+    (*out)[23] = (val >> 24) & 0x7f;
+    (*out)[24] = (val >> 17) & 0x7f;
+    (*out)[25] = (val >> 10) & 0x7f;
+    (*out)[26] = (val >> 3) & 0x7f;
+    (*out)[27] = (val << 4) & 0x7f;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 6);
+    (*out)[27] |= val >> 28;
+    (*out)[28] = (val >> 21) & 0x7f;
+    (*out)[29] = (val >> 14) & 0x7f;
+    (*out)[30] = (val >> 7) & 0x7f;
+    (*out)[31] = val & 0x7f;
+  }
 }
 
 /* UNPACKER: 8 */
 inline void VSESIMPLE_UNPACK8_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK8_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK8_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK8_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
+  (*out)[3] = val & 0xff;
 
-  *out += 4;
+  *in += 1, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK8_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
+  (*out)[3] = val & 0xff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] = val >> 24;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK8_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 6;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
+  (*out)[3] = val & 0xff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] = val >> 24;
+  (*out)[5] = (val >> 16) & 0xff;
+
+  *in += 2, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK8_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
 
-  *out += 7;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
+  (*out)[3] = val & 0xff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[4] = val >> 24;
+  (*out)[5] = (val >> 16) & 0xff;
+  (*out)[6] = (val >> 8) & 0xff;
+
+  *in += 2, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK8_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
-
-  *out += 8;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK8_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 
-  *out += 9;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK8_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 
-  *out += 10;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK8_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 
-  *out += 11;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+  (*out)[2] = (val >> 8) & 0xff;
+
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK8_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 12;
+  for (uint32_t i = 0; i < 3;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK8_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 3;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 
-  *out += 14;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 24;
+  (*out)[1] = (val >> 16) & 0xff;
+
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK8_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 16;
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK8_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-
-  *out += 32;
+  for (uint32_t i = 0; i < 8;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK8_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 16;
+          i++, *in += 1, *out += 4) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 24;
+    (*out)[1] = (val >> 16) & 0xff;
+    (*out)[2] = (val >> 8) & 0xff;
+    (*out)[3] = val & 0xff;
+  }
 }
 
 /* UNPACKER: 9 */
 inline void VSESIMPLE_UNPACK9_1(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK9_2(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK9_3(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK9_4(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 4;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+
+  *in += 2, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK9_5(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK9_6(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+
+  *in += 2, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK9_7(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+
+  *in += 2, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK9_8(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+
+  *in += 3, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK9_9(uint32_t ** restrict out,
                                 const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+
+  *in += 3, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK9_10(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+
+  *in += 3, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK9_11(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+  (*out)[10] = (val << 3) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[10] |= val >> 29;
+
+  *in += 4, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK9_12(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+  (*out)[10] = (val << 3) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[10] |= val >> 29;
+  (*out)[11] = (val >> 20) & 0x01ff;
+
+  *in += 4, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK9_14(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+  (*out)[10] = (val << 3) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[10] |= val >> 29;
+  (*out)[11] = (val >> 20) & 0x01ff;
+  (*out)[12] = (val >> 11) & 0x01ff;
+  (*out)[13] = (val >> 2) & 0x01ff;
+
+  *in += 4, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK9_16(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+  (*out)[10] = (val << 3) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[10] |= val >> 29;
+  (*out)[11] = (val >> 20) & 0x01ff;
+  (*out)[12] = (val >> 11) & 0x01ff;
+  (*out)[13] = (val >> 2) & 0x01ff;
+  (*out)[14] = (val << 7) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[14] |= val >> 25;
+  (*out)[15] = (val >> 16) & 0x01ff;
+
+  *in += 5, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK9_32(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 23;
+  (*out)[1] = (val >> 14) & 0x01ff;
+  (*out)[2] = (val >> 5) & 0x01ff;
+  (*out)[3] = (val << 4) & 0x01ff;
 
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 28;
+  (*out)[4] = (val >> 19) & 0x01ff;
+  (*out)[5] = (val >> 10) & 0x01ff;
+  (*out)[6] = (val >> 1) & 0x01ff;
+  (*out)[7] = (val << 8) & 0x01ff;
 
-  *out += 32;
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[7] |= val >> 24;
+  (*out)[8] = (val >> 15) & 0x01ff;
+  (*out)[9] = (val >> 6) & 0x01ff;
+  (*out)[10] = (val << 3) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[10] |= val >> 29;
+  (*out)[11] = (val >> 20) & 0x01ff;
+  (*out)[12] = (val >> 11) & 0x01ff;
+  (*out)[13] = (val >> 2) & 0x01ff;
+  (*out)[14] = (val << 7) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[14] |= val >> 25;
+  (*out)[15] = (val >> 16) & 0x01ff;
+  (*out)[16] = (val >> 7) & 0x01ff;
+  (*out)[17] = (val << 2) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[17] |= val >> 30;
+  (*out)[18] = (val >> 21) & 0x01ff;
+  (*out)[19] = (val >> 12) & 0x01ff;
+  (*out)[20] = (val >> 3) & 0x01ff;
+  (*out)[21] = (val << 6) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[21] |= val >> 26;
+  (*out)[22] = (val >> 17) & 0x01ff;
+  (*out)[23] = (val >> 8) & 0x01ff;
+  (*out)[24] = (val << 1) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 7);
+  (*out)[24] |= val >> 31;
+  (*out)[25] = (val >> 22) & 0x01ff;
+  (*out)[26] = (val >> 13) & 0x01ff;
+  (*out)[27] = (val >> 4) & 0x01ff;
+  (*out)[28] = (val << 5) & 0x01ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 8);
+  (*out)[28] |= val >> 27;
+  (*out)[29] = (val >> 18) & 0x01ff;
+  (*out)[30] = (val >> 9) & 0x01ff;
+  (*out)[31] = val & 0x01ff;
+
+  *in += 9, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK9_64(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 9, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 23;
+    (*out)[1] = (val >> 14) & 0x01ff;
+    (*out)[2] = (val >> 5) & 0x01ff;
+    (*out)[3] = (val << 4) & 0x01ff;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[3] |= val >> 28;
+    (*out)[4] = (val >> 19) & 0x01ff;
+    (*out)[5] = (val >> 10) & 0x01ff;
+    (*out)[6] = (val >> 1) & 0x01ff;
+    (*out)[7] = (val << 8) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[7] |= val >> 24;
+    (*out)[8] = (val >> 15) & 0x01ff;
+    (*out)[9] = (val >> 6) & 0x01ff;
+    (*out)[10] = (val << 3) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[10] |= val >> 29;
+    (*out)[11] = (val >> 20) & 0x01ff;
+    (*out)[12] = (val >> 11) & 0x01ff;
+    (*out)[13] = (val >> 2) & 0x01ff;
+    (*out)[14] = (val << 7) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[14] |= val >> 25;
+    (*out)[15] = (val >> 16) & 0x01ff;
+    (*out)[16] = (val >> 7) & 0x01ff;
+    (*out)[17] = (val << 2) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 5);
+    (*out)[17] |= val >> 30;
+    (*out)[18] = (val >> 21) & 0x01ff;
+    (*out)[19] = (val >> 12) & 0x01ff;
+    (*out)[20] = (val >> 3) & 0x01ff;
+    (*out)[21] = (val << 6) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 6);
+    (*out)[21] |= val >> 26;
+    (*out)[22] = (val >> 17) & 0x01ff;
+    (*out)[23] = (val >> 8) & 0x01ff;
+    (*out)[24] = (val << 1) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 7);
+    (*out)[24] |= val >> 31;
+    (*out)[25] = (val >> 22) & 0x01ff;
+    (*out)[26] = (val >> 13) & 0x01ff;
+    (*out)[27] = (val >> 4) & 0x01ff;
+    (*out)[28] = (val << 5) & 0x01ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 8);
+    (*out)[28] |= val >> 27;
+    (*out)[29] = (val >> 18) & 0x01ff;
+    (*out)[30] = (val >> 9) & 0x01ff;
+    (*out)[31] = val & 0x01ff;
+  }
 }
 
 /* UNPACKER: 10 */
 inline void VSESIMPLE_UNPACK10_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK10_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK10_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
 
-  *out += 3;
+  *in += 1, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK10_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 4;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+
+  *in += 2, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK10_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK10_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+
+  *in += 2, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK10_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+
+  *in += 3, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK10_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+
+  *in += 3, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK10_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+
+  *in += 3, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK10_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+  (*out)[9] = (val << 4) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[9] |= val >> 28;
+
+  *in += 4, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK10_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+  (*out)[9] = (val << 4) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[9] |= val >> 28;
+  (*out)[10] = (val >> 18) & 0x03ff;
+
+  *in += 4, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK10_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+  (*out)[9] = (val << 4) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[9] |= val >> 28;
+  (*out)[10] = (val >> 18) & 0x03ff;
+  (*out)[11] = (val >> 8) & 0x03ff;
+
+  *in += 4, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK10_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+  (*out)[9] = (val << 4) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[9] |= val >> 28;
+  (*out)[10] = (val >> 18) & 0x03ff;
+  (*out)[11] = (val >> 8) & 0x03ff;
+  (*out)[12] = (val << 2) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[12] |= val >> 30;
+  (*out)[13] = (val >> 20) & 0x03ff;
+
+  *in += 5, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK10_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 22;
+  (*out)[1] = (val >> 12) & 0x03ff;
+  (*out)[2] = (val >> 2) & 0x03ff;
+  (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[3] |= val >> 24;
+  (*out)[4] = (val >> 14) & 0x03ff;
+  (*out)[5] = (val >> 4) & 0x03ff;
+  (*out)[6] = (val << 6) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[6] |= val >> 26;
+  (*out)[7] = (val >> 16) & 0x03ff;
+  (*out)[8] = (val >> 6) & 0x03ff;
+  (*out)[9] = (val << 4) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[9] |= val >> 28;
+  (*out)[10] = (val >> 18) & 0x03ff;
+  (*out)[11] = (val >> 8) & 0x03ff;
+  (*out)[12] = (val << 2) & 0x03ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[12] |= val >> 30;
+  (*out)[13] = (val >> 20) & 0x03ff;
+  (*out)[14] = (val >> 10) & 0x03ff;
+  (*out)[15] = val & 0x03ff;
+
+  *in += 5, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK10_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 5, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 22;
+    (*out)[1] = (val >> 12) & 0x03ff;
+    (*out)[2] = (val >> 2) & 0x03ff;
+    (*out)[3] = (val << 8) & 0x03ff;
 
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[3] |= val >> 24;
+    (*out)[4] = (val >> 14) & 0x03ff;
+    (*out)[5] = (val >> 4) & 0x03ff;
+    (*out)[6] = (val << 6) & 0x03ff;
 
-  *out += 32;
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[6] |= val >> 26;
+    (*out)[7] = (val >> 16) & 0x03ff;
+    (*out)[8] = (val >> 6) & 0x03ff;
+    (*out)[9] = (val << 4) & 0x03ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[9] |= val >> 28;
+    (*out)[10] = (val >> 18) & 0x03ff;
+    (*out)[11] = (val >> 8) & 0x03ff;
+    (*out)[12] = (val << 2) & 0x03ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[12] |= val >> 30;
+    (*out)[13] = (val >> 20) & 0x03ff;
+    (*out)[14] = (val >> 10) & 0x03ff;
+    (*out)[15] = val & 0x03ff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK10_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 5, *out += 16) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 22;
+    (*out)[1] = (val >> 12) & 0x03ff;
+    (*out)[2] = (val >> 2) & 0x03ff;
+    (*out)[3] = (val << 8) & 0x03ff;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[3] |= val >> 24;
+    (*out)[4] = (val >> 14) & 0x03ff;
+    (*out)[5] = (val >> 4) & 0x03ff;
+    (*out)[6] = (val << 6) & 0x03ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[6] |= val >> 26;
+    (*out)[7] = (val >> 16) & 0x03ff;
+    (*out)[8] = (val >> 6) & 0x03ff;
+    (*out)[9] = (val << 4) & 0x03ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[9] |= val >> 28;
+    (*out)[10] = (val >> 18) & 0x03ff;
+    (*out)[11] = (val >> 8) & 0x03ff;
+    (*out)[12] = (val << 2) & 0x03ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[12] |= val >> 30;
+    (*out)[13] = (val >> 20) & 0x03ff;
+    (*out)[14] = (val >> 10) & 0x03ff;
+    (*out)[15] = val & 0x03ff;
+  }
 }
 
 /* UNPACKER: 11 */
 inline void VSESIMPLE_UNPACK11_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK11_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK11_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 3;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+
+  *in += 2, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK11_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 4;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+
+  *in += 2, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK11_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK11_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+
+  *in += 3, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK11_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+
+  *in += 3, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK11_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+
+  *in += 3, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK11_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+
+  *in += 4, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK11_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+
+  *in += 4, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK11_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+  (*out)[10] = (val >> 7) & 0x07ff;
+
+  *in += 4, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK11_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+  (*out)[10] = (val >> 7) & 0x07ff;
+  (*out)[11] = (val << 4) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[11] |= val >> 28;
+
+  *in += 5, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK11_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+  (*out)[10] = (val >> 7) & 0x07ff;
+  (*out)[11] = (val << 4) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[11] |= val >> 28;
+  (*out)[12] = (val >> 17) & 0x07ff;
+  (*out)[13] = (val >> 6) & 0x07ff;
+
+  *in += 5, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK11_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 16;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+  (*out)[10] = (val >> 7) & 0x07ff;
+  (*out)[11] = (val << 4) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[11] |= val >> 28;
+  (*out)[12] = (val >> 17) & 0x07ff;
+  (*out)[13] = (val >> 6) & 0x07ff;
+  (*out)[14] = (val << 5) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[14] |= val >> 27;
+  (*out)[15] = (val >> 16) & 0x07ff;
+
+  *in += 6, *out += 16;
 }
 
 inline void VSESIMPLE_UNPACK11_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 21;
+  (*out)[1] = (val >> 10) & 0x07ff;
+  (*out)[2] = (val << 1) & 0x07ff;
 
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 31;
+  (*out)[3] = (val >> 20) & 0x07ff;
+  (*out)[4] = (val >> 9) & 0x07ff;
+  (*out)[5] = (val << 2) & 0x07ff;
 
-  *out += 32;
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 30;
+  (*out)[6] = (val >> 19) & 0x07ff;
+  (*out)[7] = (val >> 8) & 0x07ff;
+  (*out)[8] = (val << 3) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] |= val >> 29;
+  (*out)[9] = (val >> 18) & 0x07ff;
+  (*out)[10] = (val >> 7) & 0x07ff;
+  (*out)[11] = (val << 4) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[11] |= val >> 28;
+  (*out)[12] = (val >> 17) & 0x07ff;
+  (*out)[13] = (val >> 6) & 0x07ff;
+  (*out)[14] = (val << 5) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[14] |= val >> 27;
+  (*out)[15] = (val >> 16) & 0x07ff;
+  (*out)[16] = (val >> 5) & 0x07ff;
+  (*out)[17] = (val << 6) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[17] |= val >> 26;
+  (*out)[18] = (val >> 15) & 0x07ff;
+  (*out)[19] = (val >> 4) & 0x07ff;
+  (*out)[20] = (val << 7) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 7);
+  (*out)[20] |= val >> 25;
+  (*out)[21] = (val >> 14) & 0x07ff;
+  (*out)[22] = (val >> 3) & 0x07ff;
+  (*out)[23] = (val << 8) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 8);
+  (*out)[23] |= val >> 24;
+  (*out)[24] = (val >> 13) & 0x07ff;
+  (*out)[25] = (val >> 2) & 0x07ff;
+  (*out)[26] = (val << 9) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 9);
+  (*out)[26] |= val >> 23;
+  (*out)[27] = (val >> 12) & 0x07ff;
+  (*out)[28] = (val >> 1) & 0x07ff;
+  (*out)[29] = (val << 10) & 0x07ff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 10);
+  (*out)[29] |= val >> 22;
+  (*out)[30] = (val >> 11) & 0x07ff;
+  (*out)[31] = val & 0x07ff;
+
+  *in += 11, *out += 32;
 }
 
 inline void VSESIMPLE_UNPACK11_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 11, *out += 32) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 21;
+    (*out)[1] = (val >> 10) & 0x07ff;
+    (*out)[2] = (val << 1) & 0x07ff;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[2] |= val >> 31;
+    (*out)[3] = (val >> 20) & 0x07ff;
+    (*out)[4] = (val >> 9) & 0x07ff;
+    (*out)[5] = (val << 2) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[5] |= val >> 30;
+    (*out)[6] = (val >> 19) & 0x07ff;
+    (*out)[7] = (val >> 8) & 0x07ff;
+    (*out)[8] = (val << 3) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[8] |= val >> 29;
+    (*out)[9] = (val >> 18) & 0x07ff;
+    (*out)[10] = (val >> 7) & 0x07ff;
+    (*out)[11] = (val << 4) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[11] |= val >> 28;
+    (*out)[12] = (val >> 17) & 0x07ff;
+    (*out)[13] = (val >> 6) & 0x07ff;
+    (*out)[14] = (val << 5) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 5);
+    (*out)[14] |= val >> 27;
+    (*out)[15] = (val >> 16) & 0x07ff;
+    (*out)[16] = (val >> 5) & 0x07ff;
+    (*out)[17] = (val << 6) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 6);
+    (*out)[17] |= val >> 26;
+    (*out)[18] = (val >> 15) & 0x07ff;
+    (*out)[19] = (val >> 4) & 0x07ff;
+    (*out)[20] = (val << 7) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 7);
+    (*out)[20] |= val >> 25;
+    (*out)[21] = (val >> 14) & 0x07ff;
+    (*out)[22] = (val >> 3) & 0x07ff;
+    (*out)[23] = (val << 8) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 8);
+    (*out)[23] |= val >> 24;
+    (*out)[24] = (val >> 13) & 0x07ff;
+    (*out)[25] = (val >> 2) & 0x07ff;
+    (*out)[26] = (val << 9) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 9);
+    (*out)[26] |= val >> 23;
+    (*out)[27] = (val >> 12) & 0x07ff;
+    (*out)[28] = (val >> 1) & 0x07ff;
+    (*out)[29] = (val << 10) & 0x07ff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 10);
+    (*out)[29] |= val >> 22;
+    (*out)[30] = (val >> 11) & 0x07ff;
+    (*out)[31] = val & 0x07ff;
+  }
 }
 
 /* UNPACKER: 12 */
 inline void VSESIMPLE_UNPACK12_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK12_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK12_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 3;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+
+  *in += 2, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK12_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 4;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+
+  *in += 2, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK12_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+
+  *in += 2, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK12_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+
+  *in += 3, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK12_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+
+  *in += 3, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK12_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  *in += 3, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK12_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] = val >> 20;
+
+  *in += 4, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK12_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] = val >> 20;
+  (*out)[9] = (val >> 8) & 0x0fff;
+
+  *in += 4, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK12_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] = val >> 20;
+  (*out)[9] = (val >> 8) & 0x0fff;
+  (*out)[10] = (val << 4) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[10] |= val >> 28;
+
+  *in += 5, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK12_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] = val >> 20;
+  (*out)[9] = (val >> 8) & 0x0fff;
+  (*out)[10] = (val << 4) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[10] |= val >> 28;
+  (*out)[11] = (val >> 16) & 0x0fff;
+
+  *in += 5, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK12_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 20;
+  (*out)[1] = (val >> 8) & 0x0fff;
+  (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 14;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[2] |= val >> 28;
+  (*out)[3] = (val >> 16) & 0x0fff;
+  (*out)[4] = (val >> 4) & 0x0fff;
+  (*out)[5] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[5] |= val >> 24;
+  (*out)[6] = (val >> 12) & 0x0fff;
+  (*out)[7] = val & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[8] = val >> 20;
+  (*out)[9] = (val >> 8) & 0x0fff;
+  (*out)[10] = (val << 4) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[10] |= val >> 28;
+  (*out)[11] = (val >> 16) & 0x0fff;
+  (*out)[12] = (val >> 4) & 0x0fff;
+  (*out)[13] = (val << 8) & 0x0fff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[13] |= val >> 24;
+
+  *in += 6, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK12_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 3, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 20;
+    (*out)[1] = (val >> 8) & 0x0fff;
+    (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 16;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[2] |= val >> 28;
+    (*out)[3] = (val >> 16) & 0x0fff;
+    (*out)[4] = (val >> 4) & 0x0fff;
+    (*out)[5] = (val << 8) & 0x0fff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[5] |= val >> 24;
+    (*out)[6] = (val >> 12) & 0x0fff;
+    (*out)[7] = val & 0x0fff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK12_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 3, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 20;
+    (*out)[1] = (val >> 8) & 0x0fff;
+    (*out)[2] = (val << 4) & 0x0fff;
 
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[2] |= val >> 28;
+    (*out)[3] = (val >> 16) & 0x0fff;
+    (*out)[4] = (val >> 4) & 0x0fff;
+    (*out)[5] = (val << 8) & 0x0fff;
 
-  *out += 32;
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[5] |= val >> 24;
+    (*out)[6] = (val >> 12) & 0x0fff;
+    (*out)[7] = val & 0x0fff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK12_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 8;
+          i++, *in += 3, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 20;
+    (*out)[1] = (val >> 8) & 0x0fff;
+    (*out)[2] = (val << 4) & 0x0fff;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[2] |= val >> 28;
+    (*out)[3] = (val >> 16) & 0x0fff;
+    (*out)[4] = (val >> 4) & 0x0fff;
+    (*out)[5] = (val << 8) & 0x0fff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[5] |= val >> 24;
+    (*out)[6] = (val >> 12) & 0x0fff;
+    (*out)[7] = val & 0x0fff;
+  }
 }
 
 /* UNPACKER: 16 */
 inline void VSESIMPLE_UNPACK16_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK16_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  (*out)[1] = val & 0xffff;
 
-  *out += 2;
+  *in += 1, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK16_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  (*out)[1] = val & 0xffff;
 
-  *out += 3;
+  val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[2] = val >> 16;
+
+  *in += 2, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK16_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 4;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 
-  *out += 5;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK16_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 6;
+  for (uint32_t i = 0; i < 3;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 3;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 
-  *out += 7;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK16_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 8;
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 
-  *out += 9;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK16_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 10;
+  for (uint32_t i = 0; i < 5;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 5;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 
-  *out += 11;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 16;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK16_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 12;
+  for (uint32_t i = 0; i < 6;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 14;
+  for (uint32_t i = 0; i < 7;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 16;
+  for (uint32_t i = 0; i < 8;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-
-  *out += 32;
+  for (uint32_t i = 0; i < 16;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK16_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 32;
+          i++, *in += 1, *out += 2) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 16;
+    (*out)[1] = val & 0xffff;
+  }
 }
 
 /* UNPACKER: 20 */
 inline void VSESIMPLE_UNPACK20_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
 
-  *out += 1;
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK20_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 2;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+
+  *in += 2, *out += 2;
 }
 
 inline void VSESIMPLE_UNPACK20_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 3;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+
+  *in += 2, *out += 3;
 }
 
 inline void VSESIMPLE_UNPACK20_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 4;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+
+  *in += 3, *out += 4;
 }
 
 inline void VSESIMPLE_UNPACK20_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 5;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+
+  *in += 4, *out += 5;
 }
 
 inline void VSESIMPLE_UNPACK20_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 6;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+
+  *in += 4, *out += 6;
 }
 
 inline void VSESIMPLE_UNPACK20_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 7;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+
+  *in += 5, *out += 7;
 }
 
 inline void VSESIMPLE_UNPACK20_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 8;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  *in += 5, *out += 8;
 }
 
 inline void VSESIMPLE_UNPACK20_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 9;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[8] = val >> 12;
+
+  *in += 6, *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK20_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 10;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[8] = val >> 12;
+  (*out)[9] = (val << 8) & 0x0fffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[9] |= val >> 24;
+
+  *in += 7, *out += 10;
 }
 
 inline void VSESIMPLE_UNPACK20_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 11;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[8] = val >> 12;
+  (*out)[9] = (val << 8) & 0x0fffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[9] |= val >> 24;
+  (*out)[10] = (val >> 4) & 0xfffff;
+
+  *in += 7, *out += 11;
 }
 
 inline void VSESIMPLE_UNPACK20_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 12;
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[8] = val >> 12;
+  (*out)[9] = (val << 8) & 0x0fffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[9] |= val >> 24;
+  (*out)[10] = (val >> 4) & 0xfffff;
+  (*out)[11] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 7);
+  (*out)[11] |= val >> 16;
+
+  *in += 8, *out += 12;
 }
 
 inline void VSESIMPLE_UNPACK20_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
 
-  *out += 14;
+  uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+  (*out)[0] = val >> 12;
+  (*out)[1] = (val << 8) & 0x0fffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 1);
+  (*out)[1] |= val >> 24;
+  (*out)[2] = (val >> 4) & 0xfffff;
+  (*out)[3] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 2);
+  (*out)[3] |= val >> 16;
+  (*out)[4] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 3);
+  (*out)[4] |= val >> 28;
+  (*out)[5] = (val >> 8) & 0xfffff;
+  (*out)[6] = (val << 12) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 4);
+  (*out)[6] |= val >> 20;
+  (*out)[7] = val & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 5);
+  (*out)[8] = val >> 12;
+  (*out)[9] = (val << 8) & 0x0fffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 6);
+  (*out)[9] |= val >> 24;
+  (*out)[10] = (val >> 4) & 0xfffff;
+  (*out)[11] = (val << 16) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 7);
+  (*out)[11] |= val >> 16;
+  (*out)[12] = (val << 4) & 0xfffff;
+
+  val = BYTEORDER_FREE_LOAD32(*in + 8);
+  (*out)[12] |= val >> 28;
+  (*out)[13] = (val >> 8) & 0xfffff;
+
+  *in += 9, *out += 14;
 }
 
 inline void VSESIMPLE_UNPACK20_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 2; i++,
+          *in += 5, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 12;
+    (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 16;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[1] |= val >> 24;
+    (*out)[2] = (val >> 4) & 0xfffff;
+    (*out)[3] = (val << 16) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[3] |= val >> 16;
+    (*out)[4] = (val << 4) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[4] |= val >> 28;
+    (*out)[5] = (val >> 8) & 0xfffff;
+    (*out)[6] = (val << 12) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[6] |= val >> 20;
+    (*out)[7] = val & 0xfffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK20_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 4; i++,
+          *in += 5, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 12;
+    (*out)[1] = (val << 8) & 0x0fffff;
 
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[1] |= val >> 24;
+    (*out)[2] = (val >> 4) & 0xfffff;
+    (*out)[3] = (val << 16) & 0xfffff;
 
-  *out += 32;
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[3] |= val >> 16;
+    (*out)[4] = (val << 4) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[4] |= val >> 28;
+    (*out)[5] = (val >> 8) & 0xfffff;
+    (*out)[6] = (val << 12) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[6] |= val >> 20;
+    (*out)[7] = val & 0xfffff;
+  }
 }
 
 inline void VSESIMPLE_UNPACK20_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 8; i++,
+          *in += 5, *out += 8) {
+    uint32_t val = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = val >> 12;
+    (*out)[1] = (val << 8) & 0x0fffff;
 
-  *out += 64;
+    val = BYTEORDER_FREE_LOAD32(*in + 1);
+    (*out)[1] |= val >> 24;
+    (*out)[2] = (val >> 4) & 0xfffff;
+    (*out)[3] = (val << 16) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 2);
+    (*out)[3] |= val >> 16;
+    (*out)[4] = (val << 4) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 3);
+    (*out)[4] |= val >> 28;
+    (*out)[5] = (val >> 8) & 0xfffff;
+    (*out)[6] = (val << 12) & 0xfffff;
+
+    val = BYTEORDER_FREE_LOAD32(*in + 4);
+    (*out)[6] |= val >> 20;
+    (*out)[7] = val & 0xfffff;
+  }
 }
 
 /* UNPACKER: 32 */
 inline void VSESIMPLE_UNPACK32_1(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 1;
+  (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
+  *in += 1, *out += 1;
 }
 
 inline void VSESIMPLE_UNPACK32_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 2;
+  for (uint32_t i = 0; i < 2;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 3;
+  for (uint32_t i = 0; i < 3;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 4;
+  for (uint32_t i = 0; i < 4;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 5;
+  for (uint32_t i = 0; i < 5;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 6;
+  for (uint32_t i = 0; i < 6;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 7;
+  for (uint32_t i = 0; i < 7;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
-
-  *out += 8;
+  for (uint32_t i = 0; i < 8;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
+  for (uint32_t i = 0; i < 9;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 
-  *out += 9;
 }
 
 inline void VSESIMPLE_UNPACK32_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 10;
+  for (uint32_t i = 0; i < 10;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 11;
+  for (uint32_t i = 0; i < 11;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 12;
+  for (uint32_t i = 0; i < 12;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 14;
+  for (uint32_t i = 0; i < 14;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 16;
+  for (uint32_t i = 0; i < 16;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-
-  *out += 32;
+  for (uint32_t i = 0; i < 32;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
-
-  *out += 64;
+  for (uint32_t i = 0; i < 64;
+          i++, *in += 1, *out += 1)
+    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 const uint32_t VSESIMPLE_LENS[] = {
@@ -1683,7 +4780,7 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
   ASSERT_ADDR(in, len);
   ASSERT_ADDR(out, *nvalue);
 
-  /* COMPUTE OPTIMAL PARTITION */
+  /* Compute optimal partition */
   std::vector<uint32_t> logs;
   std::vector<uint32_t> parts;
 
@@ -1705,14 +4802,14 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
   *nvalue -= 2;
   out += 2;
 
-  uint64_t offset = DIV_ROUNDUP(num, 8);
+  uint64_t offset = DIV_ROUNDUP(num, 4);
 
-  /* READY TO WRITE data */
+  /* Ready to write data */
   BitsWriter  wt1(out, offset);
   BitsWriter  wt2(out + offset, *nvalue - offset);
 
   for (uint64_t i = 0; i < num; i++) {
-    /* COMPUTE MAX B in THE BLOCK */
+    /* Compute max B in the block */
     uint32_t maxB = 0;
 
     for (auto j = parts[i];
@@ -1721,7 +4818,7 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
         maxB = logs[j];
     }
 
-    /* COMPUTE THE CODE for THE BLOCK LENGTH */
+    /* Compute the code for the block length */
     uint32_t idx = 0;
 
     for (; idx < VSESIMPLE_LENS_LEN; idx++){
@@ -1729,14 +4826,14 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
         break;
     }
 
-    /* WRITE inTEGERS */
+    /* Write integers */
     for (uint64_t j = parts[i]; j < parts[i + 1]; j++)
       wt2.write_bits(in[j], maxB);
 
-    /* ALLIGN TO 32-BIT */
+    /* Align to 32-bit */
     wt2.flush_bits();
 
-    /* WRITES THE VALUE OF B AND K */
+    /* Write the value of B and K */
     wt1.write_bits(VSESIMPLE_CODELOGS[maxB],
                    VSESIMPLE_LOGLOG);
     wt1.write_bits(idx, VSESIMPLE_LOGLEN);
@@ -1928,28 +5025,30 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
   uint32_t *oterm = out + nvalue;
 
   uint64_t num = BYTEORDER_FREE_LOAD64(in);
-  uint64_t offset =
-      DIV_ROUNDUP(num, 32 / VSESIMPLE_LOGDESC);
+  uint64_t offset = DIV_ROUNDUP(num, 4);
 
   const uint32_t *data = in + offset + 2;
   in += 2;
 
-  /* CREATE A DIPATCH TABLE */
+  /* Create a dispath table */
   REGISTER_VECTOR_RAII(void *, jtable, num + 1);
 
   uint64_t numBlocks = num / 4;
+
+#define VSESIMPLE_DESC(__val__, __offset__) \
+    (((__val__) >> VSESIMPLE_LOGDESC * __offset__) & (VSESIMPLE_LEN - 1))
 
   for (uint64_t i = 0; i < numBlocks; i++, in++) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
 
     jtable[i * 4] =
-        VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC * 3];
+        VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 3)];
     jtable[i * 4 + 1] =
-        VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC * 2];
+        VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 2)];
     jtable[i * 4 + 2] =
-        VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC * 1];
+        VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 1)];
     jtable[i * 4 + 3] =
-        VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC];
+        VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 0)];
   }
 
   uint32_t rem = num % 4;
@@ -1959,18 +5058,18 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
 
     switch (rem) {
       case 3: {
-        jtable[numBlocks + 2] =
-            VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC * 2];
+        jtable[4 * numBlocks + 2] =
+            VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 1)];
       }
 
       case 2: {
-        jtable[numBlocks + 1] =
-            VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC * 1];
+        jtable[4 * numBlocks + 1] =
+            VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 2)];
       }
 
       case 1: {
-        jtable[numBlocks] =
-            VSESIMPLE_UNPACK[val >> VSESIMPLE_LOGDESC];
+        jtable[4 * numBlocks] =
+            VSESIMPLE_UNPACK[VSESIMPLE_DESC(val, 3)];
       }
     }
   }
@@ -1978,9 +5077,9 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
   jtable[4 * numBlocks + rem] = &&VSESIMPLE_RET;
 
 #define NEXT  \
-  if (UNLIKELY(out < oterm && data < iterm))  \
-    return;   \
-  *jtable++
+  if (UNLIKELY(out > oterm || data > iterm))  \
+    return; \
+  goto **jtable++
 
   /* Start point for decompression */
   NEXT;
