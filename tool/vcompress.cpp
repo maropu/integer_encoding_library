@@ -384,10 +384,10 @@ void do_decompress(const std::string& input,
   /* Show performance results */
   fprintf(stdout, "Performance Results:\n");
   fprintf(stdout, "  Total Num Decoded: %llu\n", dnum);
-  fprintf(stdout, "  Elapsed: %lf\n", elapsed);
-  fprintf(stdout, "  Performance: %lfmis\n",
+  fprintf(stdout, "  Elapsed: %.4lf\n", elapsed);
+  fprintf(stdout, "  Performance: %.4lfmis\n",
           (dnum + 0.0) / (elapsed * 1000000));
-  fprintf(stdout, "  Size: %lfbpi\n", ((cmp_pos + 0.0) / dnum) * 32);
+  fprintf(stdout, "  Size: %.4lfbpi\n", ((cmp_pos + 0.0) / dnum) * 32);
 }
 
 }; /* namespace: */
