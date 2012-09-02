@@ -4827,8 +4827,10 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
     }
 
     /* Write integers */
-    for (uint64_t j = parts[i]; j < parts[i + 1]; j++)
-      wt2.write_bits(in[j], maxB);
+    for (uint64_t j = parts[i]; j < parts[i + 1]; j++) {
+      uint32_t val = BYTEORDER_FREE_LOAD32(in + j);
+      wt2.write_bits(val, maxB);
+    }
 
     /* Align to 32-bit */
     wt2.flush_bits();
