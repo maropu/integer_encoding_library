@@ -76,12 +76,11 @@ void VSEncodingDP::computePartition(const std::vector<uint32_t>& seq,
     int64_t   j, g, l, mleft;
     uint64_t  ccost;
 
-    for (int64_t i = 1; i <= seq.size(); i++) {
+    for (uint64_t i = 1; i <= seq.size(); i++) {
       mleft = (i > mxblk_)? i - mxblk_ : 0;
 
       for (maxB = 0, l = 0, g = 0, j = i - 1;
               j >= mleft; j--) {
-        ASSERT(j < i);
         ASSERT(l <= size_);
         ASSERT(g <= size_);
 

@@ -842,10 +842,8 @@ namespace {
 
 inline void CopySubLists(uint32_t offset,
                          uint32_t in,
-                         uint32_t **out,
-                         uint32_t **blk) {
-  uint32_t **pblk = blk;
-
+                         uint32_t ** restrict out,
+                         uint32_t ** restrict blk) {
   /* Permuting integers with a first 8-bit */
   uint32_t info = (in >> (VSEBLOCKS_LOGDESC * offset));
   info &= VSEBLOCKS_DESC_LEN - 1;
@@ -853,12 +851,41 @@ inline void CopySubLists(uint32_t offset,
   uint32_t b = info >> VSEBLOCKS_LOGLEN;
   uint32_t k = info & (VSEBLOCKS_LENS_LEN - 1);
 
-  if (b) {
-    MEMCPY(*out, pblk[b], VSEBLOCKS_LENS[k]);
-    pblk[b] += VSEBLOCKS_LENS[k];
+  if (LIKELY(b)) {
+#if 0
+    MEMCPY(*out, blk[b], VSEBLOCKS_LENS[k]);
+#else
+    if (LIKELY(k > (VSEBLOCKS_LENS_LEN >> 1) - 1)) {
+      MEMCPY128(blk[b], *out);
+      MEMCPY128(blk[b] + 4, *out + 4);
+      MEMCPY128(blk[b] + 8, *out + 8);
+      MEMCPY128(blk[b] + 12, *out + 12);
+    } else {
+      MEMCPY128(blk[b], *out);
+      MEMCPY128(blk[b] + 4, *out + 4);
+    }
+#endif
+
+    blk[b] += VSEBLOCKS_LENS[k];
     *out += VSEBLOCKS_LENS[k];
   } else {
+#if 0
     ZMEMCPY(*out, VSEBLOCKS_ZLENS[k]);
+#else
+    if (LIKELY(k > (VSEBLOCKS_LENS_LEN >> 1) - 1)) {
+      ZMEMCPY128(*out);
+      ZMEMCPY128(*out + 4);
+      ZMEMCPY128(*out + 8);
+      ZMEMCPY128(*out + 12);
+      ZMEMCPY128(*out + 16);
+      ZMEMCPY128(*out + 20);
+      ZMEMCPY128(*out + 24);
+      ZMEMCPY128(*out + 28);
+    } else {
+      ZMEMCPY128(*out);
+      ZMEMCPY128(*out + 4);
+    }
+#endif
     *out += VSEBLOCKS_ZLENS[k];
   }
 }
@@ -906,7 +933,7 @@ void VSEncodingBlocks::decodeVS(const uint32_t *in,
     data += DIV_ROUNDUP(nblk * VSEBLOCKS_LOGS[b], 32);
   }
 
-  while  (out < oterm && data < iterm) {
+  while  (LIKELY(out < oterm && data < iterm)) {
     CopySubLists(3, *data, &out, pblk);
     CopySubLists(2, *data, &out, pblk);
     CopySubLists(1, *data, &out, pblk);

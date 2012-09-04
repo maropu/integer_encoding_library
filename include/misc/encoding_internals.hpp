@@ -85,8 +85,6 @@ namespace integer_encoding {
  */
 inline void MEMCPY(void *dest,
                    void *src, uint64_t n) {
-  if (n == 0) return;
-
   ASSERT(dest != NULL);
   ASSERT(src != NULL);
 
@@ -100,8 +98,6 @@ inline void MEMCPY(void *dest,
 }
 
 inline void ZMEMCPY(void *dest, uint64_t n) {
-  if (n == 0) return;
-
   ASSERT(dest != NULL);
 
   char *d = reinterpret_cast<char *>(dest);
