@@ -38,8 +38,8 @@ const size_t PFORDELTA_B = 6;
 const size_t PFORDELTA_NEXCEPT = 10;
 const size_t PFORDELTA_EXCEPTSZ = 16;
 
-void PFORDELTA_UNPACK0(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK0(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0;
           i < PFORDELTA_BLOCKSZ; i += 16, out += 16) {
     ZMEMCPY128(out);
@@ -49,8 +49,8 @@ void PFORDELTA_UNPACK0(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK1(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK1(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -89,8 +89,8 @@ void PFORDELTA_UNPACK1(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK2(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK2(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 16, out += 16, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -113,8 +113,8 @@ void PFORDELTA_UNPACK2(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK3(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK3(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -159,8 +159,8 @@ void PFORDELTA_UNPACK3(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK4(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK4(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 8, out += 8, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -175,8 +175,8 @@ void PFORDELTA_UNPACK4(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK5(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK5(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -227,8 +227,8 @@ void PFORDELTA_UNPACK5(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK6(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK6(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 16, out += 16, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -257,8 +257,8 @@ void PFORDELTA_UNPACK6(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK7(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK7(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 7) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -315,8 +315,8 @@ void PFORDELTA_UNPACK7(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK8(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK8(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 4, out += 4, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -327,8 +327,8 @@ void PFORDELTA_UNPACK8(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK9(uint32_t *out,
-                       const uint32_t *in) {
+inline void PFORDELTA_UNPACK9(uint32_t * restrict out,
+                              const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 9) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -391,8 +391,8 @@ void PFORDELTA_UNPACK9(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK10(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK10(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 16, out += 16, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -427,8 +427,8 @@ void PFORDELTA_UNPACK10(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK11(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK11(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 11) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -497,8 +497,8 @@ void PFORDELTA_UNPACK11(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK12(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK12(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 8, out += 8, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -519,8 +519,8 @@ void PFORDELTA_UNPACK12(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK13(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK13(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 32, out += 32, in += 13) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -595,8 +595,8 @@ void PFORDELTA_UNPACK13(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK16(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK16(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 2, out += 2, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -605,8 +605,8 @@ void PFORDELTA_UNPACK16(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK20(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK20(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 8, out += 8, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -633,8 +633,8 @@ void PFORDELTA_UNPACK20(uint32_t *out,
   }
 }
 
-void PFORDELTA_UNPACK32(uint32_t *out,
-                        const uint32_t *in) {
+inline void PFORDELTA_UNPACK32(uint32_t * restrict out,
+                               const uint32_t * restrict in) {
   for (uint32_t i = 0; i < PFORDELTA_BLOCKSZ;
           i += 1, out += 1, in += 1)
     out[0] = BYTEORDER_FREE_LOAD32(in);
@@ -681,10 +681,10 @@ p4delta_unpack_t PFORDELTA_UNPACK[] = {
 };
 
 /* A hard-corded Simple16 decoder wirtten in the original code */
-void PFORDELTA_S16_DECODE(const uint32_t *in,
-                          uint32_t len,
-                          uint32_t *out,
-                          uint32_t nvalue) {
+inline void PFORDELTA_S16_DECODE(const uint32_t * restrict in,
+                                 uint32_t len,
+                                 uint32_t * restrict out,
+                                 uint32_t nvalue) {
   ASSERT(in != NULL);
   ASSERT(out != NULL);
 
@@ -693,7 +693,7 @@ void PFORDELTA_S16_DECODE(const uint32_t *in,
 
   uint32_t nlen = 0;
 
-  while (len > nlen) {
+  while (LIKELY(len > nlen)) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
     in++;
 
@@ -946,7 +946,7 @@ void PFORDELTA_S16_DECODE(const uint32_t *in,
 }
 
 const uint32_t PFORDELTA_LOGS[] = {
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 20, 32
 };
 
 } /* namespace: */
@@ -985,7 +985,7 @@ PForDelta::~PForDelta() throw() {}
 uint32_t PForDelta::tryB(uint32_t b,
                          const uint32_t *in,
                          uint64_t len) const {
-  ASSERT(b > 0 && b <= 32);
+  ASSERT(b >= 0 && b <= 32);
   ASSERT(in != NULL);
   ASSERT(len != 0);
 
@@ -998,7 +998,7 @@ uint32_t PForDelta::tryB(uint32_t b,
 
   for (uint32_t i = 0; i < len; i++) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    if (val >= (1U << b))
+    if (val >= (1ULL << b))
       curExcept++;
   }
 
