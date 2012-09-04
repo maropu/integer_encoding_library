@@ -137,18 +137,18 @@ uint64_t Simple9::require(uint64_t len) const {
 bool Simple9::try_pack(const uint32_t *in,
                        uint32_t len,
                        uint32_t num1, uint32_t log1) {
-  uint32_t min = (len < num1)? len : num1;
+  uint32_t min = (len > num1)? num1 : len;
   for (uint32_t i = 0; i < min; i++) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    uint32_t d = 31 - MSB32(val);
-    if (d > log1 - 1)
+    uint32_t d = 32 - MSB32(val);
+    if (d > log1)
       return false;
   }
   return true;
 }
 
-void Simple9::unpack28_1(uint32_t ** restrict out,
-                         const uint32_t ** restrict in) {
+inline void Simple9::unpack28_1(uint32_t ** restrict out,
+                                const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 27) & 0x01;
   (*out)[1] = (val >> 26) & 0x01;
@@ -182,8 +182,8 @@ void Simple9::unpack28_1(uint32_t ** restrict out,
   *in += 1, *out += 28;
 }
 
-void Simple9::unpack14_2(uint32_t ** restrict out,
-                         const uint32_t ** restrict in) {
+inline void Simple9::unpack14_2(uint32_t ** restrict out,
+                                const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 26) & 0x03;
   (*out)[1] = (val >> 24) & 0x03;
@@ -203,8 +203,8 @@ void Simple9::unpack14_2(uint32_t ** restrict out,
   *in += 1, *out += 14;
 }
 
-void Simple9::unpack9_3(uint32_t ** restrict out,
-                        const uint32_t ** restrict in) {
+inline void Simple9::unpack9_3(uint32_t ** restrict out,
+                               const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 25) & 0x07;
   (*out)[1] = (val >> 22) & 0x07;
@@ -219,8 +219,8 @@ void Simple9::unpack9_3(uint32_t ** restrict out,
   *in += 1, *out += 9;
 }
 
-void Simple9::unpack7_4(uint32_t ** restrict out,
-                        const uint32_t ** restrict in) {
+inline void Simple9::unpack7_4(uint32_t ** restrict out,
+                               const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 24) & 0x0f;
   (*out)[1] = (val >> 20) & 0x0f;
@@ -233,8 +233,8 @@ void Simple9::unpack7_4(uint32_t ** restrict out,
   *in += 1, *out += 7;
 }
 
-void Simple9::unpack5_5(uint32_t ** restrict out,
-                        const uint32_t ** restrict in) {
+inline void Simple9::unpack5_5(uint32_t ** restrict out,
+                               const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 23) & 0x1f;
   (*out)[1] = (val >> 18) & 0x1f;
@@ -245,8 +245,8 @@ void Simple9::unpack5_5(uint32_t ** restrict out,
   *in += 1, *out += 5;
 }
 
-void Simple9::unpack4_7(uint32_t ** restrict out,
-                        const uint32_t ** restrict in) {
+inline void Simple9::unpack4_7(uint32_t ** restrict out,
+                               const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 21) & 0x7f;
   (*out)[1] = (val >> 14) & 0x7f;
@@ -256,8 +256,8 @@ void Simple9::unpack4_7(uint32_t ** restrict out,
   *in += 1, *out += 4;
 }
 
-void Simple9::unpack3_9(uint32_t ** restrict out,
-                        const uint32_t ** restrict in) {
+inline void Simple9::unpack3_9(uint32_t ** restrict out,
+                               const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 19) & 0x01ff;
   (*out)[1] = (val >> 10) & 0x01ff;
@@ -266,8 +266,8 @@ void Simple9::unpack3_9(uint32_t ** restrict out,
   *in += 1, *out += 3;
 }
 
-void Simple9::unpack2_14(uint32_t ** restrict out,
-                         const uint32_t ** restrict in) {
+inline void Simple9::unpack2_14(uint32_t ** restrict out,
+                                const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = (val >> 14) & 0x3fff;
   (*out)[1] = val & 0x3fff;
@@ -275,8 +275,8 @@ void Simple9::unpack2_14(uint32_t ** restrict out,
   *in += 1, *out += 2;
 }
 
-void Simple9::unpack1_28(uint32_t ** restrict out,
-                         const uint32_t ** restrict in) {
+inline void Simple9::unpack1_28(uint32_t ** restrict out,
+                                const uint32_t ** restrict in) {
   uint32_t val = BYTEORDER_FREE_LOAD32(*in);
   (*out)[0] = val & 0x0fffffff;
 
