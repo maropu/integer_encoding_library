@@ -96,10 +96,10 @@ FG Delta                         103.06         4.70
 F Delta                          122.26         4.70
 Variable Byte                    174.88         8.97
 Binary Interpolative              71.71         3.95
-Simple 9                              -            -
-Simple 16                             -            -
-PForDelta                        892.65         7.41
-OPTPForDelta                    1167.41         6.25
+Simple 9                         645.52         5.41
+Simple 16                        642.80         5.17
+PForDelta                       1043.99         6.00
+OPTPForDelta                     828.32         5.46
 VSEncodingBlocks                 973.65         4.51
 VSE-R                                 -            -
 VSEncodingRest                        -            -
