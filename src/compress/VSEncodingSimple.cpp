@@ -4756,8 +4756,12 @@ const uint32_t VSESIMPLE_CODELOGS[] = {
 
 } /* NAMESPACE: */
 
+/* FIXME: It comply with MAXLEN in vcompress.hpp */
+const uint64_t MAXLEN = 100000000;
+
 VSEncodingSimple::VSEncodingSimple()
     : EncodingBase(E_VSESIMPLE),
+      jtable_(INITIALIZE_SPTR(void *, MAXLEN)),
       vdp_(new VSEncodingDP(VSESIMPLE_LENS,
                             NULL,
                             VSESIMPLE_LENS_LEN, true)) {}
@@ -4860,6 +4864,9 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
 
   ASSERT_ADDR(in, len);
   ASSERT_ADDR(out, nvalue);
+
+  /* Get a working space */
+  void **jtable = jtable_.get();
 
   static void *VSESIMPLE_UNPACK[VSESIMPLE_LEN] = {
     /* UNPACKER: 0 */
@@ -5031,9 +5038,6 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
 
   const uint32_t *data = in + offset + 2;
   in += 2;
-
-  /* Create a dispath table */
-  REGISTER_VECTOR_RAII(void *, jtable, num + 1);
 
   uint64_t numBlocks = num / 4;
 

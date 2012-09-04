@@ -30,9 +30,9 @@ const uint32_t VSEBLOCKS_LENS_LEN = 1U << VSEBLOCKS_LOGLEN;
 const uint32_t VSEBLOCKS_LOGS_LEN = 1U << VSEBLOCKS_LOGLOG;
 const uint32_t VSEBLOCKS_DESC_LEN = 1U << VSEBLOCKS_LOGDESC;
 
-void VSEBLOCKS_UNPACK1(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK1(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -72,9 +72,9 @@ void VSEBLOCKS_UNPACK1(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK2(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK2(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 16, out += 16, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -98,9 +98,9 @@ void VSEBLOCKS_UNPACK2(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK3(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK3(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -148,9 +148,9 @@ void VSEBLOCKS_UNPACK3(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK4(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK4(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 8, out += 8, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -166,9 +166,9 @@ void VSEBLOCKS_UNPACK4(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK5(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK5(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -224,9 +224,9 @@ void VSEBLOCKS_UNPACK5(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK6(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK6(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 16, out += 16, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -258,9 +258,9 @@ void VSEBLOCKS_UNPACK6(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK7(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK7(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 7) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -324,9 +324,9 @@ void VSEBLOCKS_UNPACK7(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK8(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK8(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 4, out += 4, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -338,9 +338,9 @@ void VSEBLOCKS_UNPACK8(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK9(uint32_t * restrict out,
-                       const uint32_t * restrict in,
-                       uint32_t bs) {
+inline void VSEBLOCKS_UNPACK9(uint32_t * restrict out,
+                              const uint32_t * restrict in,
+                              uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 9) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -412,9 +412,9 @@ void VSEBLOCKS_UNPACK9(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK10(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK10(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 16, out += 16, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -454,9 +454,9 @@ void VSEBLOCKS_UNPACK10(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK11(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK11(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 32, out += 32, in += 11) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -536,9 +536,9 @@ void VSEBLOCKS_UNPACK11(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK12(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK12(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 8, out += 8, in += 3) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -562,9 +562,9 @@ void VSEBLOCKS_UNPACK12(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK16(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK16(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 2, out += 2, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -574,9 +574,9 @@ void VSEBLOCKS_UNPACK16(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK20(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK20(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 8, out += 8, in += 5) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
@@ -608,9 +608,9 @@ void VSEBLOCKS_UNPACK20(uint32_t * restrict out,
   }
 }
 
-void VSEBLOCKS_UNPACK32(uint32_t * restrict out,
-                        const uint32_t * restrict in,
-                        uint32_t bs) {
+inline void VSEBLOCKS_UNPACK32(uint32_t * restrict out,
+                               const uint32_t * restrict in,
+                               uint32_t bs) {
   for (uint32_t i = 0; i < bs;
           i += 8, out += 8, in += 8) {
     MEMCPY128(in, out);

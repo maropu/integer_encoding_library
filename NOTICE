@@ -87,24 +87,24 @@ Track. This test was done on a machine with a Intel Core i5-2500
 
 CoderName                           mis          bpi
 ---
-N Gamma                          114.53         5.05
-FU Gamma                         144.82         5.05
-F Gamma                          122.09         5.05
-N Delta                          117.14         4.70
-FU Delta                         123.87         4.70
-FG Delta                         129.67         4.70
-F Delta                          140.74         4.70
-Variable Byte                    226.15         8.97
-Binary Interpolative             103.27         3.95
-Simple 9                         571.93         5.41
-Simple 16                        575.90         5.17
-PForDelta                        990.22         6.16
-OPTPForDelta                     842.96         5.36
-VSEncodingBlocks                 915.36         4.95
-VSE-R                            167.21         4.55
-VSEncodingRest                   586.07         4.69
-VSEncodingBlocksHybrid           616.58         4.82
-VSEncodingSimple                1554.63         6.13
+N Gamma                           59.14         5.05
+FU Gamma                          93.61         5.05
+F Gamma                           89.43         5.05
+N Delta                           68.82         4.70
+FU Delta                          88.69         4.70
+FG Delta                         103.06         4.70
+F Delta                          122.26         4.70
+Variable Byte                    174.88         8.97
+Binary Interpolative              71.71         3.95
+Simple 9                              -            -
+Simple 16                             -            -
+PForDelta                        892.65         7.41
+OPTPForDelta                    1167.41         6.25
+VSEncodingBlocks                 708.39         4.51
+VSE-R                                 -            -
+VSEncodingRest                        -            -
+VSEncodingBlocksHybrid                -            -
+VSEncodingSimple                1712.34         6.13
 
 , where 'mis' represents these average decompression speeds
 expressed in millions of integers per second, and 'bpi' does

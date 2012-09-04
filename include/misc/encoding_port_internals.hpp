@@ -69,7 +69,7 @@ typedef struct {uint64_t  v;} U64_S;
 /* Not display some warnings in gcc */
 # if defined(__GNUC__) && (GCC_VERSION >= 406)
 #   pragma GCC diagnostic push
-#   pragma GCC diagnostic ignored -Wstrict-aliasing
+#   pragma GCC diagnostic ignored "-Wstrict-aliasing"
 # endif
 
 # define LOAD32(__x__)  (((U32_S *)(__x__))->v)

@@ -1,7 +1,8 @@
-CC		= ccache g++
+CC		= g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
-# CFLAGS		+= -DNDEBUG -O2 -msse2 -fomit-frame-pointer -march=nocona
-CFLAGS		+= -O2 -g -msse2 -fomit-frame-pointer -march=nocona
+CFLAGS		+= -O2 -msse2
+#CFLAGS		+= -DNDEBUG -O9 -g -msse2 -fomit-frame-pointer --param max-inline-insns-single=1000 \
+			--param inline-unit-growth=1000 --param max-completely-peel-times=100 -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
 WFLAGS		= -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wfloat-equal \

@@ -61,6 +61,14 @@ class VSEncodingSimple : public EncodingBase {
   uint64_t require(uint64_t len) const;
 
  private:
+  /*
+   * FIXME: It is wasteful to allocate memory
+   * in advance, so decodeArray needs to be
+   * modified in a similar way of VSEncodingBlocks,
+   * that is, it splits the constant chunk and
+   * compress each chunk.
+   */
+  std::shared_ptr<void *>       jtable_;
   std::shared_ptr<VSEncodingDP> vdp_;
 }; /* VSEncodingSimple */
 

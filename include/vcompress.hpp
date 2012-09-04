@@ -22,7 +22,7 @@
 namespace integer_encoding {
 
 /* Configurable parameters */
-const uint64_t MAXLEN = 200000000;
+const uint64_t MAXLEN = 100000000;
 const uint64_t NSKIP = 32;
 
 /*
