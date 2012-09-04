@@ -32,7 +32,9 @@ const uint32_t VC_VERSION =
 /* Valid options */
 bool decompress_enabled =  false;
 bool verbose_enabled =  false;
+bool squeeze_enabled = false;
 int encoder_id = -1;
+uint64_t num_decompressed = 0;
 std::string input;
 std::string output;
 
@@ -67,6 +69,7 @@ void show_usage() {
   fprintf(stderr, "(by default, compress FILE).\n");
   fprintf(stderr, "-d, decompress\n");
   fprintf(stderr, "-l, ID list\n");
+  fprintf(stderr, "-n XXX, number to decompress\n");
   fprintf(stderr, "-v, verbose mode\n\n");
   fprintf(stderr, "Report bugs to <integerencoding_at_isti.cnr.it>\n\n");
 
@@ -101,17 +104,27 @@ void show_ids() {
 }
 
 int parse_command(int argc, char **argv) {
+  int   result;
+  char  *end;
+
   /* Read input options */
-  int result = 0;
-  while ((result = getopt(argc, argv, "dlvh")) != -1) {
+  while ((result = getopt(argc, argv, "dlvhn:")) != -1) {
     switch (result) {
       case 'd': {decompress_enabled = true; break;}
       case 'v': {verbose_enabled = true; break;}
+      case 'n': {
+        squeeze_enabled = true;
+        num_decompressed = strtol(optarg, &end, 10);
+        break;
+      }
       case 'l': {show_ids(); break;}
       case 'h': {show_usage(); break;}
       case '?': {show_usage(); break;}
     }
   }
+
+  if (squeeze_enabled && num_decompressed++ < 1)
+    return 1;
 
   if (decompress_enabled) {
     /* Left arguments MUST be >= 1 */
@@ -130,7 +143,6 @@ int parse_command(int argc, char **argv) {
     return 1;
 
   /* Get a encoder ID */
-  char  *end;
   encoder_id = strtol(argv[optind++], &end, 10);
   if ((errno == ERANGE) || (*end != '\0') || (encoder_id < 0) ||
       (encoder_id >= NUMCODERS)) {
@@ -350,30 +362,37 @@ void do_decompress(const std::string& input,
 
     ASSERT(num < MAXLEN);
 
-    /* Do decoding */
-    uint32_t *ptr = reinterpret_cast<uint32_t *>(cmp) + cmp_pos;
-    BenchmarkTimer  t;
-    c->decodeArray(ptr, next_pos - cmp_pos, list, num - 1);
-    elapsed += t.elapsed();
-    dnum += num - 1;
+    if (!(squeeze_enabled && num < num_decompressed)) {
+      /* Chop lists to decompress for performance tests */
+      if (squeeze_enabled)
+        num = num_decompressed;
 
-    /* Write in the output file */
-    if (out != NULL) {
-      char buf[8];
-      BYTEORDER_FREE_STORE32(buf, num);
-      BYTEORDER_FREE_STORE32(buf + 4, prev);
+      /* Do decoding */
+      uint32_t *ptr = reinterpret_cast<uint32_t *>(cmp) + cmp_pos;
 
-      fwrite(buf, 8, 1, out);
+      BenchmarkTimer  t;
+      c->decodeArray(ptr, next_pos - cmp_pos, list, num - 1);
+      elapsed += t.elapsed();
+      dnum += num - 1;
 
-      if (encoder_id != E_BINARYIPL) {
-        for (uint32_t j = 0; j < num - 1; j++) {
-          uint32_t d = VC_LOAD32(list);
-          prev += d + 1;
-          BYTEORDER_FREE_STORE32(buf, prev);
-          fwrite(buf, 4, 1, out);
+      /* Write in the output file */
+      if (out != NULL) {
+        char buf[8];
+        BYTEORDER_FREE_STORE32(buf, num);
+        BYTEORDER_FREE_STORE32(buf + 4, prev);
+
+        fwrite(buf, 8, 1, out);
+
+        if (encoder_id != E_BINARYIPL) {
+          for (uint32_t j = 0; j < num - 1; j++) {
+            uint32_t d = VC_LOAD32(list);
+            prev += d + 1;
+            BYTEORDER_FREE_STORE32(buf, prev);
+            fwrite(buf, 4, 1, out);
+          }
+        } else {
+          fwrite(list, num - 1, 4, out);
         }
-      } else {
-        fwrite(list, num - 1, 4, out);
       }
     }
 
@@ -382,7 +401,7 @@ void do_decompress(const std::string& input,
   }
 
   /* Show performance results */
-  fprintf(stdout, "Performance Results:\n");
+  fprintf(stdout, "Performance Results(ID:%d):\n", encoder_id);
   fprintf(stdout, "  Total Num Decoded: %llu\n",
           static_cast<unsigned long long>(dnum));
   fprintf(stdout, "  Elapsed: %.2lf\n", elapsed);
