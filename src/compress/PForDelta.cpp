@@ -985,7 +985,7 @@ PForDelta::~PForDelta() throw() {}
 uint32_t PForDelta::tryB(uint32_t b,
                          const uint32_t *in,
                          uint64_t len) const {
-  ASSERT(b >= 0 && b <= 32);
+  ASSERT(b <= 32);
   ASSERT(in != NULL);
   ASSERT(len != 0);
 

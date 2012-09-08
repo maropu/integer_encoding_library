@@ -215,6 +215,22 @@ inline void ZMEMCPY128(void *dest) {
 
 #endif
 
+// #define __AVX__
+
+#if defined(__AVX__) && \
+    (defined(__x86_64__) || defined(__x86_64))
+
+inline void ZMEMCPY256(void *dest) {
+  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+
+  __asm__ __volatile__(
+    "vpxor   %%xmm0, %%xmm0, %%xmm0\n\t"
+    "vmovdqu %%ymm0, %0\n\t"
+    :"=m" (d[0]) ::"memory", "%xmm0");
+}
+
+#endif
+
 /* Support 64bit files even on 32bit platfroms */
 #if defined(__GNUC__) && (GCC_VERSION >= 202)
 # ifndef _LARGEFILE_SOURCE
