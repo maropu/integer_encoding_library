@@ -61,7 +61,7 @@ const std::string encoder_suffix[] = {
 };
 
 /* For position of data */
-const std::string pos_suffix = ".pos";
+const std::string pos_suffix = ".vc";
 
 void show_usage() {
   fprintf(stderr, "Usage: vcompress [OPTIONS]... [ID] [FILE] [OUT]\n");
@@ -319,7 +319,7 @@ void do_decompress(const std::string& input,
                    const std::string& output) {
   /* Open a file for position */
   uint64_t poslen = 0;
-  uint32_t *pos = OpenFile(input + pos_suffix, &poslen);
+  uint32_t *pos = OpenFile(input, &poslen);
 
   /* Get a encoder id from the header */
   validate_encoder_id(&pos);
@@ -327,7 +327,8 @@ void do_decompress(const std::string& input,
   /* Open a file for position */
   uint64_t cmplen = 0;
   uint32_t *cmp = OpenFile(
-      input + encoder_suffix[encoder_id], &cmplen);
+      input.substr(0, input.length() - pos_suffix.length()) +
+      encoder_suffix[encoder_id], &cmplen);
 
   /* Open a output file */
   FILE *out = NULL;
@@ -405,8 +406,9 @@ void do_decompress(const std::string& input,
   fprintf(stdout, "  Total Num Decoded: %llu\n",
           static_cast<unsigned long long>(dnum));
   fprintf(stdout, "  Elapsed: %.2lf\n", elapsed);
-  fprintf(stdout, "  Performance: %.2lfmis\n",
-          (dnum + 0.0) / (elapsed * 1000000));
+  fprintf(stdout, "  Performance: %.2lfmis\n", (dnum + 0.0) / (elapsed * 1000000));
+  fprintf(stdout, "  Throughput: %.2lfGiB/s\n",
+          dnum * 4.0 / (elapsed * 1024 * 1024 * 1024));
   fprintf(stdout, "  Size: %.2lfbpi\n", ((cmp_pos + 0.0) / dnum) * 32);
 }
 
