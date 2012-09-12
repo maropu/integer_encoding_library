@@ -18,6 +18,7 @@
 #include <vcompress.hpp>
 
 using namespace integer_encoding;
+using namespace integer_encoding::internals;
 
 namespace {
 
@@ -169,8 +170,7 @@ void write_headerinfo(FILE *cmp, FILE *pos) {
   char  buf[32];
 
   /* Generate a random-generated magic number */
-  srand(time(NULL));
-  uint32_t rmagic = rand();
+  uint32_t rmagic = xor128();
 
   /* Get file size */
   uint64_t cmplen = ftello(cmp);

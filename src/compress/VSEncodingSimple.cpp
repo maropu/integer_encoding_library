@@ -4764,7 +4764,7 @@ VSEncodingSimple::VSEncodingSimple()
       jtable_(INITIALIZE_SPTR(void *, MAXLEN)),
       vdp_(new VSEncodingDP(VSESIMPLE_LENS,
                             NULL,
-                            VSESIMPLE_LENS_LEN, true)) {}
+                            ARRAYSIZE(VSESIMPLE_LENS), true)) {}
 
 VSEncodingSimple::~VSEncodingSimple() throw() {}
 
@@ -4825,7 +4825,7 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
     /* Compute the code for the block length */
     uint32_t idx = 0;
 
-    for (; idx < VSESIMPLE_LENS_LEN; idx++){
+    for (; idx < ARRAYSIZE(VSESIMPLE_LENS); idx++){
       if (parts[i + 1] - parts[i] == VSESIMPLE_LENS[idx])
         break;
     }

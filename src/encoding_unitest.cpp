@@ -155,17 +155,48 @@ TEST(IntegerEncodingInternals, BitsRWTests) {
   EXPECT_THROW(rd.read_bits(9), encoding_exception);
 }
 
+namespace {
+
+class SkewedRandom {
+ public:
+  SkewedRandom() {}
+  ~SkewedRandom() throw() {}
+  uint32_t next(int log) {
+    ASSERT(log > 0 && log < 32);
+    const uint32_t base = (xor128() - 1) % log;
+    return (xor128() - 1) & ((1U << base) - 1);
+  }
+};
+
+const int RANDOM_TEST_LEN = 100000;
+const int RANDOM_TEST_LOG = 23;
+
+} /* nemespace: */
+
 class IntegerEncoding : public ::testing::TestWithParam<int> {
  public:
   virtual void SetUp() {
+    /* test data sets: 1 */
     data = OpenFile(".testdata/gov2.dat", &len);
     len >>= 2;
+
+    /* test data sets: 2 */
+    SkewedRandom  rnd;
+    rlen = RANDOM_TEST_LEN;
+    rdata = new uint32_t[rlen];
+    for (int i = 0; i < rlen; i++)
+      rdata[i] = rnd.next(RANDOM_TEST_LOG);
   }
 
-  virtual void TearDown() {}
+  virtual void TearDown() {delete[] rdata;}
 
+  /* test data sets: 1 */
   uint32_t  *data;
   uint64_t  len;
+
+  /* test data sets: 2 */
+  uint32_t  *rdata;
+  uint64_t  rlen;
 };
 
 TEST_P(IntegerEncoding, EncoderTests) {
@@ -201,20 +232,44 @@ TEST_P(IntegerEncoding, EncoderTests) {
     REGISTER_VECTOR_RAII(uint32_t, dec, DECODE_REQUIRE_MEM(len));
 
     if (policy == E_BINARYIPL) {
-      REGISTER_VECTOR_RAII(uint32_t, rdata, len);
+      REGISTER_VECTOR_RAII(uint32_t, sdata, len);
 
       for (uint64_t i = 0; i < len; i++)
-        rdata[i] = data[i] + ((i > 0)? rdata[i - 1] + 1 : 0);
+        sdata[i] = data[i] + ((i > 0)? sdata[i - 1] + 1 : 0);
 
-      EXPECT_NO_THROW(c->encodeArray(rdata, len, out, &nvalue));
+      EXPECT_NO_THROW(c->encodeArray(sdata, len, out, &nvalue));
       EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, len));
       for (uint64_t i = 0; i < len; i++)
-        EXPECT_EQ(rdata[i], dec[i]);
+        EXPECT_EQ(sdata[i], dec[i]);
     } else {
       EXPECT_NO_THROW(c->encodeArray(data, len, out, &nvalue));
       EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, len));
       for (uint64_t i = 0; i < len; i++)
         EXPECT_EQ(data[i], dec[i]);
+    }
+  }
+
+  {
+    /* Skewed Random Sequence Tests */
+    uint64_t nvalue = c->require(rlen);
+    REGISTER_VECTOR_RAII(uint32_t, out, nvalue);
+    REGISTER_VECTOR_RAII(uint32_t, dec, DECODE_REQUIRE_MEM(rlen));
+
+    if (policy == E_BINARYIPL) {
+      REGISTER_VECTOR_RAII(uint32_t, sdata, rlen);
+
+      for (uint64_t i = 0; i < rlen; i++)
+        sdata[i] = rdata[i] + ((i > 0)? sdata[i - 1] + 1 : 0);
+
+      EXPECT_NO_THROW(c->encodeArray(sdata, rlen, out, &nvalue));
+      EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, rlen));
+      for (uint64_t i = 0; i < rlen; i++)
+        EXPECT_EQ(sdata[i], dec[i]);
+    } else {
+      EXPECT_NO_THROW(c->encodeArray(rdata, rlen, out, &nvalue));
+      EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, rlen));
+      for (uint64_t i = 0; i < rlen; i++)
+        EXPECT_EQ(rdata[i], dec[i]);
     }
   }
 }

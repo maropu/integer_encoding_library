@@ -168,19 +168,38 @@ inline void MEMCPY128(const void *src, void *dest) {
           reinterpret_cast<const uint32_t *>(src);
   uint32_t *d = reinterpret_cast<uint32_t *>(dest);
 
-  __asm__ __volatile__(
+  __asm__ (
     "movdqu %1, %%xmm0\n\t"
     "movdqu %%xmm0, %0\n\t"
     :"=m" (d[0]) :"m" (s[0])
     :"memory", "%xmm0", "%xmm1", "%xmm2", "%xmm3");
 }
 
+inline void MEMCPYA128(const void *src, void *dest) {
+  const uint32_t *s =
+          reinterpret_cast<const uint32_t *>(src);
+  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+
+  __asm__ (
+    "movdqa  %1, %%xmm0\n\t"
+    "movntdq %%xmm0, %0\n\t"
+    :"=m" (d[0]) :"m" (s[0]) :"memory", "%xmm0");
+}
+
 inline void ZMEMCPY128(void *dest) {
   uint32_t *d = reinterpret_cast<uint32_t *>(dest);
 
-  __asm__ __volatile__(
+  __asm__ (
     "pxor   %%xmm0, %%xmm0\n\t"
     "movdqu %%xmm0, %0\n\t"
+    :"=m" (d[0]) ::"memory", "%xmm0");
+}
+
+inline void ZMEMCPYA128(void *dest) {
+  uint32_t *d = reinterpret_cast<uint32_t *>(dest);
+  __asm__ (
+    "pxor     %%xmm0, %%xmm0\n\t"
+    "movntdq  %%xmm0, %0\n\t"
     :"=m" (d[0]) ::"memory", "%xmm0");
 }
 
@@ -213,6 +232,10 @@ inline void ZMEMCPY128(void *dest) {
 # endif
 }
 
+/* Just replace these with non-alignment copys */
+#define MEMCPYA128    MEMCPY128
+#define ZMEMCPYA128   ZMEMCPYA128
+
 #endif
 
 // #define __AVX__
@@ -223,7 +246,7 @@ inline void ZMEMCPY128(void *dest) {
 inline void ZMEMCPY256(void *dest) {
   uint32_t *d = reinterpret_cast<uint32_t *>(dest);
 
-  __asm__ __volatile__(
+  __asm__ (
     "vpxor   %%xmm0, %%xmm0, %%xmm0\n\t"
     "vmovdqu %%ymm0, %0\n\t"
     :"=m" (d[0]) ::"memory", "%xmm0");
