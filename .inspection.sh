@@ -1,12 +1,16 @@
 #!/bin/bash --
 
 ## Build and measure the coverage with running tests
-CXXFLAGS='-coverage' make test
+CXXFLAGS='-coverage -g' make test
 
 for TEST in `find ./ -name "*_utest" -type f`; do
   ./$TEST
 done;
 
+## Colloct test statistics
+which lcov
+
+if [ $? = 0 ]; then
 lcov --capture --directory ./ --base-directory ./ \
          --output-file integer_coding.info
 lcov --remove integer_coding.info /usr/include/\* \
@@ -14,6 +18,7 @@ lcov --remove integer_coding.info /usr/include/\* \
          --output-file integer_coding-coverage.info
 genhtml --title integer_coding --output-directory \
          ./coverage integer_coding-coverage.info
+fi
 
 make clean
 

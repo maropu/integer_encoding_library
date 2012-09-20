@@ -168,7 +168,7 @@ class SkewedRandom {
   }
 };
 
-const int RANDOM_TEST_LEN = 100000;
+const int RANDOM_TEST_LEN = 1000000;
 const int RANDOM_TEST_LOG = 23;
 
 } /* nemespace: */
@@ -255,21 +255,11 @@ TEST_P(IntegerEncoding, EncoderTests) {
     REGISTER_VECTOR_RAII(uint32_t, out, nvalue);
     REGISTER_VECTOR_RAII(uint32_t, dec, DECODE_REQUIRE_MEM(rlen));
 
-    if (policy == E_BINARYIPL) {
-      REGISTER_VECTOR_RAII(uint32_t, sdata, rlen);
-
-      for (uint64_t i = 0; i < rlen; i++)
-        sdata[i] = rdata[i] + ((i > 0)? sdata[i - 1] + 1 : 0);
-
-      EXPECT_NO_THROW(c->encodeArray(sdata, rlen, out, &nvalue));
-      EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, rlen));
-      for (uint64_t i = 0; i < rlen; i++)
-        EXPECT_EQ(sdata[i], dec[i]);
-    } else {
+    if (policy != E_BINARYIPL) {
       EXPECT_NO_THROW(c->encodeArray(rdata, rlen, out, &nvalue));
       EXPECT_NO_THROW(c->decodeArray(out, nvalue, dec, rlen));
       for (uint64_t i = 0; i < rlen; i++)
-        EXPECT_EQ(rdata[i], dec[i]);
+        EXPECT_EQ(rdata[i], dec[i]) << i;
     }
   }
 }

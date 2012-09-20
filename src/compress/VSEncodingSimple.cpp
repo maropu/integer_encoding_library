@@ -4635,56 +4635,56 @@ inline void VSESIMPLE_UNPACK32_2(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 2;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_3(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 3;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_4(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 4;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_5(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 5;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_6(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 6;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_7(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 7;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_8(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 8;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_9(uint32_t ** restrict out,
                                  const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 9;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 
 }
 
@@ -4692,49 +4692,49 @@ inline void VSESIMPLE_UNPACK32_10(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 10;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_11(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 11;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_12(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 12;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_14(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 14;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_16(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 16;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_32(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 32;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 inline void VSESIMPLE_UNPACK32_64(uint32_t ** restrict out,
                                   const uint32_t ** restrict in) {
   for (uint32_t i = 0; i < 64;
           i++, *in += 1, *out += 1)
-    (*out)[i] = BYTEORDER_FREE_LOAD32(*in);
+    (*out)[0] = BYTEORDER_FREE_LOAD32(*in);
 }
 
 const uint32_t VSESIMPLE_LENS[] = {
@@ -5027,7 +5027,7 @@ void VSEncodingSimple::decodeArray(const uint32_t *in,
     &&VSESIMPLE_U32_9, &&VSESIMPLE_U32_10,
     &&VSESIMPLE_U32_11, &&VSESIMPLE_U32_12,
     &&VSESIMPLE_U32_14, &&VSESIMPLE_U32_16,
-    &&VSESIMPLE_U32_32, &&VSESIMPLE_U32_64,
+    &&VSESIMPLE_U32_32, &&VSESIMPLE_U32_64
   };
 
   const uint32_t *iterm = in + len;
