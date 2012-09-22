@@ -4755,10 +4755,10 @@ const uint32_t VSESIMPLE_CODELOGS[] = {
   15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-} /* namespace: */
-
 /* FIXME: It comply with MAXLEN in vcompress.hpp */
 const uint64_t MAXLEN = 100000000;
+
+} /* namespace: */
 
 VSEncodingSimple::VSEncodingSimple()
     : EncodingBase(E_VSESIMPLE),

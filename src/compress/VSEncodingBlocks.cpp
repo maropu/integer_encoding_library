@@ -681,14 +681,12 @@ VSEncodingBlocks::VSEncodingBlocks()
 
 VSEncodingBlocks::VSEncodingBlocks(int policy)
     : EncodingBase(policy),
-      wmem_(INITIALIZE_SPTR(
-              uint32_t, VSENCODING_BLOCKSZ * 2 + 128)),
-      vdp_(new VSEncodingDP(VSEBLOCKS_LENS,
-                            VSEBLOCKS_ZLENS,
-                            VSEBLOCKS_LENS_LEN, false)){}
+      wmem_(std::shared_ptr<uint32_t>(
+              reinterpret_cast<uint32_t *>(0))),
+      vdp_(std::shared_ptr<VSEncodingDP>(
+              reinterpret_cast<VSEncodingDP *>(0))) {}
 
 VSEncodingBlocks::~VSEncodingBlocks() throw() {}
-
 
 void VSEncodingBlocks::encodeVS(const uint32_t *in,
                                 uint32_t len,

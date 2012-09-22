@@ -45,7 +45,7 @@ class VSEncodingBlocks : public EncodingBase {
 
   uint64_t require(uint64_t len) const;
 
- protected:
+ private:
   void encodeVS(const uint32_t *in,
                 uint32_t len,
                 uint32_t *out,
@@ -55,7 +55,6 @@ class VSEncodingBlocks : public EncodingBase {
                 uint32_t *out,
                 uint32_t nvalue) const;
 
- private:
   std::shared_ptr<uint32_t>     wmem_;
   std::shared_ptr<VSEncodingDP> vdp_;
 }; /* VSEncodingBlocks */
