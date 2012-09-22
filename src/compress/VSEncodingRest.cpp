@@ -4946,7 +4946,7 @@ const uint32_t VSEREST_CODELOGS[] = {
   15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-} /* NAMESPACE: */
+} /* namespace: */
 
 VSEncodingRest::VSEncodingRest()
     : EncodingBase(E_VSEREST),
@@ -5140,7 +5140,6 @@ void VSEncodingRest::encodeArray(const uint32_t *in,
 
   vdp_->computePartition(logs, &parts,
                          VSEREST_LOGLEN + VSEREST_LOGLOG);
-
   ASSERT(parts.size() > 1);
 
   uint64_t num = parts.size() - 1;

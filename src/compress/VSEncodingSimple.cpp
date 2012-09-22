@@ -4755,7 +4755,7 @@ const uint32_t VSESIMPLE_CODELOGS[] = {
   15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15
 };
 
-} /* NAMESPACE: */
+} /* namespace: */
 
 /* FIXME: It comply with MAXLEN in vcompress.hpp */
 const uint64_t MAXLEN = 100000000;
@@ -4799,7 +4799,6 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
 
   vdp_->computePartition(logs, &parts,
                          VSESIMPLE_LOGLEN + VSESIMPLE_LOGLOG);
-
   ASSERT(parts.size() > 1);
 
   uint64_t num = parts.size() - 1;
