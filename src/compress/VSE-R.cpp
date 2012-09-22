@@ -29,7 +29,7 @@ const uint64_t MAXLEN = 100000000;
 } /* namespace: */
 
 VSE_R::VSE_R()
-    : VSEncodingBlocks(E_VSER),
+    : EncodingBase(E_VSER),
       wmem_(INITIALIZE_SPTR(uint32_t, MAXLEN)) {}
 
 VSE_R::~VSE_R() throw() {}

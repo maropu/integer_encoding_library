@@ -22,13 +22,14 @@
 #include <compress/EncodingBase.hpp>
 #include <compress/policy/VSEncodingBlocks.hpp>
 #include <compress/policy/VSEncodingDP.hpp>
+#include <compress/policy/VSEncodingUnpackers.hpp>
 #include <io/BitsWriter.hpp>
 #include <io/BitsReader.hpp>
 
 namespace integer_encoding {
 namespace internals {
 
-class VSE_R : public VSEncodingBlocks {
+class VSE_R : public EncodingBase {
  public:
   VSE_R();
   ~VSE_R() throw();

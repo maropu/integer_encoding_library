@@ -21,6 +21,7 @@
 
 #include <compress/EncodingBase.hpp>
 #include <compress/policy/VSEncodingDP.hpp>
+#include <compress/policy/VSEncodingUnpackers.hpp>
 #include <io/BitsWriter.hpp>
 
 namespace integer_encoding {
@@ -29,8 +30,6 @@ namespace internals {
 class VSEncodingBlocks : public EncodingBase {
  public:
   VSEncodingBlocks();
-  explicit VSEncodingBlocks(int policy);
-
   ~VSEncodingBlocks() throw();
 
   void encodeArray(const uint32_t *in,
