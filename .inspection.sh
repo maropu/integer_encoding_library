@@ -25,3 +25,13 @@ make clean
 ## Code policy checker
 # which cpplint.py && find ./src ./tool -name '*.cpp' -type f | xargs cpplint.py
 
+## Heap profiler
+# if type -P valgrind > /dev/null; then
+# CXXFLAGS='-g' make
+# valgrind --tool=massif --max-snapshots=512 \
+#                 --massif-out-file=massif.log \
+#                 ./do_something
+# ms_print massif.log > massif.profile
+# make clean
+# fi
+

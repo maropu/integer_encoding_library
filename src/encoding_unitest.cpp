@@ -272,7 +272,7 @@ INSTANTIATE_TEST_CASE_P(
                     E_VARIABLEBYTE, E_BINARYIPL,
                     E_SIMPLE9, E_SIMPLE16,
                     E_P4D, E_OPTP4D,
-                    E_VSEBLOCKS, E_VSESIMPLE));
+                    E_VSEBLOCKS, E_VSEREST, E_VSESIMPLE));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
