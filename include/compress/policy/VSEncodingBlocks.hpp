@@ -21,7 +21,6 @@
 
 #include <compress/EncodingBase.hpp>
 #include <compress/policy/VSEncodingDP.hpp>
-#include <compress/policy/VSEncodingUnpackers.hpp>
 #include <io/BitsWriter.hpp>
 
 namespace integer_encoding {

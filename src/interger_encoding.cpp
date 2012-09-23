@@ -118,10 +118,24 @@ EncodingPtr EncodingFactory::create(const int policy) {
       break;
     }
 
+    case E_VSER: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::VSE_R()));
+      break;
+    }
+
     case E_VSEREST: {
       return EncodingPtr(
           static_cast<internals::EncodingBase *>(
               new internals::VSEncodingRest()));
+      break;
+    }
+
+    case E_VSEHYB: {
+      return EncodingPtr(
+          static_cast<internals::EncodingBase *>(
+              new internals::VSEncodingBlocksHybrid()));
       break;
     }
 

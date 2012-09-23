@@ -108,6 +108,24 @@ TEST(IntegerEncodingInternals, FactoryTests) {
   }
 
   {
+    /* Encoder ID: E_VSER */
+    EncodingPtr c = EncodingFactory::create(E_VSER);
+    EXPECT_EQ(typeid(VSE_R), typeid(*c));
+  }
+
+  {
+    /* Encoder ID: E_VSEREST */
+    EncodingPtr c = EncodingFactory::create(E_VSEREST);
+    EXPECT_EQ(typeid(VSEncodingRest), typeid(*c));
+  }
+
+  {
+    /* Encoder ID: E_VSEHYB */
+    EncodingPtr c = EncodingFactory::create(E_VSEHYB);
+    EXPECT_EQ(typeid(VSEncodingBlocksHybrid), typeid(*c));
+  }
+
+  {
     /* Encoder ID: E_VSESIMPLE */
     EncodingPtr c = EncodingFactory::create(E_VSESIMPLE);
     EXPECT_EQ(typeid(VSEncodingSimple), typeid(*c));
@@ -272,7 +290,7 @@ INSTANTIATE_TEST_CASE_P(
                     E_VARIABLEBYTE, E_BINARYIPL,
                     E_SIMPLE9, E_SIMPLE16,
                     E_P4D, E_OPTP4D,
-                    E_VSEBLOCKS, E_VSEREST, E_VSESIMPLE));
+                    E_VSEBLOCKS, E_VSEREST, E_VSEHYB, E_VSESIMPLE));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

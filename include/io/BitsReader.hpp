@@ -54,6 +54,8 @@ class BitsReader {
                        uint32_t low, uint32_t high);
 
  private:
+  friend class VSE_R;
+
   /* A single value decoder for unary */
   uint32_t read_unary();
   uint32_t read_funary();

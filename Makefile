@@ -19,6 +19,7 @@ OBJS		= $(subst .cpp,.o,$(SRCS))
 VSRCS		= $(shell find ./tool -name '*.cpp' -type f)
 VOBJS		= $(subst .cpp,.o,$(VSRCS))
 VCOMPRESS	= vcompress
+VSCRIPT		= run-perfs.sh
 
 # For general tests
 TSRCS		= $(shell find ./src -name '*_unitest.cpp' -type f)
@@ -37,6 +38,7 @@ all:		$(VCOMPRESS)
 
 $(VCOMPRESS):	$(OBJS) $(VOBJS)
 		$(CC) $(CFLAGS) $(WFLAGS) $(OBJS) $(VOBJS) $(INCLUDE) $(LDFLAGS) $(LIBS) -o $@
+		cp tool/$(VSCRIPT) .
 
 .cpp.o:
 		$(CC) $(CXXFLAGS) $(CFLAGS) $(WFLAGS) $(INCLUDE) $(LDFLAGS) $(LIBS) -c $< -o $@
@@ -60,7 +62,7 @@ $(TOBJS):
 
 .PHONY:clean
 clean:
-		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a $(VCOMPRESS) $(TEST)
+		rm -f *.dat *.log *.gcda *.gcno *.info *.o *.a $(VCOMPRESS) $(VSCRIPT) $(TEST)
 		$(MAKE) -C src clean
 		$(MAKE) -C tool clean
 

@@ -20,9 +20,9 @@
 #include <misc/encoding_internals.hpp>
 
 #include <compress/EncodingBase.hpp>
-#include <compress/policy/VSEncodingBlocks.hpp>
+#include <compress/policy/F_Delta.hpp>
+#include <compress/policy/VSEncodingNaive.hpp>
 #include <compress/policy/VSEncodingDP.hpp>
-#include <compress/policy/VSEncodingUnpackers.hpp>
 #include <io/BitsWriter.hpp>
 #include <io/BitsReader.hpp>
 
