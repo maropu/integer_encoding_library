@@ -694,10 +694,9 @@ void VSEncodingBlocks::encodeVS(const uint32_t *in,
   std::vector<uint32_t> logs;
   std::vector<uint32_t> parts;
 
-  for (uint32_t i = 0; i < len; i++) {
-    uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    logs.push_back(VSEBLOCKS_REMAPLOGS[32 - MSB32(val)]);
-  }
+  for (uint32_t i = 0; i < len; i++)
+    logs.push_back(
+        VSEBLOCKS_REMAPLOGS[32 - MSB32(in[i])]);
 
   ASSERT(logs.size() == len);
   ASSERT(parts.size() == 0);
@@ -771,19 +770,15 @@ void VSEncodingBlocks::encodeVS(const uint32_t *in,
     if (!maxB)
       continue;
 
-    for (auto j = parts[i];
-            j < parts[i + 1]; j++) {
+    for (auto j = parts[i]; j < parts[i + 1]; j++)
       /* Save current element in its bucket */
-      uint32_t val = BYTEORDER_FREE_LOAD32(in + j);
-      blocks[VSEBLOCKS_CODELOGS[maxB]].push_back(val);
-    }
+      blocks[VSEBLOCKS_CODELOGS[maxB]].push_back(in[j]);
   }
 
   /* Write each bucket ... keeping byte alligment */
   for (uint32_t i = 1; i < VSEBLOCKS_LOGS_LEN; i++) {
     for (uint32_t j = 0; j < countBlocksLogs[i]; j++)
       wt.write_bits(blocks[i][j], VSEBLOCKS_LOGS[i]);
-
     wt.flush_bits();
   }
 

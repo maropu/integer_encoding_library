@@ -84,10 +84,9 @@ void VSEncodingNaive::encodeArray(const uint32_t *in,
   std::vector<uint32_t> logs;
   std::vector<uint32_t> parts;
 
-  for (uint64_t i = 0; i < len; i++) {
-    uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    logs.push_back(VSENAIVE_REMAPLOGS[32 - MSB32(val)]);
-  }
+  for (uint64_t i = 0; i < len; i++)
+    logs.push_back(
+        VSENAIVE_REMAPLOGS[32 - MSB32(in[i])]);
 
   ASSERT(logs.size() == len);
   ASSERT(parts.size() == 0);
@@ -117,10 +116,9 @@ void VSEncodingNaive::encodeArray(const uint32_t *in,
                   VSENAIVE_LOGLEN);
 
     /* Write integers */
-    for (uint64_t j = parts[i]; j < parts[i + 1]; j++) {
-      uint32_t val = BYTEORDER_FREE_LOAD32(in + j);
-      wt.write_bits(val, maxB);
-    }
+    for (uint64_t j = parts[i];
+            j < parts[i + 1]; j++)
+      wt.write_bits(in[j], maxB);
   }
 
   wt.flush_bits();

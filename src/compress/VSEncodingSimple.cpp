@@ -4789,10 +4789,9 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
   std::vector<uint32_t> logs;
   std::vector<uint32_t> parts;
 
-  for (uint64_t i = 0; i < len; i++) {
-    uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    logs.push_back(VSESIMPLE_REMAPLOGS[32 - MSB32(val)]);
-  }
+  for (uint64_t i = 0; i < len; i++)
+    logs.push_back(
+        VSESIMPLE_REMAPLOGS[32 - MSB32(in[i])]);
 
   ASSERT(logs.size() == len);
   ASSERT(parts.size() == 0);
@@ -4831,10 +4830,8 @@ void VSEncodingSimple::encodeArray(const uint32_t *in,
     }
 
     /* Write integers */
-    for (uint64_t j = parts[i]; j < parts[i + 1]; j++) {
-      uint32_t val = BYTEORDER_FREE_LOAD32(in + j);
-      wt2.write_bits(val, maxB);
-    }
+    for (uint64_t j = parts[i]; j < parts[i + 1]; j++)
+      wt2.write_bits(in[j], maxB);
 
     /* Align to 32-bit */
     wt2.flush_bits();

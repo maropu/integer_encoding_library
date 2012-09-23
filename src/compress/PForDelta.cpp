@@ -981,7 +981,6 @@ PForDelta::PForDelta(int policy)
 
 PForDelta::~PForDelta() throw() {}
 
-
 uint32_t PForDelta::tryB(uint32_t b,
                          const uint32_t *in,
                          uint64_t len) const {
@@ -997,8 +996,7 @@ uint32_t PForDelta::tryB(uint32_t b,
   uint32_t curExcept = 0;
 
   for (uint32_t i = 0; i < len; i++) {
-    uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    if (val >= (1ULL << b))
+    if (in[i] >= (1ULL << b))
       curExcept++;
   }
 
@@ -1050,11 +1048,10 @@ void PForDelta::encodeBlock(const uint32_t *in,
 
   if (b < 32) {
     for (uint32_t i = 0; i < len; i++) {
-      uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-      wt.write_bits(val, b);
+      wt.write_bits(in[i], b);
 
       if (in[i] >= (1U << b)) {
-        uint32_t e = val >> b;
+        uint32_t e = in[i] >> b;
         exceptionsPositions[curExcept] = i;
         exceptionsValues[curExcept] = e;
         curExcept++;

@@ -139,8 +139,7 @@ bool Simple9::try_pack(const uint32_t *in,
                        uint32_t num1, uint32_t log1) {
   uint32_t min = (len > num1)? num1 : len;
   for (uint32_t i = 0; i < min; i++) {
-    uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-    uint32_t d = 32 - MSB32(val);
+    uint32_t d = 32 - MSB32(in[i]);
     if (d > log1)
       return false;
   }

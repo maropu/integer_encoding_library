@@ -55,10 +55,8 @@ uint32_t OPTPForDelta::tryB(uint32_t b,
     size = DIV_ROUNDUP(len * b, 32);
 
     for (uint32_t i = 0; i < len; i++) {
-      uint32_t val = BYTEORDER_FREE_LOAD32(in + i);
-
-      if (val >= (1U << b)) {
-        uint32_t e = val >> b;
+      if (in[i] >= (1U << b)) {
+        uint32_t e = in[i] >> b;
         exceptionsPositions[curExcept] = i;
         exceptionsValues[curExcept] = e;
         curExcept++;

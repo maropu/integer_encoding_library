@@ -186,7 +186,7 @@ class SkewedRandom {
   }
 };
 
-const int RANDOM_TEST_LEN = 1000;
+const int RANDOM_TEST_LEN = 10000000;
 const int RANDOM_TEST_LOG = 23;
 
 } /* nemespace: */
@@ -243,7 +243,7 @@ TEST_P(IntegerEncoding, EncoderTests) {
       EXPECT_EQ(data[i], dec[i]);
   }
 
-  if (0) {
+  {
     /* Long Sequence Tests */
     uint64_t nvalue = c->require(len);
     REGISTER_VECTOR_RAII(uint32_t, out, nvalue);
