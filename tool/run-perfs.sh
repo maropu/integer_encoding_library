@@ -53,12 +53,16 @@ echo '=========================='
 
 # Run tests, output results
 for impl in $(seq 0 $MAXID); do
+  # Show a type of coders to test
   echo -n "${M[$impl]}   "
-  # Compress lists, and warm-up
-  ./$COMPRESS $impl $1 > /dev/null || exit 1
-  ./$COMPRESS -d $1$SUFFIX > /dev/null || exit 1
+
   for len in $L; do
-    ./$COMPRESS -d -n $len $1$SUFFIX > temp.output || exit 1
+    # Compress lists, and warm-up
+    ./$COMPRESS $impl -n $len $1 > /dev/null || exit 1
+    ./$COMPRESS -d $1$SUFFIX > /dev/null || exit 1
+
+    # Do benchmarking
+    ./$COMPRESS -d $1$SUFFIX > temp.output || exit 1
     echo -en '\t'
     sed -n 's/  Performance: \(.*\)mis$/\1/p' < temp.output | xargs echo -n
   done

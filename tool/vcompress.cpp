@@ -35,7 +35,7 @@ bool decompress_enabled =  false;
 bool verbose_enabled =  false;
 bool squeeze_enabled = false;
 int encoder_id = -1;
-uint64_t num_decompressed = 0;
+uint64_t num_compressed = 0;
 std::string input;
 std::string output;
 
@@ -115,7 +115,7 @@ int parse_command(int argc, char **argv) {
       case 'v': {verbose_enabled = true; break;}
       case 'n': {
         squeeze_enabled = true;
-        num_decompressed = strtol(optarg, &end, 10);
+        num_compressed = strtol(optarg, &end, 10);
         break;
       }
       case 'l': {show_ids(); break;}
@@ -124,7 +124,9 @@ int parse_command(int argc, char **argv) {
     }
   }
 
-  if (squeeze_enabled && num_decompressed++ < 1)
+  if (squeeze_enabled &&
+          (num_compressed <= NSKIP ||
+              num_compressed >= MAXLEN))
     return 1;
 
   if (decompress_enabled) {
@@ -275,10 +277,9 @@ void do_compress(const std::string& input, int id) {
       goto LOOP_END;
 
     uint32_t prev = VC_LOAD32(addr);
+    uint32_t base = prev;
 
     if (UNLIKELY(num > NSKIP && num < MAXLEN)) {
-      write_pos_entry(num, prev, cmp_pos, pos);
-
       for (uint32_t i = 0; i < num - 1; i++) {
         uint32_t d = VC_LOAD32(addr);
         if (UNLIKELY(d < prev))
@@ -291,6 +292,16 @@ void do_compress(const std::string& input, int id) {
 
         prev = d;
       }
+
+      if (squeeze_enabled) {
+        if (num < num_compressed)
+          continue;
+
+        /* Chop lists to compress for performance tests */
+        num = num_compressed;
+      }
+
+      write_pos_entry(num, base, cmp_pos, pos);
 
       uint64_t cmp_size = MAXLEN;
       c->encodeArray(list, num - 1, cmp_array, &cmp_size);
@@ -363,37 +374,31 @@ void do_decompress(const std::string& input,
 
     ASSERT(num < MAXLEN);
 
-    if (!(squeeze_enabled && num < num_decompressed)) {
-      /* Chop lists to decompress for performance tests */
-      if (squeeze_enabled)
-        num = num_decompressed;
+    /* Do decoding */
+    uint32_t *ptr = reinterpret_cast<uint32_t *>(cmp) + cmp_pos;
 
-      /* Do decoding */
-      uint32_t *ptr = reinterpret_cast<uint32_t *>(cmp) + cmp_pos;
+    BenchmarkTimer  t;
+    c->decodeArray(ptr, next_pos - cmp_pos, list, num - 1);
+    elapsed += t.elapsed();
+    dnum += num - 1;
 
-      BenchmarkTimer  t;
-      c->decodeArray(ptr, next_pos - cmp_pos, list, num - 1);
-      elapsed += t.elapsed();
-      dnum += num - 1;
+    /* Write in the output file */
+    if (out != NULL) {
+      char buf[8];
+      BYTEORDER_FREE_STORE32(buf, num);
+      BYTEORDER_FREE_STORE32(buf + 4, prev);
 
-      /* Write in the output file */
-      if (out != NULL) {
-        char buf[8];
-        BYTEORDER_FREE_STORE32(buf, num);
-        BYTEORDER_FREE_STORE32(buf + 4, prev);
+      fwrite(buf, 8, 1, out);
 
-        fwrite(buf, 8, 1, out);
-
-        if (encoder_id != E_BINARYIPL) {
-          for (uint32_t j = 0; j < num - 1; j++) {
-            uint32_t d = VC_LOAD32(list);
-            prev += d + 1;
-            BYTEORDER_FREE_STORE32(buf, prev);
-            fwrite(buf, 4, 1, out);
-          }
-        } else {
-          fwrite(list, num - 1, 4, out);
+      if (encoder_id != E_BINARYIPL) {
+        for (uint32_t j = 0; j < num - 1; j++) {
+          uint32_t d = VC_LOAD32(list);
+          prev += d + 1;
+          BYTEORDER_FREE_STORE32(buf, prev);
+          fwrite(buf, 4, 1, out);
         }
+      } else {
+        fwrite(list, num - 1, 4, out);
       }
     }
 
