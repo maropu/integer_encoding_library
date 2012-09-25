@@ -34,6 +34,9 @@ History
 2012-08-08 version 0.3.0:
 * Code refactoring done, and unit tests added.
 
+2012-04-03 version 0.2.0:
+* Release a stable version(See tag 'stable-0.2.0').
+
 2011-11-13 version 0.1.0:
 * Basic functions implemented, and a first release.
 
