@@ -217,7 +217,7 @@ void write_pos_entry(uint64_t pos, FILE *out) {
 void validate_encoder_id(uint32_t **pos) {
   encoder_id = VC_LOAD32(*pos);
   if ((encoder_id < 0) || (encoder_id >= NUMCODERS))
-    OUTPUT_AND_DIE("File format xxception: encoder ID");
+    OUTPUT_AND_DIE("File format exception: encoder ID");
 }
 
 void validate_headerinfo(uint32_t **cmp, uint64_t cmplen,
