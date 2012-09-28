@@ -101,9 +101,9 @@ Simple 16                        642.80         5.17
 PForDelta                       1043.99         6.00
 OPTPForDelta                     828.32         5.46
 VSEncodingBlocks                 973.65         4.51
-VSE-R                                 -            -
-VSEncodingRest                   510.04         4.34
-VSEncodingBlocksHybrid                -            -
+VSE-R                            182.61         4.24
+VSEncodingRest                   520.72         4.34
+VSEncodingBlocksHybrid           808.90         4.40
 VSEncodingSimple                1712.34         6.13
 
 , where 'mis' represents these average decompression speeds
