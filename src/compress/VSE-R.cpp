@@ -303,16 +303,12 @@ inline void VSER_UNPACK8(uint32_t * restrict out,
                          const uint32_t * restrict in,
                          uint32_t bs) {
   for (uint32_t i = 0;
-          i < bs; i += 1, out += 8, in += 1) {
+          i < bs; i += 1, out += 4, in += 1) {
     uint32_t val = BYTEORDER_FREE_LOAD32(in);
     out[0] = (1U << 8) | ((val >> 24));
     out[1] = (1U << 8) | ((val >> 16) & 0xff);
     out[2] = (1U << 8) | ((val >> 8) & 0xff);
     out[3] = (1U << 8) | (val & 0xff);
-    out[4] = (1U << 8) | ((val >> 24));
-    out[5] = (1U << 8) | ((val >> 16) & 0xff);
-    out[6] = (1U << 8) | ((val >> 8) & 0xff);
-    out[7] = (1U << 8) | (val & 0xff);
   }
 }
 

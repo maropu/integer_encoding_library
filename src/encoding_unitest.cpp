@@ -186,7 +186,7 @@ class SkewedRandom {
   }
 };
 
-const int RANDOM_TEST_LEN = 10000000;
+const int RANDOM_TEST_LEN = 1000000;
 const int RANDOM_TEST_LOG = 23;
 
 } /* nemespace: */
@@ -244,6 +244,7 @@ TEST_P(IntegerEncoding, EncoderTests) {
   }
 
   {
+    /* Simple Tests */
     /* Long Sequence Tests */
     uint64_t nvalue = c->require(len);
     REGISTER_VECTOR_RAII(uint32_t, out, nvalue);
@@ -290,7 +291,7 @@ INSTANTIATE_TEST_CASE_P(
                     E_VARIABLEBYTE, E_BINARYIPL,
                     E_SIMPLE9, E_SIMPLE16,
                     E_P4D, E_OPTP4D,
-                    E_VSEBLOCKS, E_VSEREST, E_VSEHYB, E_VSESIMPLE));
+                    E_VSEBLOCKS, E_VSER, E_VSEREST, E_VSEHYB, E_VSESIMPLE));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
