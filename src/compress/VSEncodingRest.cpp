@@ -5410,7 +5410,7 @@ void VSEncodingRest::decodeArray(uint32_t *in,
     (((__val__) >> VSEREST_LOGDESC * __offset__) & (VSEREST_LEN - 1))
 
 #define VSEREST_RESTORE_BUF(__in__, __fill__, __buf__)  \
-    (__fill__ >= 32)? *(--__in__) = __buf__ >> (__fill__ -= 32) : 0
+    UNLIKELY(__fill__ >= 32)? *(--__in__) = __buf__ >> (__fill__ -= 32) : 0
 
   /* Initialize a buffer for paddings */
   number_of_filled_bits = 0;
