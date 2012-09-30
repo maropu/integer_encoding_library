@@ -392,13 +392,15 @@ void do_decompress(const std::string& input,
 
       if (encoder_id != E_BINARYIPL) {
         for (uint32_t j = 0; j < num - 1; j++) {
-          uint32_t d = VC_LOAD32(list);
-          prev += d + 1;
+          prev += list[j] + 1;
           BYTEORDER_FREE_STORE32(buf, prev);
           fwrite(buf, 4, 1, out);
         }
       } else {
-        fwrite(list, num - 1, 4, out);
+        for (uint32_t j = 0; j < num - 1; j++) {
+          BYTEORDER_FREE_STORE32(buf, list[j]);
+          fwrite(buf, 4, 1, out);
+        }
       }
     }
 

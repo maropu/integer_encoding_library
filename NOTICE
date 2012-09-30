@@ -83,7 +83,7 @@ respectively) of these encoders are shown here. gov2 was used as
 a test set, which is one of TREC test collections in the Terabyte
 Track. This test was done on a machine with a Intel Core i5-2500
 (3.3GHz) processor and 8GiB of memory.
-(git tag benchmark-20120902):
+(git tag benchmark-20120928):
 
 CoderName                           mis          bpi
 ---
