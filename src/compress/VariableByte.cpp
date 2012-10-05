@@ -46,7 +46,7 @@ void VariableByte::encodeArray(const uint32_t *in,
   BitsWriter  wt(out, *nvalue);
 
   for (uint32_t i = 0; i < len; i++) {
-    uint32_t nwords = (31 - MSB32(in[i])) / 7;
+    uint32_t nwords = (32 - MSB32(in[i])) / 7;
 
     switch(nwords) {
       case 0: {

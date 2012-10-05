@@ -1,7 +1,7 @@
 CC		= g++
 CCVERSION	:= $(strip $(shell $(CC) --version))
-#CFLAGS		+= -O2 -msse2
-CFLAGS		+= -DNDEBUG -O9 -msse2 -fomit-frame-pointer --param max-inline-insns-single=1000 \
+CFLAGS		+= -O2 -msse2
+#CFLAGS		+= -DNDEBUG -O9 -msse2 -fomit-frame-pointer --param max-inline-insns-single=1000 \
 			--param inline-unit-growth=1000 --param max-completely-peel-times=100 -march=nocona
 CFLAGS		+= $(if $(filter 4.4.% 4.5.% 4.6.%,$(CCVERSION)), -std=gnu++0x,)
 CFLAGS		+= $(if $(filter 4.7.%,$(CCVERSION)), -std=gnu++11,)
