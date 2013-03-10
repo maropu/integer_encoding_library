@@ -15,8 +15,10 @@ See a web site below to know more about the library:
 http://integerencoding.isti.cnr.it/
 
 NOTE: The library aims at a research tool for performance
-benchmarks, not a qualified product. So, some improvements to
-remove risks such memory leaks are pended for the time being.
+benchmarks, not a qualified product. If you would like to use
+portable ones, you can access a URL below:
+
+https://github.com/maropu/vpacker
 
 
 Prequisites
